@@ -1,6 +1,7 @@
 from enum import Enum
 
 BRD_SQ_NUM = 120
+MAXGAMEMOVES = 2048
 
 class PIECE(Enum):
     EMPTY = 0
@@ -120,6 +121,15 @@ class SQUARES(Enum):
     
     NO_SQ = 99
     
+class UNDO:
+    def __init__(self):
+        self.move = 0 # the move number
+        self.castlePerm = 0
+        self.enPas = -1
+        self.fiftyMove = 0
+        self.posKey = 0 #unqiue position key
+        
+
 class Board:
     def __init__(self):
         # 120 squares to represent the board
@@ -145,6 +155,9 @@ class Board:
 
         # history of half moves
         self.hisPly = 0
+        
+        # castle permission
+        self.castlePerm = 0
 
         # Unique Position key for each Position
         self.posKey = 0
@@ -160,4 +173,15 @@ class Board:
 
         # Number of minor pieces (Bishops and Knights)
         self.minPce = [0] * 3  # 0 for white, 1 for black, 2 for both
+        
+        
+        # Declare an array of UNDO class instances
+        self.history = [UNDO() for _ in range(MAXGAMEMOVES)]
 
+# castling information
+class CASTLING(Enum):
+    WKCA = 1 # white king side castling
+    WQCA = 2 # white queen side castling
+    BKCA = 4
+    BQCA = 8
+    
