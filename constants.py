@@ -1,5 +1,7 @@
 from enum import Enum
 
+BRD_SQ_NUM = 120
+
 class PIECE(Enum):
     EMPTY = 0
     wP = 1 # white pawn
@@ -44,7 +46,6 @@ class COLORS(Enum):
     
 
 class SQUARES(Enum):
-    
     A1 = 21
     A2 = 31
     A3 = 41
@@ -118,3 +119,45 @@ class SQUARES(Enum):
     H8 = 98
     
     NO_SQ = 99
+    
+class Board:
+    def __init__(self):
+        # 120 squares to represent the board
+        self.pieces = [0] * BRD_SQ_NUM
+
+        # represent the pawns of both sides (0 for white, 1 for black, 2 for both)
+        self.pawns = [0] * 3  
+
+        # Position of kings (0 for white, 1 for black)
+        self.kingSq = [0] * 2
+
+        # Side to move (0 for white, 1 for black)
+        self.side = 0
+
+        # En passant square (-1 means no en passant square)
+        self.enPas = -1
+
+        # Fifty-move rule counter
+        self.fiftyMove = 0
+
+        # Ply (depth of search in current game)
+        self.ply = 0
+
+        # history of half moves
+        self.hisPly = 0
+
+        # Unique Position key for each Position
+        self.posKey = 0
+
+        # 
+        self.pceNum = [0] * 13  # Total Number of pieces
+
+        # Number of non-pawn big pieces (Queens, rooks, bishops, knights)
+        self.bigPce = [0] * 3  # 0 for white, 1 for black, 2 for both
+
+        # Number of major pieces (Queens and Rooks)
+        self.majPce = [0] * 3  # 0 for white, 1 for black, 2 for both
+
+        # Number of minor pieces (Bishops and Knights)
+        self.minPce = [0] * 3  # 0 for white, 1 for black, 2 for both
+
