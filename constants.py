@@ -185,3 +185,6 @@ class CASTLING(Enum):
     BKCA = 4
     BQCA = 8
     
+# file rank to the square number (120 squares representation)
+def FR2SQ(f, r):
+    return (21 + f) + (r * 10)
