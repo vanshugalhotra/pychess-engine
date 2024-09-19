@@ -177,6 +177,9 @@ class Board:
         
         # Declare an array of UNDO class instances
         self.history = [UNDO() for _ in range(MAXGAMEMOVES)]
+        
+        #piece list, pList[wN][0] = E1; adds a white knight on e1
+        self.pList = [[0 for _ in range(10)] for _ in range(13)] 
 
 # castling information
 class CASTLING(Enum):
