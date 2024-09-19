@@ -16,3 +16,22 @@ def PrintBitBoard(bb):
                 print("-", end=" ")
         print()
         
+def CountBits(b):
+    r = 0
+    while(b):
+        b = b & b-1
+        r += 1
+    return r
+        
+def PopBit(bb):
+    # Isolate the least significant bit (LSB)
+    lsb = bb & -bb
+
+    # Find the index of the LSB using bit_length
+    index = (lsb.bit_length() - 1)
+
+    # Remove the LSB from the bitboard
+    bb &= bb - 1
+
+    return index, bb
+
