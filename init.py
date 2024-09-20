@@ -18,7 +18,18 @@ def InitBitMasks():
         # lets say, on index 3, setMask[3] will be (In binary) 000000.....1000
         # clearMask[3] will be (IN binary) 11111111.....0111 
 
+def InitHashKeys():
+    for i in range(0, 13):
+        for j in range(0, 120):
+            globals.PieceKeys[i][j] = constants.RAND_64()
+    globals.SideKey = constants.RAND_64()
+    for i in range(0, 16):
+        globals.CastleKeys[i] = constants.RAND_64()
+    
+            
+
 def AllInit():
     InitSq120To64AndSq64To120()
     InitBitMasks()
+    InitHashKeys()
 

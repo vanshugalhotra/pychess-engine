@@ -5,3 +5,8 @@ Sq64ToSq120 = [120] * 64 # initially every box is 120 doesn't mean anything we c
 
 setMask = [0] * 64
 clearMask = [0] * 64
+
+PieceKeys = [[0 for _ in range(120)] for _ in range(13)] # will hold random values for each piece on each square
+
+SideKey = -1 # for holding the side value
+CastleKeys = [0] * 16 # holding castle values (0 - 15)

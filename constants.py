@@ -1,4 +1,5 @@
 from enum import Enum
+from random import getrandbits
 
 BRD_SQ_NUM = 120
 MAXGAMEMOVES = 2048
@@ -191,3 +192,6 @@ class CASTLING(Enum):
 # file rank to the square number (120 squares representation)
 def FR2SQ(f, r):
     return (21 + f) + (r * 10)
+
+def RAND_64():
+    return getrandbits(64)
