@@ -34,8 +34,12 @@ def PopBit(bb):
     b = bb ^ (bb - 1)
     fold = ((b & 0xffffffff) ^ (b >> 32))
     bb = bb & (bb- 1)
-    return bitTable[((fold * 0x783a9b23)%(2**32)) >> 26], bb # Modulo 2**32 to keep number in range
+    return bitTable[((fold * 0x783a9b23)%4294967296) >> 26], bb # Modulo 2**32 to keep number in range
 
+def SetBit(bb, sq):
+    bb |= globals.setMask[sq]
+    return bb
 
-print(PopBit(1<<15))
-
+def ClearBit(bb, sq):
+    bb &= globals.clearMask[sq]
+    return bb
