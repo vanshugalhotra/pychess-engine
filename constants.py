@@ -3,6 +3,10 @@ from random import getrandbits
 
 BRD_SQ_NUM = 120
 MAXGAMEMOVES = 2048
+START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+FEN1 = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
+FEN2 = "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2"
+FEN3 = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
 
 class PIECE(Enum):
     EMPTY = 0
@@ -140,7 +144,7 @@ class Board:
         self.pawns = [0] * 3  
 
         # Position of kings (0 for white, 1 for black)
-        self.kingSq = [0] * 2
+        self.KingSq = [0] * 2
 
         # Side to move (0 for white, 1 for black)
         self.side = 0
