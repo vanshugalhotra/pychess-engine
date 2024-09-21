@@ -1,8 +1,9 @@
 from constants import BRD_SQ_NUM, SQUARES, PIECE, COLORS, RANK, FILE, CASTLING, FR2SQ
-from globals import Sq64ToSq120
+from globals import Sq64ToSq120, Sq120ToSq64
 from debug import assert_condition
 from hashkeys import GeneratePosKey
 from data import PceChar, SideChar, PieceBig, PieceMaj, PieceMin, PieceCol, PieceVal
+from bitboards import SetBit
 
 def ResetBoard(board):
     for i in range(0, BRD_SQ_NUM):
@@ -12,7 +13,7 @@ def ResetBoard(board):
     for i in range(0, 64):
         board.pieces[Sq64ToSq120[i]] = PIECE.EMPTY.value
         
-    for i in range(0, 3): # for white, black and both
+    for i in range(0, 2): # for white, black
         board.bigPce[i] = 0
         board.majPce[i] = 0
         board.minPce[i] = 0
@@ -56,6 +57,40 @@ def PrintBoard(board):
     
     print(hex(board.posKey))
     
+
+def UpdateListsMaterial(board):
+    for index in range(0, BRD_SQ_NUM):
+        sq = index
+        piece = board.pieces[index]
+        if(piece != SQUARES.OFFBOARD.value and piece != PIECE.EMPTY.value):
+            colour = PieceCol[piece]
+            if(PieceBig[piece]):
+                board.bigPce[colour] += 1
+            if(PieceMin[piece]):
+                board.minPce[colour] += 1
+            if(PieceMaj[piece]):
+                board.majPce[colour] += 1
+            board.material[colour] += PieceVal[piece] # adding the value of material
+            
+            #Piece List --> pList[wP][pceNum]; example, there's our first white Pawn on e4, pList[wP][0] = E4
+            
+            # how the following code works, for example we already have 2 white Pawns, so Our pceNum[1] = 2, now If we want to add a white Pawn on E4, we need to do like, pList[wP][2] = E4
+            # that's exactly what we are doing
+            board.pList[piece][board.pceNum[piece]] = sq #the inner [] represents the number of the piece, I mean if its 1st white pawn, or 2nd or etc....
+            board.pceNum[piece] += 1 # incrementing the pceNum
+            
+            # setting the kingSquare
+            if(piece == PIECE.wK.value or piece == PIECE.bK.value):
+                board.KingSq[colour] = sq
+                
+            # setting the pawn bits
+            if(piece == PIECE.wP.value):
+                board.pawns[COLORS.WHITE.value] = SetBit(board.pawns[COLORS.WHITE.value], Sq120ToSq64[sq] )
+                board.pawns[COLORS.BOTH.value] = SetBit(board.pawns[COLORS.BOTH.value], Sq120ToSq64[sq] )
+            elif(piece == PIECE.bP.value):
+                board.pawns[COLORS.BLACK.value] = SetBit(board.pawns[COLORS.BLACK.value], Sq120ToSq64[sq] )
+                board.pawns[COLORS.BOTH.value] = SetBit(board.pawns[COLORS.BOTH.value], Sq120ToSq64[sq] )
+                     
 def ParseFen(fen, board):
     assert_condition(fen != None)
     assert_condition(board != None)
@@ -135,29 +170,5 @@ def ParseFen(fen, board):
         
         board.enPas = FR2SQ(file, rank)
     board.posKey = GeneratePosKey(board) #generating the hashkey
+    UpdateListsMaterial(board)
     return 0
-
-def UpdateListsMaterial(board):
-    for index in range(0, BRD_SQ_NUM):
-        sq = index
-        piece = board.pieces[index]
-        if(piece != SQUARES.OFFBOARD.value and piece != PIECE.EMPTY.value):
-            colour = PieceCol[piece]
-            if(PieceBig[piece]):
-                board.bigPce[colour] += 1
-            if(PieceMin[piece]):
-                board.minPce[colour] += 1
-            if(PieceMaj[piece]):
-                board.majPce[colour] += 1
-            board.material[colour] += PieceVal[piece] # adding the value of material
-            
-            #Piece List --> pList[wP][pceNum]; example, there's our first white Pawn on e4, pList[wP][0] = E4
-            
-            # how the following code works, for example we already have 2 white Pawns, so Our pceNum[1] = 2, now If we want to add a white Pawn on E4, we need to do like, pList[wP][2] = E4
-            # that's exactly what we are doing
-            board.pList[piece][board.pceNum[piece]] = sq #the inner [] represents the number of the piece, I mean if its 1st white pawn, or 2nd or etc....
-            board.pceNum[piece] += 1 # incrementing the pceNum
-            
-            # setting the kingSquare
-            if(piece == PIECE.wK.value or piece == PIECE.bK.value):
-                board.KingSq[colour] = sq

@@ -7,7 +7,7 @@ def GeneratePosKey(board):
     piece = PIECE.EMPTY.value
     for sq in range(0, BRD_SQ_NUM):
         piece = board.pieces[sq]
-        if(piece != SQUARES.NO_SQ.value and piece != PIECE.EMPTY.value):
+        if(piece != SQUARES.OFFBOARD.value and piece != PIECE.EMPTY.value):
             assert_condition(piece >= PIECE.wP.value and piece <= PIECE.bK.value)
             finalKey ^= PieceKeys[piece][sq]
     

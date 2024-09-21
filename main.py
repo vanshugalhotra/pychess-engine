@@ -1,13 +1,15 @@
 import constants
 import init
-import bitboards
-from board import ParseFen, PrintBoard
+from bitboards import PrintBitBoard
+from board import ParseFen, PrintBoard, UpdateListsMaterial
 
 if __name__ == "__main__":
     init.AllInit()
     boardR = constants.Board()
     
-    # ParseFen(constants.START_FEN, boardR)
-    # PrintBoard(boardR)
+    ParseFen(constants.FEN4, boardR)
+    PrintBoard(boardR)
+    PrintBitBoard(boardR.pawns[2])
+    
     
     
