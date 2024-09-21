@@ -7,5 +7,7 @@ if __name__ == "__main__":
     init.AllInit()
     boardR = constants.Board()
     
-    ParseFen(constants.FEN3, boardR)
-    PrintBoard(boardR)
+    # ParseFen(constants.START_FEN, boardR)
+    # PrintBoard(boardR)
+    
+    

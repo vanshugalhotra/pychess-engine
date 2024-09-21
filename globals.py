@@ -10,3 +10,6 @@ PieceKeys = [[0 for _ in range(120)] for _ in range(13)] # will hold random valu
 
 SideKey = -1 # for holding the side value
 CastleKeys = [0] * 16 # holding castle values (0 - 15)
+
+FilesBrd = [constants.SQUARES.OFFBOARD.value] * constants.BRD_SQ_NUM
+RanksBrd = [constants.SQUARES.OFFBOARD.value] * constants.BRD_SQ_NUM

@@ -26,10 +26,16 @@ def InitHashKeys():
     for i in range(0, 16):
         globals.CastleKeys[i] = constants.RAND_64()
     
-            
+def InitFilesRanksBrd():
+    for rank in range(constants.RANK.R1.value, constants.RANK.R8.value+1):
+        for file in range(constants.FILE.A.value, constants.FILE.H.value + 1):
+            sq = constants.FR2SQ(file, rank)
+            globals.FilesBrd[sq] = file
+            globals.RanksBrd[sq] = rank     
 
 def AllInit():
     InitSq120To64AndSq64To120()
     InitBitMasks()
     InitHashKeys()
+    InitFilesRanksBrd()
 

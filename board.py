@@ -2,11 +2,11 @@ from constants import BRD_SQ_NUM, SQUARES, PIECE, COLORS, RANK, FILE, CASTLING, 
 from globals import Sq64ToSq120
 from debug import assert_condition
 from hashkeys import GeneratePosKey
-from data import PceChar, SideChar, RankChar, FileChar
+from data import PceChar, SideChar, PieceBig, PieceMaj, PieceMin, PieceCol, PieceVal
 
 def ResetBoard(board):
     for i in range(0, BRD_SQ_NUM):
-        board.pieces[i] = SQUARES.NO_SQ.value
+        board.pieces[i] = SQUARES.OFFBOARD.value
     
     # clearing the board, I mean placing every box empty (there's no piece on it)
     for i in range(0, 64):
@@ -137,3 +137,27 @@ def ParseFen(fen, board):
     board.posKey = GeneratePosKey(board) #generating the hashkey
     return 0
 
+def UpdateListsMaterial(board):
+    for index in range(0, BRD_SQ_NUM):
+        sq = index
+        piece = board.pieces[index]
+        if(piece != SQUARES.OFFBOARD.value and piece != PIECE.EMPTY.value):
+            colour = PieceCol[piece]
+            if(PieceBig[piece]):
+                board.bigPce[colour] += 1
+            if(PieceMin[piece]):
+                board.minPce[colour] += 1
+            if(PieceMaj[piece]):
+                board.majPce[colour] += 1
+            board.material[colour] += PieceVal[piece] # adding the value of material
+            
+            #Piece List --> pList[wP][pceNum]; example, there's our first white Pawn on e4, pList[wP][0] = E4
+            
+            # how the following code works, for example we already have 2 white Pawns, so Our pceNum[1] = 2, now If we want to add a white Pawn on E4, we need to do like, pList[wP][2] = E4
+            # that's exactly what we are doing
+            board.pList[piece][board.pceNum[piece]] = sq #the inner [] represents the number of the piece, I mean if its 1st white pawn, or 2nd or etc....
+            board.pceNum[piece] += 1 # incrementing the pceNum
+            
+            # setting the kingSquare
+            if(piece == PIECE.wK.value or piece == PIECE.bK.value):
+                board.KingSq[colour] = sq

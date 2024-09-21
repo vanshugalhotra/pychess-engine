@@ -5,7 +5,7 @@ BRD_SQ_NUM = 120
 MAXGAMEMOVES = 2048
 START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 FEN1 = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
-FEN2 = "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2"
+FEN2 = "rnbqkbnr/pp1pppp p/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2"
 FEN3 = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
 
 class PIECE(Enum):
@@ -125,6 +125,7 @@ class SQUARES(Enum):
     H8 = 98
     
     NO_SQ = 99
+    OFFBOARD = 100
     
 class UNDO:
     def __init__(self):
@@ -168,17 +169,19 @@ class Board:
         self.posKey = 0
 
         # 
-        self.pceNum = [0] * 13  # Total Number of pieces
+        self.pceNum = [0] * 13  # Total Number of pieces (Like pceNum[1] = 6 means we have 6 white pawns)
 
         # Number of non-pawn big pieces (Queens, rooks, bishops, knights)
-        self.bigPce = [0] * 3  # 0 for white, 1 for black, 2 for both
+        self.bigPce = [0] * 2  # 0 for white, 1 for black
 
         # Number of major pieces (Queens and Rooks)
-        self.majPce = [0] * 3  # 0 for white, 1 for black, 2 for both
+        self.majPce = [0] * 2  # 0 for white, 1 for black 
 
         # Number of minor pieces (Bishops and Knights)
-        self.minPce = [0] * 3  # 0 for white, 1 for black, 2 for both
+        self.minPce = [0] * 2  # 0 for white, 1 for black
         
+        # Material Value of Pieces  
+        self.material = [0] * 2
         
         # Declare an array of UNDO class instances
         self.history = [UNDO() for _ in range(MAXGAMEMOVES)]
