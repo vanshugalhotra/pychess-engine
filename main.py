@@ -1,7 +1,8 @@
 import constants
 import init
 from bitboards import PrintBitBoard
-from board import ParseFen, PrintBoard, UpdateListsMaterial
+from board import ParseFen, PrintBoard,CheckBoard
+from debug import assert_condition
 
 if __name__ == "__main__":
     init.AllInit()
@@ -9,7 +10,7 @@ if __name__ == "__main__":
     
     ParseFen(constants.FEN4, boardR)
     PrintBoard(boardR)
-    PrintBitBoard(boardR.pawns[2])
     
+    assert_condition(CheckBoard(boardR))
     
     

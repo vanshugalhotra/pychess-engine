@@ -7,7 +7,7 @@ def assert_condition(condition, message="Assertion failed"):
         frame = traceback.extract_stack()[-2]
         
         # Custom message to mimic C-style debugging info
-        print(f"{message}", end=" ")
+        print(f"{message} ->", end=" ")
         print(f"File: {frame.filename}", end=" ")
         print(f"Line: {frame.lineno}", end=" ")
         print(f"Function: {frame.name}", end=" ")
