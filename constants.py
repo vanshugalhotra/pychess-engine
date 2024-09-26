@@ -3,6 +3,8 @@ from random import getrandbits
 
 BRD_SQ_NUM = 120
 MAXGAMEMOVES = 2048
+MAXPOSITIONMOVES = 256
+
 START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 FEN1 = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
 FEN2 = "rnbqkbnr/pp1pppp p/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2"
@@ -234,3 +236,8 @@ def CAPTURED(move):
 
 def PROMOTED(move):
     return (move >> 20) & 0xF
+
+class MOVELIST:
+    def __init__(self):
+        self.moves = [MOVE() for _ in range(MAXPOSITIONMOVES)]
+        self.count = 0
