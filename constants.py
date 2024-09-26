@@ -9,6 +9,13 @@ FEN2 = "rnbqkbnr/pp1pppp p/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR w KQkq c6 0 2"
 FEN3 = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
 FEN4 = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1"
 
+# move flags, to retrieve information from the move
+MFLAGEP = 0x40000 # to check if the capture was EnPassant or not
+MFLAGPS = 0x80000 # to check if it was a pawn move
+MFLAGCA = 0x1000000 # to check if it was a castle move
+MFLAGCAP = 0x7C000 # to check if there occured any capture at all
+MFLAGPROM = 0xF00000 # to check if there occured any promotion of pawn
+
 class PIECE(Enum):
     EMPTY = 0
     wP = 1 # white pawn
@@ -51,7 +58,6 @@ class COLORS(Enum):
     BLACK = 1
     BOTH = 2
     
-
 class SQUARES(Enum):
     A1 = 21
     A2 = 31
@@ -136,7 +142,6 @@ class UNDO:
         self.fiftyMove = 0
         self.posKey = 0 #unqiue position key
         
-
 class Board:
     def __init__(self):
         # 120 squares to represent the board
@@ -197,9 +202,35 @@ class CASTLING(Enum):
     BKCA = 4
     BQCA = 8
     
+class MOVE:
+    def __init__(self):
+        self.move = 0
+        # move represents the following information in 25 bits
+        # FROM (square)(21 - 98)  - 7 bits
+        # TO (square) - 7 bits
+        # Captured Piece (0 - 12) - 4 bits
+        # EnPas Capture? (0 - 1) - 1 bit
+        # Pawn Start ? (0 - 1) - 1 bit
+        # Promoted Piece (0 - 12) - 4 bits
+        # castle move? (0 - 1) - 1 bit
+        self.score = 0
+        
 # file rank to the square number (120 squares representation)
 def FR2SQ(f, r):
     return (21 + f) + (r * 10)
 
 def RAND_64():
     return getrandbits(64)
+
+# functions to retrieve information from the move
+def FROMSQ(move):
+    return move & 0x7F #extracting the last 7 bits from the move number
+
+def TOSQ(move):
+    return (move >> 7) & 0x7F # first right shift the bits to 7 and then extract the last 7 bits which represents now TO Square
+
+def CAPTURED(move):
+    return (move >> 14) & 0xF # 4 bits
+
+def PROMOTED(move):
+    return (move >> 20) & 0xF
