@@ -32,3 +32,13 @@ def PrMove(move):
         MvStr = "{}{}{}{}".format(chr(ord('a') + ff), chr(ord('1') + rf), chr(ord('a') + ft), chr(ord('1') + rt))
         
     return MvStr
+
+def PrintMoveList(list):
+    print("MoveList: ")
+    for i in range(0, list.count):
+        move = list.moves[i].move
+        score = list.moves[i].score
+        
+        print(f"Move: {i+1} --> {PrMove(move)} (Score: {score})")
+    print(f"MoveList Total {list.count} Moves: \n")
+    

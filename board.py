@@ -4,6 +4,7 @@ from debug import assert_condition
 from hashkeys import GeneratePosKey
 from data import PceChar, SideChar, PieceBig, PieceMaj, PieceMin, PieceCol, PieceVal
 from bitboards import SetBit, CountBits, PopBit
+from input_output import PrSq
 
 def ResetBoard(board):
     for i in range(0, BRD_SQ_NUM):
@@ -51,7 +52,7 @@ def PrintBoard(board):
         
     print()
     print(f"Side: {SideChar[board.side]}")
-    print(f"En Passant: {board.enPas}")
+    print(f"En Passant: {PrSq(board.enPas)}")
     
     print(f"Castle: {'K' if board.castlePerm & CASTLING.WKCA.value else '-'} {'Q' if board.castlePerm & CASTLING.WQCA.value else '-'} {'k' if board.castlePerm & CASTLING.BKCA.value else '-'} {'q' if board.castlePerm & CASTLING.BQCA.value else '-'} ")
     
@@ -164,10 +165,11 @@ def ParseFen(fen, board):
     
     if(fen_parts[3] != "-"):
         file = ord(fen_parts[3][0]) - ord('a')
-        rank = ord(fen_parts[3][1]) - ord('0')
+        rank = ord(fen_parts[3][1]) - ord('1')
         
         assert_condition(file >= FILE.A.value and file <= FILE.H.value)
         assert_condition(rank >= RANK.R1.value and rank <= RANK.R8.value)
+        
         
         board.enPas = FR2SQ(file, rank)
     board.posKey = GeneratePosKey(board) #generating the hashkey
