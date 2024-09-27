@@ -18,6 +18,7 @@ def ResetBoard(board):
         board.bigPce[i] = 0
         board.majPce[i] = 0
         board.minPce[i] = 0
+        board.material[i] = 0
         board.pawns[i] = 0
     
     for i in range(0, 13):

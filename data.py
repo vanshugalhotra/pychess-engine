@@ -16,3 +16,4 @@ PieceKing = [False, False, False, False, False, False, True, False, False, False
 PieceRookQueen = [False, False, False, False, True, True, False, False, False, False, True, True, False] # is Piece a Rook or a Queen ?
 PieceBishopQueen = [False, False, False, True, False, True, False, False, False, True, False, True, False] # is Piece a Bishop or a Queen ?
 
+PieceSlides = [False, False, False, True, True, True, False, False, False, True, True, True, False]
