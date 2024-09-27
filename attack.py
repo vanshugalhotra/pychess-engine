@@ -1,6 +1,6 @@
 from constants import PIECE, COLORS, SQUARES
 from data import PieceKnight, PieceKing, PieceRookQueen, PieceBishopQueen, PieceCol
-from validate import SqOnBoard, SideValid
+from validate import SqOnBoard, SideValid, PieceValidEmpty
 from board import CheckBoard
 from debug import assert_condition
 
@@ -35,7 +35,7 @@ def SqAttacked(sq, side, board):
     # checking for knights
     for i in range(0, 8): # looping on each square there can be a knight attacking
         pce = board.pieces[sq + KnDir[i]]
-        if(PieceKnight[pce] and PieceCol[pce] == side):
+        if(PieceValidEmpty(pce) and PieceKnight[pce] and PieceCol[pce] == side):
             return True
         
     # rooks, queens
@@ -67,7 +67,7 @@ def SqAttacked(sq, side, board):
     # kings
     for i in range(0, 8):
         pce = board.pieces[sq + KiDir[i]]
-        if(PieceKing[pce] and PieceCol[pce] == side):
+        if(PieceValidEmpty(pce) and PieceKing[pce] and PieceCol[pce] == side):
             return True
             
     return False

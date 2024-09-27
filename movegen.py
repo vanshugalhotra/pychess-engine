@@ -1,9 +1,10 @@
 from globals import FilesBrd, RanksBrd
-from constants import SQUARES, RANK, PIECE, COLORS, MFLAGPS, MFLAGEP
+from constants import SQUARES, RANK, PIECE, COLORS, MFLAGPS, MFLAGEP, CASTLING
 from debug import assert_condition
 from board import CheckBoard
 from validate import SqOnBoard, PieceValidEmpty, PieceValid
 from data import PieceCol
+from attack import SqAttacked
 
 PAWNS_W = "rnbqkb1r/pp1p1pPp/8/2p1pP2/1P1P4/3P3P/P1P1P3/RNBQKBNR w KQkq e6 0 1 "
 PAWNS_B = "rnbqkbnr/p1p1p3/3p3p/1p1p4/2P1Pp2/8/PP1P1PpP/RNBQKB1R b KQkq e3 0 1"
@@ -11,6 +12,8 @@ KNIGHTSKINGS = "5k2/1n6/4n3/6N1/8/3N4/8/5K2 b - - 0 1"
 ROOKS = "6k1/8/5r2/8/1nR5/5N2/8/6K1 w - - 0 1"
 QUEENS = "6k1/8/4nq2/8/1nQ5/5N2/1N6/6K1 w - - 0 1"
 BISHOPS = "6k1/1b6/4n3/8/1n4B1/1B3N2/1N6/2b3K1 b - - 0 1"
+CASTLE1 = "r3k2r/8/8/8/8/8/8/R3K2R b KQkq - 0 1"
+CASTLE2 = "3rk2r/8/8/8/8/8/6p1/R3K2R b KQk - 0 1"
 
 def MOVE(fromSq, toSq, captured, prom, fl):
     return (fromSq | (toSq << 7) | (captured << 14) | (prom << 20) | fl)
@@ -142,6 +145,18 @@ def GenerateAllMoves(board, list):
                 AddCaptureMove(board, MOVE(sq, sq+9, PIECE.EMPTY.value, PIECE.EMPTY.value, MFLAGEP), list)
             if(sq + 11 == board.enPas):
                 AddCaptureMove(board, MOVE(sq, sq+11, PIECE.EMPTY.value, PIECE.EMPTY.value, MFLAGEP), list)
+                
+        # castling for white
+        # king side castling
+        if(board.castlePerm & CASTLING.WKCA.value):
+            if(board.pieces[SQUARES.F1.value] == PIECE.EMPTY.value and board.pieces[SQUARES.G1.value] == PIECE.EMPTY.value): # if between the king and rook squares are empty
+                if(not SqAttacked(SQUARES.E1.value, COLORS.BLACK.value, board) and not SqAttacked(SQUARES.F1.value, COLORS.BLACK.value, board)): # if the square F1, E1 are not attacked, only then king can castle, beacause, king cannot castle in between check
+                    print("WKCA MoveGen")
+                    
+        if(board.castlePerm & CASTLING.WQCA.value):
+            if(board.pieces[SQUARES.D1.value] == PIECE.EMPTY.value and board.pieces[SQUARES.C1.value] == PIECE.EMPTY.value and board.pieces[SQUARES.B1.value] == PIECE.EMPTY.value): # if between the king and rook squares are empty
+                if(not SqAttacked(SQUARES.E1.value, COLORS.BLACK.value, board) and not SqAttacked(SQUARES.D1.value, COLORS.BLACK.value, board)): # if the square D1, E1 are not attacked, only then king can castle, beacause, king cannot castle in between check
+                    print("WQCA MoveGen")
     else: 
         # looping to total number of black pawns on the board
         for pceNum in range(0, board.pceNum[PIECE.bP.value]):
@@ -166,6 +181,18 @@ def GenerateAllMoves(board, list):
                 AddCaptureMove(board, MOVE(sq, sq-9, PIECE.EMPTY.value, PIECE.EMPTY.value, MFLAGEP), list)
             if(sq - 11 == board.enPas):
                 AddCaptureMove(board, MOVE(sq, sq-11, PIECE.EMPTY.value, PIECE.EMPTY.value, MFLAGEP), list)
+                
+        # castling for black
+        # king side castling
+        if(board.castlePerm & CASTLING.BKCA.value):
+            if(board.pieces[SQUARES.F8.value] == PIECE.EMPTY.value and board.pieces[SQUARES.G8.value] == PIECE.EMPTY.value): # if between the king and rook squares are empty
+                if(not SqAttacked(SQUARES.E8.value, COLORS.WHITE.value, board) and not SqAttacked(SQUARES.F8.value, COLORS.WHITE.value, board)): # if the square F8, E8 are not attacked, only then king can castle, beacause, king cannot castle in between check
+                    print("BKCA MoveGen")
+                    
+        if(board.castlePerm & CASTLING.BQCA.value):
+            if(board.pieces[SQUARES.D8.value] == PIECE.EMPTY.value and board.pieces[SQUARES.C8.value] == PIECE.EMPTY.value and board.pieces[SQUARES.B8.value] == PIECE.EMPTY.value): # if between the king and rook squares are empty
+                if(not SqAttacked(SQUARES.E8.value, COLORS.WHITE.value, board) and not SqAttacked(SQUARES.D8.value, COLORS.WHITE.value, board)): # if the square D8, E8 are not attacked, only then king can castle, beacause, king cannot castle in between check
+                    print("BQCA MoveGen")
 
     # Move generation for sliding pieces (Bishops, Rooks, Queen)
     pceIndex = LoopSlideIndex[side] # WHITE - 0, BLACK - 4
