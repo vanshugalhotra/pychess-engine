@@ -210,7 +210,6 @@ def GenerateAllMoves(board, list):
     while(pce != 0):
         assert_condition(PieceValid(pce))
         pce = LoopSlidePce[pceIndex]
-        print(pceIndex, pce)
         for pceNum in range(0, board.pceNum[pce]):
             sq = board.pList[pce][pceNum] # accesing the square on which that particular piece is
             assert_condition(SqOnBoard(sq))
