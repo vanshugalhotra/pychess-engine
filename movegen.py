@@ -149,7 +149,7 @@ def GenerateAllMoves(board, list):
                 
         # castling for white
         # king side castling
-        if(board.castlePerm & CASTLING.WKCA.value):
+        if(board.castlePerm & CASTLING.WKCA.value): #if white can castle king side
             if(board.pieces[SQUARES.F1.value] == PIECE.EMPTY.value and board.pieces[SQUARES.G1.value] == PIECE.EMPTY.value): # if between the king and rook squares are empty
                 if(not SqAttacked(SQUARES.E1.value, COLORS.BLACK.value, board) and not SqAttacked(SQUARES.F1.value, COLORS.BLACK.value, board)): # if the square F1, E1 are not attacked, only then king can castle, beacause, king cannot castle in between check
                     

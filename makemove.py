@@ -1,9 +1,11 @@
-from globals import CastleKeys, PieceKeys, SideKey, Sq120ToSq64
-from constants import PIECE, COLORS
+from globals import CastleKeys, PieceKeys, SideKey, Sq120ToSq64, RanksBrd
+from constants import PIECE, COLORS, FROMSQ, TOSQ, MFLAGEP, MFLAGCA, SQUARES, CAPTURED, MFLAGPS, RANK, PROMOTED
 from debug import assert_condition
-from validate import SqOnBoard, PieceValid
+from validate import SqOnBoard, PieceValid, SideValid
 from bitboards import ClearBit, SetBit
-from data import PieceCol, PieceVal, PieceBig, PieceMaj
+from data import PieceCol, PieceVal, PieceBig, PieceMaj, PiecePawn, PieceKing
+from board import CheckBoard
+from attack import SqAttacked
 
 def HASH_PCE(pce, sq, board):
     board.posKey ^= PieceKeys[pce][sq]
@@ -121,5 +123,170 @@ def MovePiece(fromSq, toSq, board):
             break
     
     assert_condition(t_PieceIndex)
+    
+def TakeMove(board): # taking the move back, due to some reasons (maybe it was an illegal move)
+    assert_condition(CheckBoard(board))
+    
+    # resetting the counters
+    board.hisPly -= 1
+    board.ply -= 1
+    
+    move = board.history[board.hisPly].move # getting the move from the history
+    fromSq = FROMSQ(move)
+    toSq = TOSQ(move) 
+    
+    assert_condition(SqOnBoard(fromSq))
+    assert_condition(SqOnBoard(toSq))
+    
+    if(board.enPas != SQUARES.NO_SQ.value):
+        HASH_EP(board)
+    HASH_CA(board) # hashing out the current castle Perm
+    
+    board.castlePerm = board.history[board.hisPly].castlePerm # retreiving back the previous castlePerm
+    board.fiftyMove = board.history[board.hisPly].fiftyMove
+    board.enPas = board.history[board.hisPly].enPas
+    
+    if(board.enPas != SQUARES.NO_SQ.value):
+        HASH_EP(board)
+    HASH_CA(board) # hashing in the new castle permission
+    
+    board.side ^= 1 #changing back the side
+    HASH_SIDE(board)
+    
+    if(move & MFLAGEP): # if it was an enPas capture, then we add back the pieces
+        if(board.side == COLORS.WHITE.value):
+            AddPiece(board, toSq-10, PIECE.bP.value)
+        else:
+            AddPiece(board, toSq+10, PIECE.wP.value)
+            
+    elif(move & MFLAGCA): # if it was a castle move
+        if(toSq == SQUARES.C1.value):
+            MovePiece(SQUARES.D1.value, SQUARES.A1.value, board) # moving back the rook
+        elif(toSq == SQUARES.C8.value):
+            MovePiece(SQUARES.D8.value, SQUARES.A8.value, board) # moving back the rook
+        elif(toSq == SQUARES.G1.value):
+            MovePiece(SQUARES.F1.value, SQUARES.H1.value, board) # moving back the rook
+        elif(toSq == SQUARES.G8.value):
+            MovePiece(SQUARES.F8.value, SQUARES.H8.value, board) # moving back the rook
+        else:
+            assert_condition(False)
+            
+    # moving back the piece
+    MovePiece(toSq, fromSq, board)
+    
+    if(PieceKing[board.pieces[fromSq]]):
+        board.KingSq[board.side] = fromSq # moving back the king
+        
+    captured = CAPTURED(move)
+    if(captured != PIECE.EMPTY.value):
+        assert_condition(PieceValid(captured))
+        AddPiece(board, toSq, captured) # adding back the captured piece
+        
+    prPce = PROMOTED(move)
+    if(prPce != PIECE.EMPTY.value): #  ! explanation is needed
+        assert_condition(PieceValid(prPce) and not PiecePawn[prPce])
+        ClearPiece(board, fromSq)
+        toAdd = PIECE.wP.value if PieceCol[prPce] == COLORS.WHITE.value else PIECE.bP.value
+        AddPiece(board, fromSq, toAdd)
+    
+    assert_condition(CheckBoard(board))
+    
+    
+def MakeMove(board, move): # it returns 0 (meaning illegal move) when? when after making the move, the king of the side which made the move is in CHECK.
+    assert_condition(CheckBoard(board))
+    fromSq = FROMSQ(move)
+    toSq = TOSQ(move)
+    side = board.side
+    
+    assert_condition(SqOnBoard(fromSq))
+    assert_condition(SqOnBoard(toSq))
+    assert_condition(SideValid(side))
+    assert_condition(PieceValid(board.pieces[fromSq]))
+    
+    # storing the move in history, before changing any posKey, we store the posKey in history
+    board.history[board.hisPly].posKey = board.posKey # history array contains the objects of class UNDO()
+    
+    if(move & MFLAGEP): # if its an enpassant capture
+        if(side == COLORS.WHITE.value):
+            ClearPiece(board, toSq-10) # capturing the black pawn
+        else:
+            ClearPiece(board, toSq+10) # capturing the white pawn
+    elif(move & MFLAGCA): # if its an castle MOVE
+        if(toSq == SQUARES.C1.value):
+            MovePiece(SQUARES.A1.value, SQUARES.D1.value, board)
+        elif(toSq == SQUARES.C8.value):
+            MovePiece(SQUARES.A8.value, SQUARES.D8.value, board)
+        elif(toSq == SQUARES.G1.value): # white king side castling
+            MovePiece(SQUARES.H1.value, SQUARES.F1.value, board) # moving the rook from h1 -> f1
+        elif(toSq == SQUARES.G8.value):
+            MovePiece(SQUARES.H8.value, SQUARES.F8.value, board)
+        else:
+            assert_condition(False)
+            
+    if(board.enPas != SQUARES.NO_SQ.value):
+        HASH_EP(board)
+        
+    HASH_CA(board) # hashing out the castle permission
+    
+    board.history[board.hisPly].move = move
+    board.history[board.hisPly].fiftyMove = board.fiftyMove
+    board.history[board.hisPly].enPas = board.enPas
+    board.history[board.hisPly].castlePerm = board.castlePerm
+    
+    board.castlePerm &= CastlePerm[fromSq] # if king or rook has moved
+    board.castlePerm &= CastlePerm[toSq] # if rook or king has moved
+    board.enPas = SQUARES.NO_SQ.value
+    
+    HASH_CA(board) # hashing in the new castle permission
+    
+    captured = CAPTURED(move)
+    board.fiftyMove += 1
+    
+    if(captured != PIECE.EMPTY.value):
+        assert_condition(PieceValid(captured))
+        ClearPiece(board, toSq) # first we capture on the toSq, then we move
+        board.fiftyMove = 0 # if a capture is made, then fifty move is set to 0
+    
+    board.hisPly += 1
+    board.ply += 1
+    
+    # setting up the enPas sqaure
+    if(PiecePawn[board.pieces[fromSq]]): # if the piece on fromSq was a pawn
+        board.fiftyMove = 0 # if its a pawn move, reset the counter
+        if(move & MFLAGPS): # if it was a pawn start move
+            if(side == COLORS.WHITE.value):
+                board.enPas = fromSq + 10
+                assert_condition(RanksBrd[board.enPas] == RANK.R3.value)
+            else:
+                board.enPas = fromSq - 10
+                assert_condition(RanksBrd[board.enPas] == RANK.R6.value)
+            HASH_EP(board) # hashing in the new enPas
+    
+    # finally moving the piece on the board
+    MovePiece(fromSq, toSq, board)
+    
+    # checking for promotions
+    prPce = PROMOTED(move) 
+    if(prPce != PIECE.EMPTY.value):
+        assert_condition(PieceValid(prPce) and not PiecePawn[prPce])
+        
+        # ! explanation needed
+        ClearPiece(board, toSq) # clearing the toSq
+        AddPiece(board, toSq, prPce) # adding the promoted piece on the toSq
+        
+    # updating the kingsquare
+    if(PieceKing[board.pieces[toSq]]):
+        board.KingSq[board.side] = toSq
+    
+    board.side ^= 1 # changing the side
+    HASH_SIDE(board) 
+    
+    assert_condition(CheckBoard(board))
+    
+    if(SqAttacked(board.KingSq[side], board.side, board)): # side is the side which made the move, board.side now is now the opposite side, so we check if after making the move, the opposite side is attacking the KingSq, means king is in check, then its an illegal move
+        TakeMove(board)   # take back the move
+        return False
+    
+    return True
     
     
