@@ -55,8 +55,8 @@ def ClearPiece(board, sq):
         else: # if its a minor piece (knights , bishops)
             board.minPce[col] -= 1
     else: # if its a pawn
-        ClearBit(board.pawns[col], Sq120ToSq64[sq]) # bitboard, sq64
-        ClearBit(board.pawns[COLORS.BOTH.value], Sq120ToSq64[sq])
+        board.pawns[col] = ClearBit(board.pawns[col], Sq120ToSq64[sq]) # bitboard, sq64
+        board.pawns[COLORS.BOTH.value] = ClearBit(board.pawns[COLORS.BOTH.value], Sq120ToSq64[sq])
 
 
     # removing that particular piece from the pList[][]  
@@ -88,8 +88,8 @@ def AddPiece(board, sq, pce):
         else:
             board.minPce[col] += 1
     else: 
-        SetBit(board.pawns[col], Sq120ToSq64[sq])
-        SetBit(board.pawns[COLORS.BOTH.value], Sq120ToSq64[sq])
+        board.pawns[col] = SetBit(board.pawns[col], Sq120ToSq64[sq])
+        board.pawns[COLORS.BOTH.value] = SetBit(board.pawns[COLORS.BOTH.value], Sq120ToSq64[sq])
         
     board.material[col] += PieceVal[pce] #updating the material value
     board.pList[pce][board.pceNum[pce]] = sq # setting the pce on pList
@@ -111,10 +111,10 @@ def MovePiece(fromSq, toSq, board):
     board.pieces[toSq] = pce
     
     if(not PieceBig[pce]): # if its a pawn
-        ClearBit(board.pawns[col], Sq120ToSq64[fromSq])
-        ClearBit(board.pawns[COLORS.BOTH.value], Sq120ToSq64[fromSq])
-        SetBit(board.pawns[col], Sq120ToSq64[toSq])
-        SetBit(board.pawns[COLORS.BOTH.value], Sq120ToSq64[toSq])
+        board.pawns[col] = ClearBit(board.pawns[col], Sq120ToSq64[fromSq])
+        board.pawns[COLORS.BOTH.value] = ClearBit(board.pawns[COLORS.BOTH.value], Sq120ToSq64[fromSq])
+        board.pawns[col] = SetBit(board.pawns[col], Sq120ToSq64[toSq])
+        board.pawns[COLORS.BOTH.value] = SetBit(board.pawns[COLORS.BOTH.value], Sq120ToSq64[toSq])
         
     for index in range(0, board.pceNum[pce]):
         if(board.pList[pce][index] == fromSq):
