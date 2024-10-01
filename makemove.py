@@ -51,7 +51,7 @@ def ClearPiece(board, sq):
     if(PieceBig[pce]): # if its a non-pawn piece
         board.bigPce[col] -= 1
         if(PieceMaj[pce]): # if its a rook or queen (major pieces)
-            board.majPce[col] -= 1
+            board.majPce[col] -= 1 
         else: # if its a minor piece (knights , bishops)
             board.minPce[col] -= 1
     else: # if its a pawn
