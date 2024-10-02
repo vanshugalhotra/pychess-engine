@@ -38,7 +38,7 @@ def PerftTest(depth, board):
     list = MOVELIST()
     GenerateAllMoves(board, list)
     
-    for MoveNum in range(0, list.count):
+    for MoveNum in range(0 , list.count):
         move = list.moves[MoveNum].move
         if(not MakeMove(board, move)):
             continue

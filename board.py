@@ -1,6 +1,6 @@
 from constants import BRD_SQ_NUM, SQUARES, PIECE, COLORS, RANK, FILE, CASTLING, FR2SQ
 from globals import Sq64ToSq120, Sq120ToSq64, RanksBrd, FilesBrd
-from debug import assert_condition
+from debug import assert_condition, DEBUG
 from hashkeys import GeneratePosKey
 from data import PceChar, SideChar, PieceBig, PieceMaj, PieceMin, PieceCol, PieceVal
 from bitboards import SetBit, CountBits, PopBit
@@ -178,6 +178,9 @@ def ParseFen(fen, board):
     return 0
 
 def CheckBoard(board):
+    if(not DEBUG):
+        return True
+    
     t_pceNum = [0,0,0,0,0,0,0,0,0,0,0,0,0]
     t_bigPce = [0,0]
     t_majPce = [0,0]

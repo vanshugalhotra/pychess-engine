@@ -1,8 +1,10 @@
 import traceback
 import sys
 
-def assert_condition(condition, message="Assertion failed", debug=True):
-    if(not debug):
+DEBUG = True
+
+def assert_condition(condition, message="Assertion failed"):
+    if(not DEBUG):
         return True
     if not condition:
         # Get current stack frame
