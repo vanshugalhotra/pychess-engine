@@ -4,7 +4,14 @@ from debug import assert_condition, DEBUG
 from hashkeys import GeneratePosKey
 from data import PceChar, SideChar, PieceBig, PieceMaj, PieceMin, PieceCol, PieceVal
 from bitboards import SetBit, CountBits, PopBit
-from input_output import PrSq
+
+# for printing the square in algebraic form,
+def PrSq(sq):
+    file = FilesBrd[sq]
+    rank = RanksBrd[sq]
+    SqStr = "{}{}".format(chr(ord('a') + file), chr(ord('1') + rank))
+    
+    return SqStr
 
 def ResetBoard(board):
     for i in range(0, BRD_SQ_NUM):
