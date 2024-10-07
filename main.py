@@ -10,6 +10,13 @@ from perft import PerftTest
 
 PERFTFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 "
 
+def isRepetition(board):
+    for index in range(board.hisPly - board.fiftyMove, board.hisPly-1): # checking from only when last time fiftyMove was set to 0 because once fifty move is set to 0 there won't be no repetetions(captures and pawn moves cant repeat)
+        if(board.posKey == board.history[index].posKey):
+            return True
+        
+    return False
+
 if __name__ == "__main__":
     init.AllInit()
     boardR = constants.Board()
@@ -29,6 +36,8 @@ if __name__ == "__main__":
             Move = parseMove(mo, boardR)
             if(Move != 0):
                 MakeMove(boardR, Move)
+                if(isRepetition(boardR)):
+                    print("REPETETION FOUND!!")
             else:
                 print("INVALID")
     
