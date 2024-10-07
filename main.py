@@ -7,15 +7,9 @@ from movegen import PAWNS_B, PAWNS_W, KNIGHTSKINGS,CASTLE1, CASTLE2, TRICKY, Gen
 from input_output import PrintMoveList, PrMove, parseMove
 from makemove import MakeMove, TakeMove
 from perft import PerftTest
+from search import isRepetition
 
 PERFTFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 "
-
-def isRepetition(board):
-    for index in range(board.hisPly - board.fiftyMove, board.hisPly-1): # checking from only when last time fiftyMove was set to 0 because once fifty move is set to 0 there won't be no repetetions(captures and pawn moves cant repeat)
-        if(board.posKey == board.history[index].posKey):
-            return True
-        
-    return False
 
 if __name__ == "__main__":
     init.AllInit()
@@ -32,6 +26,8 @@ if __name__ == "__main__":
             break
         elif(mo[0] == 't'):
             TakeMove(boardR)
+        elif(mo[0] == 'p'):
+            PerftTest(int(mo[1]), boardR)
         else:
             Move = parseMove(mo, boardR)
             if(Move != 0):

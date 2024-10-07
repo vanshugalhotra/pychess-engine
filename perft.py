@@ -4,6 +4,7 @@ from constants import MOVELIST
 from movegen import GenerateAllMoves
 from makemove import MakeMove, TakeMove
 from input_output import PrMove
+from misc import GetTimeMs
 
 leafNodes = 0
 
@@ -34,6 +35,7 @@ def PerftTest(depth, board):
     
     print(f"\nStarting Test to Depth: {depth}")
     leafNodes = 0
+    start = GetTimeMs()
     
     list = MOVELIST()
     GenerateAllMoves(board, list)
@@ -49,5 +51,5 @@ def PerftTest(depth, board):
         oldnodes = leafNodes - cumnodes
         print(f"Move {MoveNum+1} is {PrMove(move)} : {oldnodes}")
     
-    print(f"Test Complete: {leafNodes} nodes visited\n")
+    print(f"Test Complete: {leafNodes} nodes visited in {GetTimeMs() - start}ms\n")
     return
