@@ -1,7 +1,6 @@
 from constants import PIECE, COLORS, SQUARES
 from data import PieceKnight, PieceKing, PieceRookQueen, PieceBishopQueen, PieceCol
-from validate import SqOnBoard, SideValid, PieceValidEmpty
-from board import CheckBoard
+from validate import SqOnBoard, SideValid, PieceValidEmpty, CheckBoard
 from debug import assert_condition
 
 # Knight Direction

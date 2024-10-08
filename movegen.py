@@ -1,8 +1,7 @@
 from globals import FilesBrd, RanksBrd
 from constants import SQUARES, RANK, PIECE, COLORS, MFLAGPS, MFLAGEP, CASTLING, MFLAGCA, MOVELIST
 from debug import assert_condition
-from board import CheckBoard
-from validate import SqOnBoard, PieceValidEmpty, PieceValid
+from validate import SqOnBoard, PieceValidEmpty, PieceValid, CheckBoard
 from data import PieceCol
 from attack import SqAttacked
 from makemove import MakeMove , TakeMove

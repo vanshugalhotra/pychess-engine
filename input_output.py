@@ -1,9 +1,8 @@
 from globals import FilesBrd, RanksBrd
-from constants import FROMSQ, TOSQ, PROMOTED, CAPTURED, FR2SQ, MOVELIST, PIECE
+from constants import FROMSQ, TOSQ, PROMOTED, FR2SQ, MOVELIST, PIECE
 from data import PieceKnight, PieceBishopQueen, PieceRookQueen
 from debug import assert_condition
-from board import CheckBoard
-from validate import SqOnBoard
+from validate import SqOnBoard, CheckBoard
 from movegen import GenerateAllMoves
 
 NOMOVE = 0

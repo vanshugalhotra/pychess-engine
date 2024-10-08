@@ -1,11 +1,9 @@
 import constants
 import init
 from board import ParseFen, PrintBoard
-from debug import assert_condition
 from input_output import parseMove, PrMove
 from makemove import MakeMove, TakeMove
 from perft import PerftTest
-from search import isRepetition
 from pvtable import StorePvMove, GetPvLine
 
 PERFTFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 "

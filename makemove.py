@@ -1,10 +1,9 @@
 from globals import CastleKeys, PieceKeys, SideKey, Sq120ToSq64, RanksBrd
 from constants import PIECE, COLORS, FROMSQ, TOSQ, MFLAGEP, MFLAGCA, SQUARES, CAPTURED, MFLAGPS, RANK, PROMOTED
 from debug import assert_condition
-from validate import SqOnBoard, PieceValid, SideValid
+from validate import SqOnBoard, PieceValid, SideValid, CheckBoard
 from bitboards import ClearBit, SetBit
 from data import PieceCol, PieceVal, PieceBig, PieceMaj, PiecePawn, PieceKing
-from board import CheckBoard
 from attack import SqAttacked
 
 def HASH_PCE(pce, sq, board):

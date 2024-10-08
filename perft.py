@@ -1,10 +1,11 @@
-from board import CheckBoard, PrintBoard
+from board import PrintBoard
 from debug import assert_condition
 from constants import MOVELIST
 from movegen import GenerateAllMoves
 from makemove import MakeMove, TakeMove
 from input_output import PrMove
 from misc import GetTimeMs
+from validate import CheckBoard
 
 leafNodes = 0
 
