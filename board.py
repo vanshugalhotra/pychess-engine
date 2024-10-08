@@ -4,6 +4,7 @@ from debug import assert_condition, DEBUG
 from hashkeys import GeneratePosKey
 from data import PceChar, SideChar, PieceBig, PieceMaj, PieceMin, PieceCol, PieceVal
 from bitboards import SetBit, CountBits, PopBit
+from pvtable import InitPvTable
 
 # for printing the square in algebraic form,
 def PrSq(sq):
@@ -43,6 +44,8 @@ def ResetBoard(board):
     
     board.castlePerm = 0
     board.posKey = 0
+    
+    InitPvTable(board.PvTable[0])
     
 def PrintBoard(board):
     print("\nGame Board: \n")

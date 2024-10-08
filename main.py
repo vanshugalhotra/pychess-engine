@@ -1,10 +1,8 @@
 import constants
 import init
-from bitboards import PrintBitBoard
-from board import ParseFen, PrintBoard,CheckBoard
+from board import ParseFen, PrintBoard
 from debug import assert_condition
-from movegen import PAWNS_B, PAWNS_W, KNIGHTSKINGS,CASTLE1, CASTLE2, TRICKY, GenerateAllMoves
-from input_output import PrintMoveList, PrMove, parseMove
+from input_output import parseMove
 from makemove import MakeMove, TakeMove
 from perft import PerftTest
 from search import isRepetition

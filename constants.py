@@ -196,6 +196,9 @@ class Board:
         
         #piece list, pList[wN][0] = E1; adds a white knight on e1
         self.pList = [[0 for _ in range(10)] for _ in range(13)] 
+        
+        #declaring pvTable
+        self.PvTable = [PVTABLE() for _ in range(1)]
 
 # castling information
 class CASTLING(Enum):
@@ -241,3 +244,13 @@ class MOVELIST:
     def __init__(self):
         self.moves = [MOVE() for _ in range(MAXPOSITIONMOVES)]
         self.count = 0
+        
+class PVENTRY:
+    def __init__(self):
+        self.posKey = 0
+        self.move = 0
+
+class PVTABLE:
+    def __init__(self):
+        self.numEntries = 0
+        self.pTable = [] # to store the entry of PVENTRY
