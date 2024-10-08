@@ -4,6 +4,7 @@ from random import getrandbits
 BRD_SQ_NUM = 120
 MAXGAMEMOVES = 2048
 MAXPOSITIONMOVES = 256
+MAXDEPTH = 64
 
 START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 FEN1 = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1"
@@ -198,7 +199,8 @@ class Board:
         self.pList = [[0 for _ in range(10)] for _ in range(13)] 
         
         #declaring pvTable
-        self.PvTable = [PVTABLE() for _ in range(1)]
+        self.PvTable = PVTABLE()
+        self.PvArray = [0] * MAXDEPTH
 
 # castling information
 class CASTLING(Enum):

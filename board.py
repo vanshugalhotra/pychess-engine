@@ -45,7 +45,7 @@ def ResetBoard(board):
     board.castlePerm = 0
     board.posKey = 0
     
-    InitPvTable(board.PvTable[0])
+    InitPvTable(board.PvTable)
     
 def PrintBoard(board):
     print("\nGame Board: \n")
