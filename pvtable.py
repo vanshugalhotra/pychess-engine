@@ -1,6 +1,8 @@
 import sys
-from constants import PVENTRY
+from constants import PVENTRY, MAXDEPTH
 from debug import assert_condition
+from makemove import MakeMove, TakeMove
+from movegen import MoveExists
 
 NOMOVE = 0
 
@@ -42,4 +44,26 @@ def ProbePvTable(board):
         return board.PvTable.pTable[index].move
     return NOMOVE
     
+    
+def GetPvLine(depth, board):
+    assert_condition(depth < MAXDEPTH)
+    
+    move = ProbePvTable(board)
+    count = 0
+    
+    while(move != NOMOVE and count < depth):
+        assert_condition(count < depth)
+        
+        if(MoveExists(board, move)): # legal move
+            MakeMove(board, move)
+            board.PvArray[count] = move
+            count += 1
+        else:
+            break # we have encountered an illegeal move
+        move = ProbePvTable(board)
+        
+    while(board.ply > 0):
+        TakeMove(board)
+        
+    return count
     

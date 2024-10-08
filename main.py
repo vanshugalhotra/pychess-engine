@@ -2,10 +2,11 @@ import constants
 import init
 from board import ParseFen, PrintBoard
 from debug import assert_condition
-from input_output import parseMove
+from input_output import parseMove, PrMove
 from makemove import MakeMove, TakeMove
 from perft import PerftTest
 from search import isRepetition
+from pvtable import StorePvMove, GetPvLine
 
 PERFTFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 "
 
@@ -26,12 +27,18 @@ if __name__ == "__main__":
             TakeMove(boardR)
         elif(mo[0] == 'p'):
             PerftTest(int(mo[1]), boardR)
+        elif(mo[0] == 'v'):
+            Max = GetPvLine(4, boardR)
+            print(f"PvLine of {Max} Moves: ")
+            for PvNum in range(Max):
+                Move = boardR.PvArray[PvNum]
+                print(PrMove(Move))
         else:
             Move = parseMove(mo, boardR)
             if(Move != 0):
+                StorePvMove(boardR, Move)
                 MakeMove(boardR, Move)
-                if(isRepetition(boardR)):
-                    print("REPETETION FOUND!!")
+
             else:
                 print("INVALID")
     

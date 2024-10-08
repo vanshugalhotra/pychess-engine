@@ -1,10 +1,11 @@
 from globals import FilesBrd, RanksBrd
-from constants import SQUARES, RANK, PIECE, COLORS, MFLAGPS, MFLAGEP, CASTLING, MFLAGCA
+from constants import SQUARES, RANK, PIECE, COLORS, MFLAGPS, MFLAGEP, CASTLING, MFLAGCA, MOVELIST
 from debug import assert_condition
 from board import CheckBoard
 from validate import SqOnBoard, PieceValidEmpty, PieceValid
 from data import PieceCol
 from attack import SqAttacked
+from makemove import MakeMove , TakeMove
 
 PAWNS_W = "rnbqkb1r/pp1p1pPp/8/2p1pP2/1P1P4/3P3P/P1P1P3/RNBQKBNR w KQkq e6 0 1 "
 PAWNS_B = "rnbqkbnr/p1p1p3/3p3p/1p1p4/2P1Pp2/8/PP1P1PpP/RNBQKB1R b KQkq e3 0 1"
@@ -267,3 +268,16 @@ def GenerateAllMoves(board, list):
         
         pceIndex += 1
         
+def MoveExists(board, move):
+    mlist = MOVELIST()
+    GenerateAllMoves(board, mlist)
+    
+    for MoveNum in range(0, mlist.count):
+        if(not MakeMove(board, mlist.moves[MoveNum].move) ):
+            continue
+        
+        TakeMove(board)
+        if(mlist.moves[MoveNum].move == move):
+            return True
+    
+    return False
