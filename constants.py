@@ -201,6 +201,16 @@ class Board:
         #declaring pvTable
         self.PvTable = PVTABLE()
         self.PvArray = [0] * MAXDEPTH
+        
+        # !explanation needed
+        #needed for move ordering
+        # searchHistory[13][120] indexed by piece type and board square, everytime a move improves by alpha we reset all the values stored in this array to 0, 
+        # when a piece beats alpha for that piece type and TOSQ we increment by 1
+        self.searchHistory = [[0 for _ in range(BRD_SQ_NUM)] for _ in range(13)]
+        
+        # searchKillers[2][MAXDEPTH], stores 2 recent moves which caused the beta cutoff which aren't captures
+        self.searchKillers = [[0 for _ in range(MAXDEPTH)] for _ in range(2)]
+        
 
 # castling information
 class CASTLING(Enum):
@@ -256,3 +266,19 @@ class PVTABLE:
     def __init__(self):
         self.numEntries = 0
         self.pTable = [] # to store the entry of PVENTRY
+        
+class SEARCHINFO:
+    def __init__(self):
+        # we need all of these to control how long engine needs to think (search)
+        self.starttime = 0
+        self.stoptime = 0
+        self.depth = 0
+        self.depthset = 0
+        self.timeset = 0
+        self.movestogo = 0
+        self.infinite = 0
+        
+        self.nodes = 0 # count of all the positions that the engine visited
+        
+        self.quit = 0 # quit if GUI wants to quit the search
+        self.stopped = 0
