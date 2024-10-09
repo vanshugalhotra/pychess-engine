@@ -282,3 +282,7 @@ class SEARCHINFO:
         
         self.quit = 0 # quit if GUI wants to quit the search
         self.stopped = 0
+        
+        # fail high , fail high first
+        self.fh = 0
+        self.fhf = 0

@@ -1,9 +1,17 @@
 from debug import assert_condition
-from constants import MAXGAMEMOVES, BRD_SQ_NUM, MAXDEPTH
-from pvtable import ClearPvTable, GetPvLine
+from constants import MAXGAMEMOVES, BRD_SQ_NUM, MAXDEPTH, MOVELIST
+from pvtable import ClearPvTable, GetPvLine, StorePvMove
 from misc import GetTimeMs
 from math import inf
 from input_output import PrMove
+from validate import CheckBoard
+from evaluate import EvalPosition
+from movegen import GenerateAllMoves
+from makemove import MakeMove, TakeMove
+from attack import SqAttacked
+
+
+MATE = 29000
 
 def CheckUp(): # will be called after certain node
     # check if time up or interrupt from GUI
@@ -32,9 +40,58 @@ def ClearForSearch(board, info): # clear all the stats , heuristics, searchHisto
     info.starttime = GetTimeMs()
     info.stopped = 0
     info.nodes = 0
+    info.fh = 0
+    info.fhf = 0
 
 def AlphaBeta(alpha, beta, depth, board, info, DoNull):
-    return 0
+    
+    assert_condition(CheckBoard(board))
+    
+    if(depth == 0):
+        info.nodes += 1
+        return EvalPosition(board)
+    
+    info.nodes += 1
+    if(isRepetition(board) or board.fiftyMove >= 100):
+        return 0
+    
+    if(board.ply > MAXDEPTH - 1):
+        return EvalPosition(board)
+    
+    mlist = MOVELIST()
+    GenerateAllMoves(board, mlist)
+    
+    Legal = 0
+    OldAlpha = alpha
+    BestMove = 0
+    Score = -inf
+    
+    for MoveNum in range(mlist.count):
+        if(not MakeMove(board, mlist.moves[MoveNum].move)):
+            continue
+        Legal +=1
+        Score = -AlphaBeta(-beta, -alpha, depth-1, board, info, True)
+        TakeMove(board)
+        
+        if(Score > alpha):
+            if(Score >= beta):
+                if(Legal == 1):
+                    info.fhf += 1
+                info.fh += 1
+                return beta
+            alpha = Score
+            BestMove = mlist.moves[MoveNum].move
+    
+    if(Legal == 0):
+        if(SqAttacked(board.KingSq[board.side], board.side^1, board)):
+            return -MATE + board.ply
+        else:
+            return 0
+        
+    if(alpha != OldAlpha):
+        StorePvMove(board, BestMove)
+    
+    return alpha
 
 # Horizon Effect: caused by depth limitation of the search algorithm. Lets say at the last depth White queen captures a knight and since its the last depth we stop evaluating further, so right now white is up a knight but what if black takes the white queen (But this move is not considered due to limited depth)
 # solution to the horizon effect is : quiescence search i.e evaluation only quiet positions (Without captures)
@@ -67,6 +124,8 @@ def SearchPosition(board, info): # class BOARD, class SEARCHINFO
         
         print(f"Depth: {currentDepth} Score: {bestScore} Move: {PrMove(bestMove)} Nodes: {info.nodes}")
         
+        print("PV: ", end=" ")
         for pvNum in range(0, pvMoves):
             print(f"{PrMove(board.PvArray[pvNum])}", end="  ")
         print()
+        # print(f"Ordering: {(info.fhf / info.fh):.2f}")
