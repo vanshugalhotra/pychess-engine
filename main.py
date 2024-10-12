@@ -4,7 +4,7 @@ from board import ParseFen, PrintBoard
 from input_output import parseMove, PrMove
 from makemove import MakeMove, TakeMove
 from perft import PerftTest
-from pvtable import StorePvMove, GetPvLine
+from pvtable import StorePvMove
 from search import SearchPosition
 
 PERFTFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 "
@@ -15,7 +15,7 @@ if __name__ == "__main__":
     boardR = constants.Board()
     info = constants.SEARCHINFO()
     
-    ParseFen(WAC1, boardR)
+    ParseFen(PERFTFEN, boardR)
     # PerftTest(3, boardR)
     Move = 0
     
@@ -29,7 +29,7 @@ if __name__ == "__main__":
         elif(mo[0] == 'p'):
             PerftTest(int(mo[1]), boardR)
         elif(mo[0] == 's'):
-            info.depth = 5
+            info.depth = 1
             SearchPosition(boardR, info)
         else:
             Move = parseMove(mo, boardR)

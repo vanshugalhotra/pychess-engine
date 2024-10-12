@@ -168,7 +168,7 @@ class Board:
         # Ply (depth of search in current game)
         self.ply = 0
 
-        # history of half moves
+        # history of half moves in game
         self.hisPly = 0
         
         # castle permission

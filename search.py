@@ -2,7 +2,6 @@ from debug import assert_condition
 from constants import MAXGAMEMOVES, BRD_SQ_NUM, MAXDEPTH, MOVELIST
 from pvtable import ClearPvTable, GetPvLine, StorePvMove
 from misc import GetTimeMs
-from math import inf
 from input_output import PrMove
 from validate import CheckBoard
 from evaluate import EvalPosition
@@ -10,7 +9,7 @@ from movegen import GenerateAllMoves
 from makemove import MakeMove, TakeMove
 from attack import SqAttacked
 
-
+INFINITE = 30000
 MATE = 29000
 
 def CheckUp(): # will be called after certain node
@@ -64,7 +63,7 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
     Legal = 0
     OldAlpha = alpha
     BestMove = 0
-    Score = -inf
+    Score = -INFINITE
     
     for MoveNum in range(mlist.count):
         if(not MakeMove(board, mlist.moves[MoveNum].move)):
@@ -74,7 +73,7 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
         TakeMove(board)
         
         if(Score > alpha):
-            if(Score >= beta):
+            if(Score >= beta): # beta cut off
                 if(Legal == 1):
                     info.fhf += 1
                 info.fh += 1
@@ -82,10 +81,10 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
             alpha = Score
             BestMove = mlist.moves[MoveNum].move
     
-    if(Legal == 0):
+    if(Legal == 0): # checkmate
         if(SqAttacked(board.KingSq[board.side], board.side^1, board)):
-            return -MATE + board.ply
-        else:
+            return -MATE + board.ply # how many moves it was to mate
+        else: # stalemate
             return 0
         
     if(alpha != OldAlpha):
@@ -108,14 +107,14 @@ def SearchPosition(board, info): # class BOARD, class SEARCHINFO
     
     
     bestMove = 0
-    bestScore = -inf
+    bestScore = -INFINITE
     pvMoves = 0
     
     ClearForSearch(board, info)
     
     #iterative deepening
     for currentDepth in range(1, info.depth+1):
-        bestScore = AlphaBeta(-inf, inf, currentDepth, board, info, True) # alpha beta
+        bestScore = AlphaBeta(-INFINITE, INFINITE, currentDepth, board, info, True) # alpha beta
         
         # out of time?
     

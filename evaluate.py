@@ -125,6 +125,3 @@ def EvalPosition(board):
         return score
     else:
         return -score # negating the score for black (because we are calculating score based on white, lets say black's score is better than our score value will be -ve because score = whiteMaterial - blackMaterial and later on we are subtracting for black and adding for white)
-    
-    
-    return 0
