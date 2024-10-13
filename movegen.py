@@ -84,6 +84,13 @@ def AddQuietMove(board, move, list):
     assert_condition(SqOnBoard(TOSQ(move)))
     list.moves[list.count].move = move
     list.moves[list.count].score = 0
+    
+    if(board.searchKillers[0][board.ply] == move):
+        list.moves[list.count].score = 900000
+    elif (board.searchKillers[1][board.ply] == move):
+        list.moves[list.count].score = 800000
+    else:
+        list.moves[list.count].score = board.searchHistory[board.pieces[FROMSQ(move)]][TOSQ(move)]
     list.count += 1
     
 def AddCaptureMove(board, move, list):
@@ -91,12 +98,14 @@ def AddCaptureMove(board, move, list):
     assert_condition(SqOnBoard(TOSQ(move)))
     assert_condition(PieceValid(CAPTURED(move)))
     list.moves[list.count].move = move
-    list.moves[list.count].score = MvvLvaScores[CAPTURED(move)][board.pieces[FROMSQ(move)]] # victim , attacker
+    list.moves[list.count].score = MvvLvaScores[CAPTURED(move)][board.pieces[FROMSQ(move)]] + 1000000 # victim , attacker
     list.count += 1
     
 def AddEnPassantMove(board, move, list):
+    assert_condition(SqOnBoard(FROMSQ(move)))
+    assert_condition(SqOnBoard(TOSQ(move)))
     list.moves[list.count].move = move
-    list.moves[list.count].score = 105 # pawn takes pawn
+    list.moves[list.count].score = 105 + 1000000 # pawn takes pawn
     list.count += 1
     
 def AddWhitePawnCapMove(board, fromSq, toSq, cap, list):

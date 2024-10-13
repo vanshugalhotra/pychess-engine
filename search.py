@@ -1,6 +1,6 @@
 from debug import assert_condition
-from constants import MAXGAMEMOVES, BRD_SQ_NUM, MAXDEPTH, MOVELIST
-from pvtable import ClearPvTable, GetPvLine, StorePvMove
+from constants import MAXGAMEMOVES, BRD_SQ_NUM, MAXDEPTH, MOVELIST, MFLAGCAP, FROMSQ, TOSQ
+from pvtable import ClearPvTable, GetPvLine, StorePvMove, ProbePvTable
 from misc import GetTimeMs
 from input_output import PrMove
 from validate import CheckBoard
@@ -52,6 +52,10 @@ def ClearForSearch(board, info): # clear all the stats , heuristics, searchHisto
     info.fh = 0
     info.fhf = 0
 
+
+# A beta cutoff occurs when the maximizing player finds a move that is so good that the minimizing player will avoid this line altogether.
+
+# An alpha cutoff occurs when the minimizing player finds a move that is so bad that the maximizing player will avoid this line altogether.
 def AlphaBeta(alpha, beta, depth, board, info, DoNull):
     
     assert_condition(CheckBoard(board))
@@ -74,6 +78,13 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
     OldAlpha = alpha
     BestMove = 0
     Score = -INFINITE
+    PvMove = ProbePvTable(board)
+    
+    if(PvMove != 0):
+        for MoveNum in range(mlist.count):
+            if(mlist.moves[MoveNum].move == PvMove):
+                mlist.moves[MoveNum].score = 2000000 # will search this first
+                break
     
     for MoveNum in range(mlist.count):
         PickNextMove(MoveNum, mlist)
@@ -88,9 +99,15 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
                 if(Legal == 1):
                     info.fhf += 1
                 info.fh += 1
+                # killer moves are those which causes beta cutoff and are not captures
+                if(not (mlist.moves[MoveNum].move & MFLAGCAP)): # if not a capture move
+                    board.searchKillers[1][board.ply] = board.searchKillers[0][board.ply]
+                    board.searchKillers[0][board.ply] = mlist.moves[MoveNum].move
                 return beta
             alpha = Score
             BestMove = mlist.moves[MoveNum].move
+            if(not (mlist.moves[MoveNum].move & MFLAGCAP)):
+                board.searchHistory[board.pieces[FROMSQ(BestMove)]][TOSQ(BestMove)] += depth
     
     if(Legal == 0): # checkmate
         if(SqAttacked(board.KingSq[board.side], board.side^1, board)):

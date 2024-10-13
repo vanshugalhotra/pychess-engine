@@ -1,7 +1,7 @@
 import constants
 import init
 from board import ParseFen, PrintBoard
-from input_output import parseMove, PrMove
+from input_output import parseMove
 from makemove import MakeMove, TakeMove
 from perft import PerftTest
 from pvtable import StorePvMove, InitPvTable
@@ -33,7 +33,7 @@ if __name__ == "__main__":
         elif(mo[0] == 'p'):
             PerftTest(int(mo[1]), boardR)
         elif(mo[0] == 's'):
-            info.depth = 5
+            info.depth = 6
             SearchPosition(boardR, info)
         else:
             Move = parseMove(mo, boardR)
