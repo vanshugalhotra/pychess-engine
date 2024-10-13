@@ -1,11 +1,10 @@
 from globals import FilesBrd, RanksBrd
-from constants import SQUARES, RANK, PIECE, COLORS, MFLAGPS, MFLAGEP, CASTLING, MFLAGCA, MOVELIST, CAPTURED, FROMSQ
+from constants import SQUARES, RANK, PIECE, COLORS, MFLAGPS, MFLAGEP, CASTLING, MFLAGCA, MOVELIST, CAPTURED, FROMSQ, TOSQ
 from debug import assert_condition
 from validate import SqOnBoard, PieceValidEmpty, PieceValid, CheckBoard
 from data import PieceCol
 from attack import SqAttacked
 from makemove import MakeMove , TakeMove
-from data import PceChar
 
 PAWNS_W = "rnbqkb1r/pp1p1pPp/8/2p1pP2/1P1P4/3P3P/P1P1P3/RNBQKBNR w KQkq e6 0 1 "
 PAWNS_B = "rnbqkbnr/p1p1p3/3p3p/1p1p4/2P1Pp2/8/PP1P1PpP/RNBQKB1R b KQkq e3 0 1"
@@ -81,11 +80,16 @@ def InitMvvLva():
             MvvLvaScores[victim][attacker] = VictimScore[victim] + 6 - (VictimScore[attacker] // 100) # assigning the scores to captures            
 
 def AddQuietMove(board, move, list):
+    assert_condition(SqOnBoard(FROMSQ(move)))
+    assert_condition(SqOnBoard(TOSQ(move)))
     list.moves[list.count].move = move
     list.moves[list.count].score = 0
     list.count += 1
     
 def AddCaptureMove(board, move, list):
+    assert_condition(SqOnBoard(FROMSQ(move)))
+    assert_condition(SqOnBoard(TOSQ(move)))
+    assert_condition(PieceValid(CAPTURED(move)))
     list.moves[list.count].move = move
     list.moves[list.count].score = MvvLvaScores[CAPTURED(move)][board.pieces[FROMSQ(move)]] # victim , attacker
     list.count += 1
@@ -174,11 +178,11 @@ def GenerateAllMoves(board, list):
                 
             if(not SQOFFBOARD(sq + 11) and PieceCol[board.pieces[sq + 11]] == COLORS.BLACK.value): # if the capturing piece is black
                 AddWhitePawnCapMove(board, sq, sq+11, board.pieces[sq+11], list) # board, fromSq, ToSq, CapturedPiece, list
-            
-            if(sq + 9 == board.enPas):
-                AddCaptureMove(board, MOVE(sq, sq+9, PIECE.EMPTY.value, PIECE.EMPTY.value, MFLAGEP), list)
-            if(sq + 11 == board.enPas):
-                AddCaptureMove(board, MOVE(sq, sq+11, PIECE.EMPTY.value, PIECE.EMPTY.value, MFLAGEP), list)
+            if(board.enPas != SQUARES.NO_SQ.value):
+                if(sq + 9 == board.enPas):
+                    AddEnPassantMove(board, MOVE(sq, sq+9, PIECE.EMPTY.value, PIECE.EMPTY.value, MFLAGEP), list)
+                if(sq + 11 == board.enPas):
+                    AddEnPassantMove(board, MOVE(sq, sq+11, PIECE.EMPTY.value, PIECE.EMPTY.value, MFLAGEP), list)
                 
         # castling for white
         # king side castling
@@ -214,11 +218,11 @@ def GenerateAllMoves(board, list):
                 
             if(not SQOFFBOARD(sq - 11) and PieceCol[board.pieces[sq - 11]] == COLORS.WHITE.value): # if the capturing piece is WHITE
                 AddBlackPawnCapMove(board, sq, sq-11, board.pieces[sq-11], list) # board, fromSq, ToSq, CapturedPiece, list
-            
-            if(sq - 9 == board.enPas):
-                AddCaptureMove(board, MOVE(sq, sq-9, PIECE.EMPTY.value, PIECE.EMPTY.value, MFLAGEP), list)
-            if(sq - 11 == board.enPas):
-                AddCaptureMove(board, MOVE(sq, sq-11, PIECE.EMPTY.value, PIECE.EMPTY.value, MFLAGEP), list)
+            if(board.enPas != SQUARES.NO_SQ.value):
+                if(sq - 9 == board.enPas):
+                    AddEnPassantMove(board, MOVE(sq, sq-9, PIECE.EMPTY.value, PIECE.EMPTY.value, MFLAGEP), list)
+                if(sq - 11 == board.enPas):
+                    AddEnPassantMove(board, MOVE(sq, sq-11, PIECE.EMPTY.value, PIECE.EMPTY.value, MFLAGEP), list)
                 
         # castling for black
         # king side castling
