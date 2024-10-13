@@ -10,7 +10,7 @@ def sizeof(cls):
     return sys.getsizeof(cls())
 
 PvSize = 0x10000 * 2  # (2 MB)
-MAXPVENTRIES = 130780
+MAXPVENTRIES = 131072
 
 def ClearPvTable(table):
     for i in range(0, table.numEntries):

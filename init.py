@@ -1,5 +1,6 @@
 import constants
 import globals
+from movegen import InitMvvLva
 
 def InitSq120To64AndSq64To120():
     sq = 0
@@ -38,4 +39,5 @@ def AllInit():
     InitBitMasks()
     InitHashKeys()
     InitFilesRanksBrd()
+    InitMvvLva()
 

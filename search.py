@@ -1,5 +1,5 @@
 from debug import assert_condition
-from constants import MAXGAMEMOVES, BRD_SQ_NUM, MAXDEPTH, MOVELIST
+from constants import MAXGAMEMOVES, BRD_SQ_NUM, MAXDEPTH, MOVELIST, MOVE
 from pvtable import ClearPvTable, GetPvLine, StorePvMove
 from misc import GetTimeMs
 from input_output import PrMove
@@ -23,6 +23,22 @@ def isRepetition(board):
             return True
         
     return False
+
+def PickNextMove(movenum, mlist):
+    bestScore = 0
+    bestNum = movenum
+    temp = MOVE()
+    for index in range(movenum, mlist.count): # from given moveNum to end of movelist
+        if(mlist.moves[index].score > bestScore):
+            bestScore = mlist.moves[index].score
+            bestNum = index
+    # swapping it (move ordering)
+    
+    temp = mlist.moves[movenum]
+    mlist.moves[movenum] = mlist.moves[bestNum]
+    mlist.moves[bestNum] = temp
+    
+    # mlist.moves[movenum], mlist.moves[bestNum] = mlist.moves[movenum], mlist.moves[movenum]
 
 def ClearForSearch(board, info): # clear all the stats , heuristics, searchHistory, searchKillers etc..
     for index in range(13):
@@ -66,6 +82,7 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
     Score = -INFINITE
     
     for MoveNum in range(mlist.count):
+        PickNextMove(MoveNum, mlist)
         if(not MakeMove(board, mlist.moves[MoveNum].move)):
             continue
         Legal +=1
@@ -127,4 +144,7 @@ def SearchPosition(board, info): # class BOARD, class SEARCHINFO
         for pvNum in range(0, pvMoves):
             print(f"{PrMove(board.PvArray[pvNum])}", end="  ")
         print()
-        # print(f"Ordering: {(info.fhf / info.fh):.2f}")
+        if(info.fh):
+            print(f"Ordering: {(info.fhf / info.fh):.2f}")
+        else:
+            print("Ordering: NAN")

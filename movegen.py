@@ -1,10 +1,11 @@
 from globals import FilesBrd, RanksBrd
-from constants import SQUARES, RANK, PIECE, COLORS, MFLAGPS, MFLAGEP, CASTLING, MFLAGCA, MOVELIST
+from constants import SQUARES, RANK, PIECE, COLORS, MFLAGPS, MFLAGEP, CASTLING, MFLAGCA, MOVELIST, CAPTURED, FROMSQ
 from debug import assert_condition
 from validate import SqOnBoard, PieceValidEmpty, PieceValid, CheckBoard
 from data import PieceCol
 from attack import SqAttacked
 from makemove import MakeMove , TakeMove
+from data import PceChar
 
 PAWNS_W = "rnbqkb1r/pp1p1pPp/8/2p1pP2/1P1P4/3P3P/P1P1P3/RNBQKBNR w KQkq e6 0 1 "
 PAWNS_B = "rnbqkbnr/p1p1p3/3p3p/1p1p4/2P1Pp2/8/PP1P1PpP/RNBQKB1R b KQkq e3 0 1"
@@ -47,6 +48,38 @@ PceDir = [ # directions for each piece
 
 NumDir = [0, 0, 8, 4, 4, 8, 8, 0, 8, 4, 4, 8, 8] # no of directions, for example, for rook we have 4
 
+"""
+PV Move
+Cap -> MvvLVA (Most valuable victim Least valuable attacker)
+Killers (beta cutoffs)
+HistoryScore
+
+[Vic][Att] highest score is P X Q (pawn takes queen) and lowest is queen takes pawn
+    P x Q
+    N x Q
+    B x Q
+    R x Q
+    .....
+    P x R
+    B
+    N
+    P
+    
+Victim Q -> 500
+Victim R -> 400 
+
+"""
+
+VictimScore = [0, 100, 200, 300, 400, 500, 600, 100, 200, 300, 400, 500, 600]
+
+# the following array also covers, white pawn takes white pawn and also similar illegal captures but we will deal with them later
+MvvLvaScores = [[0 for _ in range(13)] for _ in range(13)] # [13][13]
+
+def InitMvvLva():
+    for attacker in range(PIECE.wP.value, PIECE.bK.value + 1):
+        for victim in range(PIECE.wP.value, PIECE.bK.value+1):
+            MvvLvaScores[victim][attacker] = VictimScore[victim] + 6 - (VictimScore[attacker] // 100) # assigning the scores to captures            
+
 def AddQuietMove(board, move, list):
     list.moves[list.count].move = move
     list.moves[list.count].score = 0
@@ -54,12 +87,12 @@ def AddQuietMove(board, move, list):
     
 def AddCaptureMove(board, move, list):
     list.moves[list.count].move = move
-    list.moves[list.count].score = 0
+    list.moves[list.count].score = MvvLvaScores[CAPTURED(move)][board.pieces[FROMSQ(move)]] # victim , attacker
     list.count += 1
     
 def AddEnPassantMove(board, move, list):
     list.moves[list.count].move = move
-    list.moves[list.count].score = 0
+    list.moves[list.count].score = 105 # pawn takes pawn
     list.count += 1
     
 def AddWhitePawnCapMove(board, fromSq, toSq, cap, list):
