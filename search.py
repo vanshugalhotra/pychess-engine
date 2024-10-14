@@ -25,6 +25,11 @@ def isRepetition(board):
     return False
 
 def PickNextMove(movenum, mlist):
+    """
+    The function iterates through a list of moves and selects the move with the highest score (the most promising move) from the remaining moves. 
+    It then swaps the selected move with the current move (movenum). This helps ensure the most promising move is evaluated first in AlphaBeta, which improves the chances of pruning.
+    
+    """
     bestScore = 0
     bestNum = movenum
     for index in range(movenum, mlist.count): # from given moveNum to end of movelist
@@ -54,8 +59,8 @@ def ClearForSearch(board, info): # clear all the stats , heuristics, searchHisto
 
 
 # Horizon Effect: caused by depth limitation of the search algorithm. Lets say at the last depth White queen captures a knight and since its the last depth we stop evaluating further, so right now white is up a knight but what if black takes the white queen (But this move is not considered due to limited depth)
-# solution to the horizon effect is : quiescence search i.e evaluation only quiet positions (Without captures)
-def Quiescence(alpha, beta, board, info):
+# solution to the horizon effect is : quiescence search i.e evaluation only non-quiet positions (captures)
+def Quiescence(alpha, beta, board, info): # only captures
     assert_condition(CheckBoard(board))
     info.nodes += 1
     
@@ -80,7 +85,6 @@ def Quiescence(alpha, beta, board, info):
     OldAlpha = alpha
     BestMove = 0
     Score = -INFINITE
-    PvMove = ProbePvTable(board)
     
     for MoveNum in range(mlist.count):
         PickNextMove(MoveNum, mlist)
@@ -113,8 +117,6 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
     assert_condition(CheckBoard(board))
     
     if(depth == 0):
-        # info.nodes += 1
-        # return EvalPosition(board)
         return Quiescence(alpha, beta, board, info)
     
     info.nodes += 1
@@ -149,7 +151,18 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
         
         if(Score > alpha):
             if(Score >= beta): # beta cut off
-                if(Legal == 1):
+                """
+                Fail High (FH) Update:
+
+                Every time the engine prunes a branch because the evaluation of a move exceeds the beta value (a fail high), we increment the FH counter.
+                This means the engine found a move that was good enough to stop searching the rest of the moves at that depth or node.
+                
+                Fail High First (FHF) Update:
+
+                If the first move evaluated at a node causes a fail high, we increment both the FH counter and the FHF counter.
+                This reflects that the move ordering was good, and the engine found the best move right away.
+                """
+                if(Legal == 1): # if first move caused beta cutoff
                     info.fhf += 1
                 info.fh += 1
                 # killer moves are those which causes beta cutoff and are not captures
@@ -159,7 +172,7 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
                 return beta
             alpha = Score
             BestMove = mlist.moves[MoveNum].move
-            if(not (mlist.moves[MoveNum].move & MFLAGCAP)):
+            if(not (mlist.moves[MoveNum].move & MFLAGCAP)): # not a capture
                 board.searchHistory[board.pieces[FROMSQ(BestMove)]][TOSQ(BestMove)] += depth
     
     if(Legal == 0): # checkmate

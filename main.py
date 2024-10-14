@@ -20,7 +20,7 @@ if __name__ == "__main__":
     
     info = constants.SEARCHINFO()
     
-    ParseFen(ENDGAME, boardR)
+    ParseFen(PERFTFEN, boardR)
     # PerftTest(3, boardR)
     Move = 0
     
