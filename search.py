@@ -5,7 +5,7 @@ from misc import GetTimeMs
 from input_output import PrMove
 from validate import CheckBoard
 from evaluate import EvalPosition
-from movegen import GenerateAllMoves
+from movegen import GenerateAllMoves, GenerateAllCaps
 from makemove import MakeMove, TakeMove
 from attack import SqAttacked
 
@@ -53,6 +53,58 @@ def ClearForSearch(board, info): # clear all the stats , heuristics, searchHisto
     info.fhf = 0
 
 
+# Horizon Effect: caused by depth limitation of the search algorithm. Lets say at the last depth White queen captures a knight and since its the last depth we stop evaluating further, so right now white is up a knight but what if black takes the white queen (But this move is not considered due to limited depth)
+# solution to the horizon effect is : quiescence search i.e evaluation only quiet positions (Without captures)
+def Quiescence(alpha, beta, board, info):
+    assert_condition(CheckBoard(board))
+    info.nodes += 1
+    
+    if(isRepetition(board) or board.fiftyMove >= 100):
+        return 0
+    
+    if(board.ply > MAXDEPTH - 1):
+        return EvalPosition(board)
+    
+    Score = EvalPosition(board)
+    
+    if(Score >= beta):
+        return beta
+    
+    if(Score > alpha):
+        alpha = Score
+    
+    mlist = MOVELIST()
+    GenerateAllCaps(board, mlist)
+    
+    Legal = 0
+    OldAlpha = alpha
+    BestMove = 0
+    Score = -INFINITE
+    PvMove = ProbePvTable(board)
+    
+    for MoveNum in range(mlist.count):
+        PickNextMove(MoveNum, mlist)
+        if(not MakeMove(board, mlist.moves[MoveNum].move)):
+            continue
+        Legal +=1
+        Score = -Quiescence(-beta, -alpha, board, info)
+        TakeMove(board)
+        
+        if(Score > alpha):
+            if(Score >= beta): # beta cut off
+                if(Legal == 1):
+                    info.fhf += 1
+                info.fh += 1
+                return beta
+            alpha = Score
+            BestMove = mlist.moves[MoveNum].move
+
+    if(alpha != OldAlpha):
+        StorePvMove(board, BestMove)
+    
+    return alpha
+
+
 # A beta cutoff occurs when the maximizing player finds a move that is so good that the minimizing player will avoid this line altogether.
 
 # An alpha cutoff occurs when the minimizing player finds a move that is so bad that the maximizing player will avoid this line altogether.
@@ -61,8 +113,9 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
     assert_condition(CheckBoard(board))
     
     if(depth == 0):
-        info.nodes += 1
-        return EvalPosition(board)
+        # info.nodes += 1
+        # return EvalPosition(board)
+        return Quiescence(alpha, beta, board, info)
     
     info.nodes += 1
     if(isRepetition(board) or board.fiftyMove >= 100):
@@ -120,10 +173,6 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
     
     return alpha
 
-# Horizon Effect: caused by depth limitation of the search algorithm. Lets say at the last depth White queen captures a knight and since its the last depth we stop evaluating further, so right now white is up a knight but what if black takes the white queen (But this move is not considered due to limited depth)
-# solution to the horizon effect is : quiescence search i.e evaluation only quiet positions (Without captures)
-def Quiescence(alpha, beta, board, info):
-    return 0
 
 def SearchPosition(board, info): # class BOARD, class SEARCHINFO
     # iterative deepening, search init

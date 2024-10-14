@@ -326,3 +326,116 @@ def MoveExists(board, move):
             return True
     
     return False
+
+# generating moves for all pieces   
+def GenerateAllCaps(board, list):
+    
+    assert_condition(CheckBoard(board))
+    
+    # generating white pawn moves
+    list.count = 0
+    pce = PIECE.EMPTY.value
+    side = board.side
+    sq = 0
+    t_sq = 0
+    
+    if(side == COLORS.WHITE.value):
+        # looping to total number of white pawns on the board
+        for pceNum in range(0, board.pceNum[PIECE.wP.value]):
+            sq = board.pList[PIECE.wP.value][pceNum] # to get the square on which there is a white Pawn
+            assert_condition(SqOnBoard(sq))
+                                
+            # if it is a capture move            
+            if(not SQOFFBOARD(sq + 9) and PieceCol[board.pieces[sq + 9]] == COLORS.BLACK.value): # if the capturing piece is black
+                AddWhitePawnCapMove(board, sq, sq+9, board.pieces[sq+9], list) # board, fromSq, ToSq, CapturedPiece, list
+                
+            if(not SQOFFBOARD(sq + 11) and PieceCol[board.pieces[sq + 11]] == COLORS.BLACK.value): # if the capturing piece is black
+                AddWhitePawnCapMove(board, sq, sq+11, board.pieces[sq+11], list) # board, fromSq, ToSq, CapturedPiece, list
+            if(board.enPas != SQUARES.NO_SQ.value):
+                if(sq + 9 == board.enPas):
+                    AddEnPassantMove(board, MOVE(sq, sq+9, PIECE.EMPTY.value, PIECE.EMPTY.value, MFLAGEP), list)
+                if(sq + 11 == board.enPas):
+                    AddEnPassantMove(board, MOVE(sq, sq+11, PIECE.EMPTY.value, PIECE.EMPTY.value, MFLAGEP), list)
+                
+
+    else: 
+        # looping to total number of black pawns on the board
+        for pceNum in range(0, board.pceNum[PIECE.bP.value]):
+            sq = board.pList[PIECE.bP.value][pceNum] # to get the square on which there is a black Pawn
+            assert_condition(SqOnBoard(sq))
+                    
+            # if it is a capture move            
+            if(not SQOFFBOARD(sq - 9) and PieceCol[board.pieces[sq - 9]] == COLORS.WHITE.value): # if the capturing piece is WHITE
+                AddBlackPawnCapMove(board, sq, sq-9, board.pieces[sq-9], list) # board, fromSq, ToSq, CapturedPiece, list
+                
+            if(not SQOFFBOARD(sq - 11) and PieceCol[board.pieces[sq - 11]] == COLORS.WHITE.value): # if the capturing piece is WHITE
+                AddBlackPawnCapMove(board, sq, sq-11, board.pieces[sq-11], list) # board, fromSq, ToSq, CapturedPiece, list
+            if(board.enPas != SQUARES.NO_SQ.value):
+                if(sq - 9 == board.enPas):
+                    AddEnPassantMove(board, MOVE(sq, sq-9, PIECE.EMPTY.value, PIECE.EMPTY.value, MFLAGEP), list)
+                if(sq - 11 == board.enPas):
+                    AddEnPassantMove(board, MOVE(sq, sq-11, PIECE.EMPTY.value, PIECE.EMPTY.value, MFLAGEP), list)
+                
+    # Move generation for sliding pieces (Bishops, Rooks, Queen)
+    pceIndex = LoopSlideIndex[side] # WHITE - 0, BLACK - 4
+    pce = LoopSlidePce[pceIndex] # for white First piece is White Bishop
+    
+    while(pce != 0):
+        assert_condition(PieceValid(pce))
+        pce = LoopSlidePce[pceIndex]
+        for pceNum in range(0, board.pceNum[pce]):
+            sq = board.pList[pce][pceNum] # accesing the square on which that particular piece is
+            assert_condition(SqOnBoard(sq))
+            
+            #generating the moves
+            for index in range(NumDir[pce]): # looping till no of directions for each piece
+                dir = PceDir[pce][index]
+                t_sq = sq + dir
+                
+                while(not SQOFFBOARD(t_sq)):   # for sliding pieces we need to iterate in that direction till we are offboard 
+                    # capture move, BLACK(1) ^ 1 == WHITE(0)
+                    if(board.pieces[t_sq] != PIECE.EMPTY.value):
+                        if(PieceCol[board.pieces[t_sq]] == side ^ 1): # opposite color
+                            
+                            # addding a capture move
+                            AddCaptureMove(board, MOVE(sq, t_sq, board.pieces[t_sq], PIECE.EMPTY.value, 0), list)
+                            
+                        break #if same color piece is found then break, we can't move further
+                    
+                    # Normal Move
+
+                    t_sq += dir
+        
+        pceIndex += 1
+    
+    
+    # Move generation for non sliding pieces (Knights, King)
+    pceIndex = LoopNonSlideIndex[side] # WHITE - 0, BLACK - 4
+    pce = LoopNonSlidePce[pceIndex] # for white First piece is White Knight
+    
+    while(pce != 0):
+        assert_condition(PieceValid(pce))
+        pce = LoopNonSlidePce[pceIndex]
+        
+        for pceNum in range(0, board.pceNum[pce]):
+            sq = board.pList[pce][pceNum] # accesing the square on which that particular piece is
+            assert_condition(SqOnBoard(sq))
+            
+            #generating the moves
+            for index in range(NumDir[pce]): # looping till no of directions for each piece
+                dir = PceDir[pce][index]
+                t_sq = sq + dir
+                if(SQOFFBOARD(t_sq)):
+                    continue
+                
+                # capture move, BLACK(1) ^ 1 == WHITE(0)
+                if(board.pieces[t_sq] != PIECE.EMPTY.value):
+                    if(PieceCol[board.pieces[t_sq]] == side ^ 1): # opposite color
+                        # addding a capture move
+                        AddCaptureMove(board, MOVE(sq, t_sq, board.pieces[t_sq], PIECE.EMPTY.value, 0), list)
+                    continue #if same color then skip
+                
+                # Normal Move
+        
+        pceIndex += 1
+     
