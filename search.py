@@ -1,7 +1,7 @@
 from debug import assert_condition
 from constants import MAXGAMEMOVES, BRD_SQ_NUM, MAXDEPTH, MOVELIST, MFLAGCAP, FROMSQ, TOSQ
 from pvtable import ClearPvTable, GetPvLine, StorePvMove, ProbePvTable
-from misc import GetTimeMs
+from misc import GetTimeMs, ReadInput
 from input_output import PrMove
 from validate import CheckBoard
 from evaluate import EvalPosition
@@ -16,6 +16,8 @@ def CheckUp(info): # will be called after certain node
     # check if time up or interrupt from GUI
     if(info.timeset == True and GetTimeMs() > info.stoptime):
         info.stopped = True
+        
+    ReadInput(info)
 
 def isRepetition(board):
     for index in range(board.hisPly - board.fiftyMove, board.hisPly-1): # checking from only when last time fiftyMove was set to 0 because once fifty move is set to 0 there won't be no repetetions(captures and pawn moves cant repeat)
@@ -52,7 +54,6 @@ def ClearForSearch(board, info): # clear all the stats , heuristics, searchHisto
     ClearPvTable(board.PvTable)
     board.ply = 0
     
-    info.starttime = GetTimeMs()
     info.stopped = 0
     info.nodes = 0
     info.fh = 0
@@ -224,13 +225,15 @@ def SearchPosition(board, info): # class BOARD, class SEARCHINFO
         pvMoves = GetPvLine(currentDepth, board)
         bestMove = board.PvArray[0]
         
-        print(f"Depth: {currentDepth} Score: {bestScore} Move: {PrMove(bestMove)} Nodes: {info.nodes}")
+        print(f"info score cp {bestScore} depth {currentDepth} nodes {info.nodes} time {GetTimeMs() - info.starttime}", end=" ")
         
-        print("PV: ", end=" ")
+        print("pv", end=" ")
         for pvNum in range(0, pvMoves):
-            print(f"{PrMove(board.PvArray[pvNum])}", end="  ")
+            print(f"{PrMove(board.PvArray[pvNum])}", end=" ")
         print()
-        if(info.fh):
-            print(f"Ordering: {(info.fhf / info.fh):.2f}")
-        else:
-            print("Ordering: NAN")
+        # if(info.fh):
+        #     print(f"Ordering: {(info.fhf / info.fh):.2f}")
+        # else:
+        #     print("Ordering: NAN")
+            
+    print(f"Best Move: {PrMove(bestMove)}")
