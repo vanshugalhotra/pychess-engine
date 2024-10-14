@@ -60,7 +60,7 @@ def PrintBoard(board):
         
     print()
     print(f"Side: {SideChar[board.side]}")
-    print(f"En Passant: {PrSq(board.enPas)}")
+    print(f"En Passant: {(board.enPas)}")
     
     print(f"Castle: {'K' if board.castlePerm & CASTLING.WKCA.value else '-'} {'Q' if board.castlePerm & CASTLING.WQCA.value else '-'} {'k' if board.castlePerm & CASTLING.BKCA.value else '-'} {'q' if board.castlePerm & CASTLING.BQCA.value else '-'} ")
     

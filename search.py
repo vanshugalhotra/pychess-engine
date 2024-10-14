@@ -236,4 +236,4 @@ def SearchPosition(board, info): # class BOARD, class SEARCHINFO
         # else:
         #     print("Ordering: NAN")
             
-    print(f"Best Move: {PrMove(bestMove)}")
+    print(f"bestmove {PrMove(bestMove)}")

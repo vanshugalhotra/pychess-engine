@@ -65,7 +65,7 @@ def parseMove(userMove, board):
         if(FROMSQ(Move) == fromSq and TOSQ(Move) == toSq): # if both the to and from sqaures are same, then move is also same, provided promoted piece can be different
             PromPce = PROMOTED(Move)
             if(PromPce != PIECE.EMPTY.value): # if there is a promotion, we need to check
-                if(PieceRookQueen[PromPce] and not PieceBishopQueen(PromPce) and userMove[4] == 'r'): # promoted piece is a rook
+                if(PieceRookQueen[PromPce] and not PieceBishopQueen[PromPce] and userMove[4] == 'r'): # promoted piece is a rook
                     return Move
                 elif(not PieceRookQueen[PromPce] and PieceBishopQueen[PromPce] and userMove[4] == 'b'): # promoted piece is bishop
                     return Move

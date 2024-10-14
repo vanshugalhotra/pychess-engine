@@ -1,12 +1,4 @@
-import constants
 import init
-from board import ParseFen, PrintBoard
-from input_output import parseMove
-from makemove import MakeMove, TakeMove
-from perft import PerftTest
-from pvtable import StorePvMove, InitPvTable
-from search import SearchPosition
-from misc import GetTimeMs
 from uci import Uci_Loop
 
 PERFTFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 "
