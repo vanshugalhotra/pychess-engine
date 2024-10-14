@@ -12,9 +12,10 @@ from attack import SqAttacked
 INFINITE = 30000
 MATE = 29000
 
-def CheckUp(): # will be called after certain node
+def CheckUp(info): # will be called after certain node
     # check if time up or interrupt from GUI
-    pass
+    if(info.timeset == True and GetTimeMs() > info.stoptime):
+        info.stopped = True
 
 def isRepetition(board):
     for index in range(board.hisPly - board.fiftyMove, board.hisPly-1): # checking from only when last time fiftyMove was set to 0 because once fifty move is set to 0 there won't be no repetetions(captures and pawn moves cant repeat)
@@ -62,6 +63,9 @@ def ClearForSearch(board, info): # clear all the stats , heuristics, searchHisto
 # solution to the horizon effect is : quiescence search i.e evaluation only non-quiet positions (captures)
 def Quiescence(alpha, beta, board, info): # only captures
     assert_condition(CheckBoard(board))
+    if( (info.nodes & 2047) == 0): # means after every 2048th node
+        CheckUp(info)
+        
     info.nodes += 1
     
     if(isRepetition(board) or board.fiftyMove >= 100):
@@ -93,6 +97,8 @@ def Quiescence(alpha, beta, board, info): # only captures
         Legal +=1
         Score = -Quiescence(-beta, -alpha, board, info)
         TakeMove(board)
+        if(info.stopped):
+            return 0
         
         if(Score > alpha):
             if(Score >= beta): # beta cut off
@@ -118,6 +124,9 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
     
     if(depth == 0):
         return Quiescence(alpha, beta, board, info)
+
+    if( (info.nodes & 2047) == 0): # means after every 2048th node
+        CheckUp(info)
     
     info.nodes += 1
     if(isRepetition(board) or board.fiftyMove >= 100):
@@ -148,6 +157,8 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
         Legal +=1
         Score = -AlphaBeta(-beta, -alpha, depth-1, board, info, True)
         TakeMove(board)
+        if(info.stopped):
+            return 0
         
         if(Score > alpha):
             if(Score >= beta): # beta cut off
@@ -207,6 +218,8 @@ def SearchPosition(board, info): # class BOARD, class SEARCHINFO
         bestScore = AlphaBeta(-INFINITE, INFINITE, currentDepth, board, info, True) # alpha beta
         
         # out of time?
+        if(info.stopped):
+            break
     
         pvMoves = GetPvLine(currentDepth, board)
         bestMove = board.PvArray[0]
