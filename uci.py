@@ -1,13 +1,16 @@
 from constants import Board, SEARCHINFO, START_FEN, COLORS, MAXDEPTH
 from pvtable import InitPvTable
 from board import ParseFen, PrintBoard
-from movegen import MakeMove
+from movegen import MakeMove, TakeMove
 from input_output import parseMove
 from misc import GetTimeMs
 from search import SearchPosition
 
-NAME = "PYCE"
+NAME = "UstaadJi"
+AUTHOR = "Vanshu Galhotra"
 NOMOVE = 0
+
+test_moves = 0
 
 # go depth 6 wtime 180000 btime 100000 binc 1000 winc 1000 movetime 1000 movestogo 40
 def ParseGo(line, info, board):
@@ -110,9 +113,10 @@ def ParsePosition(lineIn, board):
             
 
 def Uci_Loop():
+    global test_moves
     line = ""
     print(f"id name {NAME}")
-    print(f"id author UstaadJi")
+    print(f"id author {AUTHOR}")
     print(f"uciok")
     
     pos = Board()
@@ -120,6 +124,7 @@ def Uci_Loop():
     InitPvTable(pos.PvTable)
     
     while(True):
+        print()
         line = input()
         if(not line):
             continue
@@ -142,6 +147,25 @@ def Uci_Loop():
             print(f"id name {NAME}")
             print(f"id author UstaadJi")
             print(f"uciok")
+        elif(line[:6] == "nonuci"):
+            coms = line.split()
+            move = 0
+            if(len(coms) > 1):
+                move = coms[1]
+            if(move != "take" and move):
+                parsed_move = parseMove(move, pos)
+                if(parsed_move):
+                    MakeMove(pos, parsed_move)
+                    test_moves += 1
+                    PrintBoard(pos)
+                else:
+                    print("Invalid Move!")
+            elif(move == "take"):
+                if(test_moves):
+                    TakeMove(pos)
+                    PrintBoard(pos)
+                    test_moves -= 1
+                
         if(info.quit):
             break
 
