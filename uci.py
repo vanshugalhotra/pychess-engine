@@ -1,10 +1,9 @@
 from constants import SEARCHINFO, START_FEN, COLORS, MAXDEPTH
-from pvtable import InitPvTable
 from board import Board
 from input_output import parseMove
 from misc import GetTimeMs
 from search import SearchPosition
-from move import MOVE
+from perft import PerftTest
 
 NAME = "UstaadJi"
 AUTHOR = "Vanshu Galhotra"
@@ -121,7 +120,6 @@ def Uci_Loop():
     
     pos = Board()
     info = SEARCHINFO()
-    InitPvTable(pos.PvTable)
     
     while(True):
         print()
@@ -152,7 +150,11 @@ def Uci_Loop():
             move = 0
             if(len(coms) > 1):
                 move = coms[1]
-            if(move != "take" and move):
+            
+            if(move == "perft" and len(coms) > 2):
+                PerftTest(int(coms[2]), pos)
+                
+            elif(move != "take" and move):
                 parsed_move = parseMove(move, pos)
                 if(parsed_move):
                     pos.make_move(parsed_move)

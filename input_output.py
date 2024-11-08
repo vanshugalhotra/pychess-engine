@@ -1,14 +1,14 @@
 from constants import FR2SQ, PIECE
 from data import PieceKnight, PieceBishopQueen, PieceRookQueen
 from debug import assert_condition
-from validate import SqOnBoard, CheckBoard
+from validate import SqOnBoard
 from move import MOVELIST
 
 NOMOVE = 0
 
 # parsing a move from user input, like a2a3 --> getting the specific move from this string
 def parseMove(userMove: str, board):
-    assert_condition(CheckBoard(board))
+    assert_condition(board.check_board())
     
     if(userMove[1] > '8' or userMove[1] < '1'):
         return NOMOVE

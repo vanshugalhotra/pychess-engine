@@ -1,6 +1,6 @@
 from debug import assert_condition
 from constants import MAXGAMEMOVES, BRD_SQ_NUM, MAXDEPTH
-from pvtable import ClearPvTable, GetPvLine, StorePvMove, ProbePvTable
+from pvtable import GetPvLine, StorePvMove, ProbePvTable
 from misc import GetTimeMs, ReadInput
 from attack import SqAttacked
 from board import Board
@@ -15,14 +15,6 @@ def CheckUp(info): # will be called after certain node
         info.stopped = True
         
     ReadInput(info)
-
-def isRepetition(board):
-    for index in range(board.hisPly - board.fiftyMove, board.hisPly-1): # checking from only when last time fiftyMove was set to 0 because once fifty move is set to 0 there won't be no repetetions(captures and pawn moves cant repeat)
-        if(board.posKey == board.history[index].posKey):
-            assert_condition(index >=0 and index <= MAXGAMEMOVES)
-            return True
-        
-    return False
 
 def PickNextMove(movenum, mlist):
     """
@@ -48,7 +40,7 @@ def ClearForSearch(board: Board, info): # clear all the stats , heuristics, sear
         for index2 in range(MAXDEPTH):
             board.searchKillers[index][index2] = 0
             
-    ClearPvTable(board.PvTable)
+    board.PvTable.clear_table()
     board.ply = 0
     
     info.stopped = 0

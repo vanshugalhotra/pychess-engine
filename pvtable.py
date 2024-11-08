@@ -1,4 +1,3 @@
-import sys
 from constants import MAXDEPTH
 from debug import assert_condition
 from move import MOVE
@@ -12,32 +11,18 @@ class PVENTRY:
 
 class PVTABLE:
     def __init__(self):
-        self.numEntries = 0
-        self.pTable = [] # to store the entry of PVENTRY
+        self.numEntries = MAXPVENTRIES - 2
+        self.pTable = [PVENTRY() for _ in range(self.numEntries)] # to store the entry of PVENTRY
+        self.clear_table()
+        print(f"PvTable init complete with {self.numEntries} entries")
+        
+    def clear_table(self):
+        for i in range(0, self.numEntries):
+            self.pTable[i].posKey = 0
+            self.pTable[i].move = NOMOVE
 
-def sizeof(cls):
-    return sys.getsizeof(cls())
-
-PvSize = 0x10000 * 2  # (2 MB)
 MAXPVENTRIES = 131072
 
-def ClearPvTable(table):
-    for i in range(0, table.numEntries):
-        table.pTable[i].posKey = 0
-        table.pTable[i].move = NOMOVE
-
-def InitPvTable(table):
-    # table.numEntries = PvSize // sizeof(PVENTRY)
-    table.numEntries = MAXPVENTRIES
-    table.numEntries -= 2
-    
-    for _ in range(0, table.numEntries):
-        table.pTable.append(PVENTRY())
-        
-    ClearPvTable(table)
-        
-    print(f"PvTable init complete with {table.numEntries} entries")
-    
 def StorePvMove(board, move: MOVE):
     index = board.posKey % board.PvTable.numEntries
     assert_condition(index >=0 and index <= board.PvTable.numEntries-1)
