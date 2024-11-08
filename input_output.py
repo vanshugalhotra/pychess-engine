@@ -1,45 +1,13 @@
-from globals import FilesBrd, RanksBrd
-from constants import FROMSQ, TOSQ, PROMOTED, FR2SQ, MOVELIST, PIECE
+from constants import FR2SQ, PIECE
 from data import PieceKnight, PieceBishopQueen, PieceRookQueen
 from debug import assert_condition
 from validate import SqOnBoard, CheckBoard
-from movegen import GenerateAllMoves
+from move import MOVELIST
 
 NOMOVE = 0
 
-# for printing the square in algebraic form
-def PrSq(sq):
-    file = FilesBrd[sq]
-    rank = RanksBrd[sq]
-    SqStr = "{}{}".format(chr(ord('a') + file), chr(ord('1') + rank))
-    
-    return SqStr
-
-# for printing the move in algebraic form
-def PrMove(move):
-    ff = FilesBrd[FROMSQ(move)] # file from 
-    rf = RanksBrd[FROMSQ(move)] # rank from 
-    ft = FilesBrd[TOSQ(move)] # file TO
-    rt = RanksBrd[TOSQ(move)] # rank TO
-    
-    promoted = PROMOTED(move) # promoted piece value
-    
-    if(promoted):
-        pchar = 'q'
-        if(PieceKnight[promoted]): # if promoted piece was a knight
-            pchar = 'n'
-        elif(PieceRookQueen[promoted] and not PieceBishopQueen[promoted]):
-            pchar = 'r'
-        elif(not PieceRookQueen[promoted] and PieceBishopQueen[promoted]):
-            pchar = 'b'
-        MvStr = "{}{}{}{}{}".format(chr(ord('a') + ff), chr(ord('1') + rf), chr(ord('a') + ft), chr(ord('1') + rt), pchar)
-    else:
-        MvStr = "{}{}{}{}".format(chr(ord('a') + ff), chr(ord('1') + rf), chr(ord('a') + ft), chr(ord('1') + rt))
-        
-    return MvStr
-
 # parsing a move from user input, like a2a3 --> getting the specific move from this string
-def parseMove(userMove, board):
+def parseMove(userMove: str, board):
     assert_condition(CheckBoard(board))
     
     if(userMove[1] > '8' or userMove[1] < '1'):
@@ -56,14 +24,14 @@ def parseMove(userMove, board):
     
     assert_condition(SqOnBoard(fromSq) and SqOnBoard(toSq))
     list = MOVELIST()
-    GenerateAllMoves(board, list)
+    list.generate_all_moves(board)
     Move = NOMOVE
     PromPce = PIECE.EMPTY.value
     
     for MoveNum in range(0, list.count): # traversing the move list
-        Move = list.moves[MoveNum].move # getting the move
-        if(FROMSQ(Move) == fromSq and TOSQ(Move) == toSq): # if both the to and from sqaures are same, then move is also same, provided promoted piece can be different
-            PromPce = PROMOTED(Move)
+        Move = list.moves[MoveNum].move # getting the move of MOVE()
+        if(Move.FROMSQ() == fromSq and Move.TOSQ() == toSq): # if both the to and from sqaures are same, then move is also same, provided promoted piece can be different
+            PromPce = Move.PROMOTED()
             if(PromPce != PIECE.EMPTY.value): # if there is a promotion, we need to check
                 if(PieceRookQueen[PromPce] and not PieceBishopQueen[PromPce] and userMove[4] == 'r'): # promoted piece is a rook
                     return Move
@@ -86,6 +54,6 @@ def PrintMoveList(list):
         move = list.moves[i].move
         score = list.moves[i].score
         
-        print(f"Move: {i+1} --> {PrMove(move)} (Score: {score})")
+        print(f"Move: {i+1} --> {move.alpha_move()} (Score: {score})")
     print(f"MoveList Total {list.count} Moves: \n")
     

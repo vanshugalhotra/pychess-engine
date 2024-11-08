@@ -1,10 +1,10 @@
-from constants import Board, SEARCHINFO, START_FEN, COLORS, MAXDEPTH
+from constants import SEARCHINFO, START_FEN, COLORS, MAXDEPTH
 from pvtable import InitPvTable
-from board import ParseFen, PrintBoard
-from movegen import MakeMove, TakeMove
+from board import Board
 from input_output import parseMove
 from misc import GetTimeMs
 from search import SearchPosition
+from move import MOVE
 
 NAME = "UstaadJi"
 AUTHOR = "Vanshu Galhotra"
@@ -13,7 +13,7 @@ NOMOVE = 0
 test_moves = 0
 
 # go depth 6 wtime 180000 btime 100000 binc 1000 winc 1000 movetime 1000 movestogo 40
-def ParseGo(line, info, board):
+def ParseGo(line, info, board: Board):
     depth = -1
     movestogo = 30
     movetime = -1
@@ -83,19 +83,19 @@ def ParseGo(line, info, board):
 # position fen SOMEFENSTRING
 # position startpos
 # .... moves e2e4 e7e5 b7b8q
-def ParsePosition(lineIn, board):
+def ParsePosition(lineIn, board: Board):
     lineIn = lineIn[9:] # skipping the "Postion "
     charIndex = lineIn
     
     if(lineIn == "startpos"):
-        ParseFen(START_FEN, board)
+        board.parse_fen(START_FEN)
     else:
         charIndex = lineIn.find("fen")
         if(charIndex < 0): # fen not found
-            ParseFen(START_FEN, board)
+            board.parse_fen(START_FEN)
         else:
             charIndex += 4
-            ParseFen(lineIn[charIndex:], board)
+            board.parse_fen(lineIn[charIndex:])
             
     # processing the moves
     charIndex = lineIn.find("moves")
@@ -107,9 +107,9 @@ def ParsePosition(lineIn, board):
             move = parseMove(mov, board)
             if(move == NOMOVE):
                 break
-            MakeMove(board, move)
+            board.make_move(move)
             board.ply = 0
-    PrintBoard(board)
+    board.print_board()
             
 
 def Uci_Loop():
@@ -155,15 +155,15 @@ def Uci_Loop():
             if(move != "take" and move):
                 parsed_move = parseMove(move, pos)
                 if(parsed_move):
-                    MakeMove(pos, parsed_move)
+                    pos.make_move(parsed_move)
                     test_moves += 1
-                    PrintBoard(pos)
+                    pos.print_board()
                 else:
                     print("Invalid Move!")
             elif(move == "take"):
                 if(test_moves):
-                    TakeMove(pos)
-                    PrintBoard(pos)
+                    pos.take_move()
+                    pos.print_board()
                     test_moves -= 1
                 
         if(info.quit):

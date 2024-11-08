@@ -1,10 +1,19 @@
 import sys
-from constants import PVENTRY, MAXDEPTH
+from constants import MAXDEPTH
 from debug import assert_condition
-from makemove import MakeMove, TakeMove
-from movegen import MoveExists
+from move import MOVE
 
 NOMOVE = 0
+
+class PVENTRY:
+    def __init__(self):
+        self.posKey = 0
+        self.move = MOVE()
+
+class PVTABLE:
+    def __init__(self):
+        self.numEntries = 0
+        self.pTable = [] # to store the entry of PVENTRY
 
 def sizeof(cls):
     return sys.getsizeof(cls())
@@ -29,7 +38,7 @@ def InitPvTable(table):
         
     print(f"PvTable init complete with {table.numEntries} entries")
     
-def StorePvMove(board, move):
+def StorePvMove(board, move: MOVE):
     index = board.posKey % board.PvTable.numEntries
     assert_condition(index >=0 and index <= board.PvTable.numEntries-1)
     
@@ -42,28 +51,26 @@ def ProbePvTable(board):
     
     if(board.PvTable.pTable[index].posKey == board.posKey):
         return board.PvTable.pTable[index].move
-    return NOMOVE
+    return MOVE()
     
     
 def GetPvLine(depth, board):
     assert_condition(depth < MAXDEPTH)
     
-    move = ProbePvTable(board)
+    move_obj = ProbePvTable(board) # instance of MOVE()
     count = 0
-    
-    while(move != NOMOVE and count < depth):
+    while(move_obj.move != NOMOVE and count < depth):
         assert_condition(count < depth)
-        
-        if(MoveExists(board, move)): # legal move
-            MakeMove(board, move)
-            board.PvArray[count] = move
+        if(move_obj.move_exists(board)): # legal move
+            board.make_move(move_obj)
+            board.PvArray[count] = move_obj
             count += 1
         else:
-            break # we have encountered an illegeal move
-        move = ProbePvTable(board)
+            break # we have encountered an illegeal move_obj
+        move_obj = ProbePvTable(board)
         
     while(board.ply > 0):
-        TakeMove(board)
+        board.take_move()
         
     return count
     

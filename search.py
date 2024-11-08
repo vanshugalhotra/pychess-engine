@@ -1,13 +1,10 @@
 from debug import assert_condition
-from constants import MAXGAMEMOVES, BRD_SQ_NUM, MAXDEPTH, MOVELIST, MFLAGCAP, FROMSQ, TOSQ
+from constants import MAXGAMEMOVES, BRD_SQ_NUM, MAXDEPTH
 from pvtable import ClearPvTable, GetPvLine, StorePvMove, ProbePvTable
 from misc import GetTimeMs, ReadInput
-from input_output import PrMove
-from validate import CheckBoard
-from evaluate import EvalPosition
-from movegen import GenerateAllMoves, GenerateAllCaps
-from makemove import MakeMove, TakeMove
 from attack import SqAttacked
+from board import Board
+from move import MOVE, MOVELIST
 
 INFINITE = 30000
 MATE = 29000
@@ -42,7 +39,7 @@ def PickNextMove(movenum, mlist):
     # swapping it (move ordering)    
     mlist.moves[movenum], mlist.moves[bestNum] = mlist.moves[bestNum], mlist.moves[movenum]
 
-def ClearForSearch(board, info): # clear all the stats , heuristics, searchHistory, searchKillers etc..
+def ClearForSearch(board: Board, info): # clear all the stats , heuristics, searchHistory, searchKillers etc..
     for index in range(13):
         for index2 in range(BRD_SQ_NUM):
             board.searchHistory[index][index] = 0
@@ -62,20 +59,20 @@ def ClearForSearch(board, info): # clear all the stats , heuristics, searchHisto
 
 # Horizon Effect: caused by depth limitation of the search algorithm. Lets say at the last depth White queen captures a knight and since its the last depth we stop evaluating further, so right now white is up a knight but what if black takes the white queen (But this move is not considered due to limited depth)
 # solution to the horizon effect is : quiescence search i.e evaluation only non-quiet positions (captures)
-def Quiescence(alpha, beta, board, info): # only captures
-    assert_condition(CheckBoard(board))
+def Quiescence(alpha, beta, board: Board, info): # only captures
+    assert_condition(board.check_board())
     if( (info.nodes & 2047) == 0): # means after every 2048th node
         CheckUp(info)
         
     info.nodes += 1
     
-    if(isRepetition(board) or board.fiftyMove >= 100):
+    if(board.is_repetition() or board.fiftyMove >= 100):
         return 0
     
     if(board.ply > MAXDEPTH - 1):
-        return EvalPosition(board)
+        return board.evaluate_position()
     
-    Score = EvalPosition(board)
+    Score = board.evaluate_position()
     
     if(Score >= beta):
         return beta
@@ -84,7 +81,7 @@ def Quiescence(alpha, beta, board, info): # only captures
         alpha = Score
     
     mlist = MOVELIST()
-    GenerateAllCaps(board, mlist)
+    mlist.generate_capture_moves(board)
     
     Legal = 0
     OldAlpha = alpha
@@ -93,11 +90,11 @@ def Quiescence(alpha, beta, board, info): # only captures
     
     for MoveNum in range(mlist.count):
         PickNextMove(MoveNum, mlist)
-        if(not MakeMove(board, mlist.moves[MoveNum].move)):
+        if(not  board.make_move(mlist.moves[MoveNum].move)):
             continue
         Legal +=1
         Score = -Quiescence(-beta, -alpha, board, info)
-        TakeMove(board)
+        board.take_move()
         if(info.stopped):
             return 0
         
@@ -119,9 +116,9 @@ def Quiescence(alpha, beta, board, info): # only captures
 # A beta cutoff occurs when the maximizing player finds a move that is so good that the minimizing player will avoid this line altogether.
 
 # An alpha cutoff occurs when the minimizing player finds a move that is so bad that the maximizing player will avoid this line altogether.
-def AlphaBeta(alpha, beta, depth, board, info, DoNull):
+def AlphaBeta(alpha, beta, depth: int, board:Board, info, DoNull):
     
-    assert_condition(CheckBoard(board))
+    assert_condition(board.check_board)
     
     if(depth == 0):
         return Quiescence(alpha, beta, board, info)
@@ -130,14 +127,14 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
         CheckUp(info)
     
     info.nodes += 1
-    if(isRepetition(board) or board.fiftyMove >= 100):
+    if(board.is_repetition() or board.fiftyMove >= 100):
         return 0
     
     if(board.ply > MAXDEPTH - 1):
-        return EvalPosition(board)
+        return board.evaluate_position()
     
     mlist = MOVELIST()
-    GenerateAllMoves(board, mlist)
+    mlist.generate_all_moves(board)
     
     Legal = 0
     OldAlpha = alpha
@@ -153,11 +150,11 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
     
     for MoveNum in range(mlist.count):
         PickNextMove(MoveNum, mlist)
-        if(not MakeMove(board, mlist.moves[MoveNum].move)):
+        if(not  board.make_move(mlist.moves[MoveNum].move)):
             continue
         Legal +=1
         Score = -AlphaBeta(-beta, -alpha, depth-1, board, info, True)
-        TakeMove(board)
+        board.take_move()
         if(info.stopped):
             return 0
         
@@ -178,14 +175,14 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
                     info.fhf += 1
                 info.fh += 1
                 # killer moves are those which causes beta cutoff and are not captures
-                if(not (mlist.moves[MoveNum].move & MFLAGCAP)): # if not a capture move
+                if(not (mlist.moves[MoveNum].move.move & MOVE.FLAG_CAP)): # if not a capture move
                     board.searchKillers[1][board.ply] = board.searchKillers[0][board.ply]
                     board.searchKillers[0][board.ply] = mlist.moves[MoveNum].move
                 return beta
             alpha = Score
             BestMove = mlist.moves[MoveNum].move
-            if(not (mlist.moves[MoveNum].move & MFLAGCAP)): # not a capture
-                board.searchHistory[board.pieces[FROMSQ(BestMove)]][TOSQ(BestMove)] += depth
+            if(not (mlist.moves[MoveNum].move.move & MOVE.FLAG_CAP)): # not a capture
+                board.searchHistory[board.pieces[BestMove.FROMSQ()]][BestMove.TOSQ()] += depth
     
     if(Legal == 0): # checkmate
         if(SqAttacked(board.KingSq[board.side], board.side^1, board)):
@@ -199,7 +196,7 @@ def AlphaBeta(alpha, beta, depth, board, info, DoNull):
     return alpha
 
 
-def SearchPosition(board, info): # class BOARD, class SEARCHINFO
+def SearchPosition(board: Board, info): # class BOARD, class SEARCHINFO
     # iterative deepening, search init
     # for depth = 1 to maxDepth, for each of these depths we then search with AlphaBeta
     # our depth depends on the time left on the clock, we don't want to search to depth 10 on first move and lose on time
@@ -229,11 +226,11 @@ def SearchPosition(board, info): # class BOARD, class SEARCHINFO
         
         print("pv", end=" ")
         for pvNum in range(0, pvMoves):
-            print(f"{PrMove(board.PvArray[pvNum])}", end=" ")
+            print(f"{board.PvArray[pvNum].alpha_move()}", end=" ")
         print()
-        # if(info.fh):
-        #     print(f"Ordering: {(info.fhf / info.fh):.2f}")
-        # else:
-        #     print("Ordering: NAN")
+        if(info.fh):
+            print(f"Ordering: {(info.fhf / info.fh):.2f}")
+        else:
+            print("Ordering: NAN")
             
-    print(f"bestmove {PrMove(bestMove)}")
+    print(f"bestmove {bestMove.alpha_move()}")

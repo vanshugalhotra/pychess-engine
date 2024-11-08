@@ -1,6 +1,6 @@
 from constants import PIECE, COLORS, SQUARES
 from data import PieceKnight, PieceKing, PieceRookQueen, PieceBishopQueen, PieceCol
-from validate import SqOnBoard, SideValid, PieceValidEmpty, CheckBoard
+from validate import SqOnBoard, SideValid, PieceValidEmpty
 from debug import assert_condition
 
 # Knight Direction
@@ -21,7 +21,7 @@ def SqAttacked(sq, side, board):
     
     assert_condition(SqOnBoard(sq))
     assert_condition(SideValid(side))
-    assert_condition(CheckBoard(board))
+    assert_condition(board.check_board())
     
     # checking for pawns
     if(side == COLORS.WHITE.value):

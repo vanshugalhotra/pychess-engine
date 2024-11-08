@@ -1,56 +1,52 @@
-from board import PrintBoard
+from board import Board
 from debug import assert_condition
-from constants import MOVELIST
-from movegen import GenerateAllMoves
-from makemove import MakeMove, TakeMove
-from input_output import PrMove
 from misc import GetTimeMs
-from validate import CheckBoard
+from move import MOVELIST
 
 leafNodes = 0
 
-def Perft(depth, board):
+def Perft(depth, board: Board):
     global leafNodes
-    assert_condition(CheckBoard(board))
+    assert_condition(board.check_board())
     
     if(depth == 0):
         leafNodes += 1
         return 
     
     list = MOVELIST()
-    GenerateAllMoves(board, list)
+    list.generate_all_moves(board)
     
     for MoveNum in range(0, list.count):
-        if(not MakeMove(board, list.moves[MoveNum].move)):
+        if(not board.make_move(list.moves[MoveNum].move)):
             continue
         Perft(depth - 1, board)
-        TakeMove(board)
+        board.take_move()
     
     return 
 
-def PerftTest(depth, board):
+def PerftTest(depth, board: Board):
     global leafNodes
-    assert_condition(CheckBoard(board))
+    assert_condition(board.check_board())
     
-    PrintBoard(board)
+    board.print_board()
     
     print(f"\nStarting Test to Depth: {depth}")
     leafNodes = 0
     start = GetTimeMs()
     
     list = MOVELIST()
-    GenerateAllMoves(board, list)
+    list.generate_all_moves(board)
     
     for MoveNum in range(0 , list.count):
         move = list.moves[MoveNum].move
-        if(not MakeMove(board, move)):
+        if(not board.make_move(move)):
             continue
         
         cumnodes = leafNodes
         Perft(depth - 1, board)
-        TakeMove(board)
+        board.take_move()
         oldnodes = leafNodes - cumnodes
-        print(f"Move {MoveNum+1} is {PrMove(move)} : {oldnodes}")
+        print(f"Move {MoveNum+1} is {move.alpha_move()} : {oldnodes}")
     
     print(f"Test Complete: {leafNodes} nodes visited in {GetTimeMs() - start}ms\n")
     return

@@ -1,6 +1,6 @@
 import constants
 import globals
-from movegen import InitMvvLva
+from data import InitMvvLva
 
 def InitSq120To64AndSq64To120():
     sq = 0
