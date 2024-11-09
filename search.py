@@ -1,6 +1,5 @@
 from debug import assert_condition
-from constants import MAXGAMEMOVES, BRD_SQ_NUM, MAXDEPTH
-from pvtable import GetPvLine, StorePvMove, ProbePvTable
+from constants import BRD_SQ_NUM, MAXDEPTH
 from misc import GetTimeMs, ReadInput
 from attack import SqAttacked
 from board import Board
@@ -100,7 +99,7 @@ def Quiescence(alpha, beta, board: Board, info): # only captures
             BestMove = mlist.moves[MoveNum].move
 
     if(alpha != OldAlpha):
-        StorePvMove(board, BestMove)
+        board.PvTable.store_pv_move(board=board, move=BestMove)
     
     return alpha
 
@@ -132,7 +131,7 @@ def AlphaBeta(alpha, beta, depth: int, board:Board, info, DoNull):
     OldAlpha = alpha
     BestMove = 0
     Score = -INFINITE
-    PvMove = ProbePvTable(board)
+    PvMove = board.PvTable.probe_pv_table(board=board)
     
     if(PvMove != 0):
         for MoveNum in range(mlist.count):
@@ -183,7 +182,7 @@ def AlphaBeta(alpha, beta, depth: int, board:Board, info, DoNull):
             return 0
         
     if(alpha != OldAlpha):
-        StorePvMove(board, BestMove)
+        board.PvTable.store_pv_move(board=board, move=BestMove)
     
     return alpha
 
@@ -211,7 +210,7 @@ def SearchPosition(board: Board, info): # class BOARD, class SEARCHINFO
         if(info.stopped):
             break
     
-        pvMoves = GetPvLine(currentDepth, board)
+        pvMoves = board.PvTable.get_pv_line(board=board, depth=currentDepth)
         bestMove = board.PvArray[0]
         
         print(f"info score cp {bestScore} depth {currentDepth} nodes {info.nodes} time {GetTimeMs() - info.starttime}ms", end=" ")
