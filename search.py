@@ -214,7 +214,7 @@ def SearchPosition(board: Board, info): # class BOARD, class SEARCHINFO
         pvMoves = GetPvLine(currentDepth, board)
         bestMove = board.PvArray[0]
         
-        print(f"info score cp {bestScore} depth {currentDepth} nodes {info.nodes} time {GetTimeMs() - info.starttime}", end=" ")
+        print(f"info score cp {bestScore} depth {currentDepth} nodes {info.nodes} time {GetTimeMs() - info.starttime}ms", end=" ")
         
         print("pv", end=" ")
         for pvNum in range(0, pvMoves):
@@ -226,3 +226,4 @@ def SearchPosition(board: Board, info): # class BOARD, class SEARCHINFO
             print("Ordering: NAN")
             
     print(f"bestmove {bestMove.alpha_move()}")
+    

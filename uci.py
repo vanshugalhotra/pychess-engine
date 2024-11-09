@@ -75,7 +75,7 @@ def ParseGo(line, info, board: Board):
         info.depth = MAXDEPTH         
         
     
-    print(f"time:{time:.2f} start:{info.starttime:.2f} stop:{info.stoptime:.2f} depth:{info.depth} timeset:{info.timeset}")
+    print(f"time:{time:.2f} depth:{info.depth} timeset:{info.timeset}")
     
     SearchPosition(board, info)
             

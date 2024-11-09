@@ -136,7 +136,7 @@ class UNDO:
         self.castlePerm = 0
         self.enPas = -1
         self.fiftyMove = 0
-        self.posKey = 0 #unqiue position key
+        self.posKey = 0 #unqiue position key (object of PositionKey Class)
         # castling information
 class CASTLING(Enum):
     WKCA = 1 # white king side castling

@@ -1,12 +1,13 @@
 from constants import MAXDEPTH
 from debug import assert_condition
 from move import MOVE
+from hashkeys import PositionKey
 
 NOMOVE = 0
 
 class PVENTRY:
     def __init__(self):
-        self.posKey = 0
+        self.posKey = PositionKey()
         self.move = MOVE()
 
 class PVTABLE:
@@ -18,23 +19,23 @@ class PVTABLE:
         
     def clear_table(self):
         for i in range(0, self.numEntries):
-            self.pTable[i].posKey = 0
+            self.pTable[i].posKey = PositionKey()
             self.pTable[i].move = NOMOVE
 
 MAXPVENTRIES = 131072
 
 def StorePvMove(board, move: MOVE):
-    index = board.posKey % board.PvTable.numEntries
+    index = board.posKey.key % board.PvTable.numEntries
     assert_condition(index >=0 and index <= board.PvTable.numEntries-1)
     
     board.PvTable.pTable[index].move = move
-    board.PvTable.pTable[index].posKey = board.posKey
+    board.PvTable.pTable[index].posKey.key = board.posKey.key
     
 def ProbePvTable(board):
-    index = board.posKey % board.PvTable.numEntries
+    index = board.posKey.key % board.PvTable.numEntries
     assert_condition(index >=0 and index <= board.PvTable.numEntries-1)
     
-    if(board.PvTable.pTable[index].posKey == board.posKey):
+    if(board.PvTable.pTable[index].posKey.key == board.posKey.key):
         return board.PvTable.pTable[index].move
     return MOVE()
     

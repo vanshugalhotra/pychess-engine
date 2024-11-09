@@ -1,7 +1,7 @@
 from constants import *
-from globals import Sq64ToSq120, Sq120ToSq64, RanksBrd, FilesBrd, PieceKeys, SideKey, CastleKeys
+from globals import Sq64ToSq120, Sq120ToSq64, RanksBrd, PieceKeys, SideKey, CastleKeys
 from debug import assert_condition, DEBUG
-from hashkeys import GeneratePosKey
+from hashkeys import PositionKey
 from data import *
 from bitboards import SetBit, PopBit, CountBits, ClearBit
 from validate import SqOnBoard, PieceValid, SideValid
@@ -43,7 +43,7 @@ class Board:
         self.castlePerm = 0
 
         # Unique Position key for each Position
-        self.posKey = 0
+        self.posKey = PositionKey()
 
         # 
         self.pceNum = [0] * 13  # Total Number of pieces (Like pceNum[1] = 6 means we have 6 white pawns)
@@ -112,7 +112,7 @@ class Board:
         self.hisPly = 0
         
         self.castlePerm = 0
-        self.posKey = 0
+        self.posKey.key = 0
 
     def print_board(self):
         """
@@ -138,7 +138,7 @@ class Board:
         
         print(f"Castle: {'K' if self.castlePerm & CASTLING.WKCA.value else '-'} {'Q' if self.castlePerm & CASTLING.WQCA.value else '-'} {'k' if self.castlePerm & CASTLING.BKCA.value else '-'} {'q' if self.castlePerm & CASTLING.BQCA.value else '-'} ")
         
-        print(hex(self.posKey))
+        print(hex(self.posKey.key))
 
     def update_list_material(self):
         """
@@ -255,7 +255,7 @@ class Board:
             
             
             self.enPas = FR2SQ(file, rank)
-        self.posKey = GeneratePosKey(self) #generating the hashkey
+        self.posKey.generate_key(self) #generating the hashkey
         self.update_list_material()
         return 0
 
@@ -335,8 +335,6 @@ class Board:
         
         assert_condition(self.side == COLORS.WHITE.value or self.side == COLORS.BLACK.value, message="SIDE can either be WHITE or BLACK")
 
-        assert_condition(GeneratePosKey(self) == self.posKey, message="PosKey not Matched!!")
-        
         assert_condition(self.enPas == SQUARES.NO_SQ.value or (RanksBrd[self.enPas] == RANK.R6.value and self.side == COLORS.WHITE.value) or (RanksBrd[self.enPas] == RANK.R3.value and self.side == COLORS.BLACK.value), message="Invalid EnPas Square") # enPas square is either on rank 3 or rank 6
         
         assert_condition(self.pieces[self.KingSq[COLORS.WHITE.value]] == PIECE.wK.value, message="WHITE King Square not Matched!!")
@@ -344,35 +342,13 @@ class Board:
         
         return True
 
-    def generate_poskey(self):
-        finalKey = 0
-        piece = PIECE.EMPTY.value
-        for sq in range(0, BRD_SQ_NUM):
-            piece = self.pieces[sq]
-            if(piece != SQUARES.OFFBOARD.value and piece != PIECE.EMPTY.value):
-                assert_condition(piece >= PIECE.wP.value and piece <= PIECE.bK.value)
-                finalKey ^= PieceKeys[piece][sq]
-        
-        if(self.side == COLORS.WHITE.value):
-            finalKey ^= SideKey
-            
-            
-        if(self.enPas != SQUARES.NO_SQ.value):
-            assert_condition(self.enPas >= 0 and self.enPas < BRD_SQ_NUM)
-            finalKey ^= PieceKeys[PIECE.EMPTY.value][self.enPas]
-            
-        assert_condition(self.castlePerm >= 0 and self.castlePerm <= 15)
-        finalKey ^= CastleKeys[self.castlePerm]
-        
-        return finalKey
-
     def clear_piece(self, sq):
         assert_condition(SqOnBoard(sq))
     
         pce = self.pieces[sq]
         assert_condition(PieceValid(pce))
         
-        self.hash_piece(pce, sq) # updating the posKey
+        self.posKey.hash_piece(piece=pce, square=sq)
         
         col = PieceCol[pce] # getting the color of the piece
         self.pieces[sq] = PIECE.EMPTY.value # making that square empty
@@ -407,7 +383,7 @@ class Board:
         assert_condition(SqOnBoard(sq))
         
         col = PieceCol[pce]
-        self.hash_piece(pce, sq)
+        self.posKey.hash_piece(piece=pce, square=sq)
         
         self.pieces[sq] = pce
         
@@ -434,10 +410,10 @@ class Board:
         
         t_PieceIndex = False
         
-        self.hash_piece(pce, fromSq)
+        self.posKey.hash_piece(piece=pce, square=fromSq)
         self.pieces[fromSq] = PIECE.EMPTY.value
         
-        self.hash_piece(pce,toSq)
+        self.posKey.hash_piece(piece=pce, square=toSq)
         self.pieces[toSq] = pce
         
         if(not PieceBig[pce]): # if its a pawn
@@ -469,19 +445,19 @@ class Board:
         assert_condition(SqOnBoard(toSq))
         
         if(self.enPas != SQUARES.NO_SQ.value):
-            self.hash_enPas()
-        self.hash_castle() # hashing out the current castle Perm
+            self.posKey.hash_enPas(enPas=self.enPas)
+        self.posKey.hash_castle(castlePerm=self.castlePerm) # hashing out the current castle Perm
         
         self.castlePerm = self.history[self.hisPly].castlePerm # retreiving back the previous castlePerm
         self.fiftyMove = self.history[self.hisPly].fiftyMove
         self.enPas = self.history[self.hisPly].enPas
         
         if(self.enPas != SQUARES.NO_SQ.value):
-            self.hash_enPas()
-        self.hash_castle() # hashing in the new castle permission
+            self.posKey.hash_enPas(enPas=self.enPas)
+        self.posKey.hash_castle(castlePerm=self.castlePerm) # hashing in the new castle permission
         
         self.side ^= 1 #changing back the side
-        self.hash_side()
+        self.posKey.hash_side()
         
         if(move.move & MOVE.FLAG_EP): # if it was an enPas capture, then we add back the pieces
             if(self.side == COLORS.WHITE.value):
@@ -554,9 +530,9 @@ class Board:
                 assert_condition(False)
                 
         if(self.enPas != SQUARES.NO_SQ.value):
-            self.hash_enPas()
+            self.posKey.hash_enPas(enPas=self.enPas)
             
-        self.hash_castle() # hashing out the castle permission
+        self.posKey.hash_castle(castlePerm=self.castlePerm) # hashing out the castle permission
         
         self.history[self.hisPly].move = move
         self.history[self.hisPly].fiftyMove = self.fiftyMove
@@ -567,7 +543,7 @@ class Board:
         self.castlePerm &= CastlePerm[toSq] # if rook or king has moved
         self.enPas = SQUARES.NO_SQ.value
         
-        self.hash_castle() # hashing in the new castle permission
+        self.posKey.hash_castle(castlePerm=self.castlePerm) # hashing in the new castle permission
         
         captured = move.CAPTURED()
         self.fiftyMove += 1
@@ -590,7 +566,7 @@ class Board:
                 else:
                     self.enPas = fromSq - 10
                     assert_condition(RanksBrd[self.enPas] == RANK.R6.value)
-                self.hash_enPas() # hashing in the new enPas
+                self.posKey.hash_enPas(enPas=self.enPas) # hashing in the new enPas
         
         # finally moving the piece on the board
         self.move_piece(fromSq, toSq)
@@ -609,7 +585,7 @@ class Board:
             self.KingSq[self.side] = toSq
         
         self.side ^= 1 # changing the side
-        self.hash_side()
+        self.posKey.hash_side()
         
         assert_condition(self.check_board())
         
@@ -619,21 +595,9 @@ class Board:
         
         return True
 
-    def hash_piece(self, pce, sq):
-        self.posKey ^= PieceKeys[pce][sq]
-        
-    def hash_castle(self):
-        self.posKey ^= CastleKeys[self.castlePerm]
-        
-    def hash_side(self):
-        self.posKey ^= SideKey
-        
-    def hash_enPas(self):
-        self.posKey ^= PieceKeys[PIECE.EMPTY.value][self.enPas]
-        
     def is_repetition(self) -> bool :
         for index in range(self.hisPly - self.fiftyMove, self.hisPly-1): # checking from only when last time fiftyMove was set to 0 because once fifty move is set to 0 there won't be no repetetions(captures and pawn moves cant repeat)
-            if(self.posKey == self.history[index].posKey):
+            if(self.posKey.key == self.history[index].posKey.key):
                 assert_condition(index >=0 and index <= MAXGAMEMOVES)
                 return True
             
