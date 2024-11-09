@@ -1,9 +1,10 @@
 from constants import SEARCHINFO, START_FEN, COLORS, MAXDEPTH
 from board import Board
-from input_output import parseMove
+from input_output import parseMove, PrintMoveList
 from misc import GetTimeMs
 from search import SearchPosition
 from perft import PerftTest
+from move import MOVELIST
 
 NAME = "UstaadJi"
 AUTHOR = "Vanshu Galhotra"
@@ -153,7 +154,11 @@ def Uci_Loop():
             
             if(move == "perft" and len(coms) > 2):
                 PerftTest(int(coms[2]), pos)
-                
+            elif(move == "movelist"):
+                mlist = MOVELIST()
+                mlist.generate_all_moves(board=pos)
+                PrintMoveList(mlist)    
+            
             elif(move != "take" and move):
                 parsed_move = parseMove(move, pos)
                 if(parsed_move):

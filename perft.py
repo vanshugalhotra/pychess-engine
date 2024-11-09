@@ -1,7 +1,7 @@
 from board import Board
 from debug import assert_condition
-from misc import GetTimeMs
 from move import MOVELIST
+from helper import execution_time
 
 leafNodes = 0
 
@@ -24,6 +24,7 @@ def Perft(depth, board: Board):
     
     return 
 
+@execution_time
 def PerftTest(depth, board: Board):
     global leafNodes
     assert_condition(board.check_board())
@@ -32,8 +33,7 @@ def PerftTest(depth, board: Board):
     
     print(f"\nStarting Test to Depth: {depth}")
     leafNodes = 0
-    start = GetTimeMs()
-    
+
     list = MOVELIST()
     list.generate_all_moves(board)
     
@@ -48,5 +48,5 @@ def PerftTest(depth, board: Board):
         oldnodes = leafNodes - cumnodes
         print(f"Move {MoveNum+1} is {move.alpha_move()} : {oldnodes}")
     
-    print(f"Test Complete: {leafNodes} nodes visited in {GetTimeMs() - start}ms\n")
+    print(f"Test Complete: {leafNodes} nodes")
     return

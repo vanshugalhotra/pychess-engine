@@ -4,6 +4,7 @@ from misc import GetTimeMs, ReadInput
 from attack import SqAttacked
 from board import Board
 from move import MOVE, MOVELIST
+from helper import execution_time
 
 INFINITE = 30000
 MATE = 29000
@@ -46,7 +47,6 @@ def ClearForSearch(board: Board, info): # clear all the stats , heuristics, sear
     info.nodes = 0
     info.fh = 0
     info.fhf = 0
-
 
 # Horizon Effect: caused by depth limitation of the search algorithm. Lets say at the last depth White queen captures a knight and since its the last depth we stop evaluating further, so right now white is up a knight but what if black takes the white queen (But this move is not considered due to limited depth)
 # solution to the horizon effect is : quiescence search i.e evaluation only non-quiet positions (captures)
@@ -102,7 +102,6 @@ def Quiescence(alpha, beta, board: Board, info): # only captures
         board.PvTable.store_pv_move(board=board, move=BestMove)
     
     return alpha
-
 
 # A beta cutoff occurs when the maximizing player finds a move that is so good that the minimizing player will avoid this line altogether.
 
@@ -186,7 +185,7 @@ def AlphaBeta(alpha, beta, depth: int, board:Board, info, DoNull):
     
     return alpha
 
-
+@execution_time
 def SearchPosition(board: Board, info): # class BOARD, class SEARCHINFO
     # iterative deepening, search init
     # for depth = 1 to maxDepth, for each of these depths we then search with AlphaBeta
