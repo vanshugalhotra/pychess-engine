@@ -6,7 +6,6 @@ from hashkeys import PositionKey
 NOMOVE = 0
 MAXPVENTRIES = 131072
 
-
 class PVENTRY:
     def __init__(self):
         self.posKey = PositionKey()

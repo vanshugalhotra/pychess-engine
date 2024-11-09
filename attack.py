@@ -4,20 +4,20 @@ from validate import SqOnBoard, SideValid, PieceValidEmpty
 from debug import assert_condition
 
 # Knight Direction
-KnDir = [-8, -19, -21, -12, 8, 19, 21, 12]
+knight_direction = [-8, -19, -21, -12, 8, 19, 21, 12]
 
 #Rook Direction
-RkDir = [-1, -10, 1, 10]
+rook_direction = [-1, -10, 1, 10]
 
 #Bishop Direction
-BiDir = [-9, -11, 11, 9]
+bishop_direction = [-9, -11, 11, 9]
 
 #King Direction
-KiDir = [-1, -10, 1, 10, -9, -11, 11, 9]
+king_direction = [-1, -10, 1, 10, -9, -11, 11, 9]
 
 # isSquareAttacked(sq, side); is square "sq" attacked by "side"
 
-def SqAttacked(sq, side, board):
+def is_sqaure_attacked(sq, side, board):
     
     assert_condition(SqOnBoard(sq))
     assert_condition(SideValid(side))
@@ -33,13 +33,13 @@ def SqAttacked(sq, side, board):
         
     # checking for knights
     for i in range(0, 8): # looping on each square there can be a knight attacking
-        pce = board.pieces[sq + KnDir[i]]
+        pce = board.pieces[sq + knight_direction[i]]
         if(PieceValidEmpty(pce) and PieceKnight[pce] and PieceCol[pce] == side):
             return True
         
     # rooks, queens
     for i in range(0, 4):
-        dir = RkDir[i]
+        dir = rook_direction[i]
         t_sq = sq + dir
         pce = board.pieces[t_sq]
         while(pce != SQUARES.OFFBOARD.value): # for moving pieces, till they reach the board end
@@ -52,7 +52,7 @@ def SqAttacked(sq, side, board):
             
     # bishops, queens
     for i in range(0, 4):
-        dir = BiDir[i]
+        dir = bishop_direction[i]
         t_sq = sq + dir
         pce = board.pieces[t_sq]
         while(pce != SQUARES.OFFBOARD.value): # for moving pieces, till they reach the board end
@@ -65,7 +65,7 @@ def SqAttacked(sq, side, board):
             
     # kings
     for i in range(0, 8):
-        pce = board.pieces[sq + KiDir[i]]
+        pce = board.pieces[sq + king_direction[i]]
         if(PieceValidEmpty(pce) and PieceKing[pce] and PieceCol[pce] == side):
             return True
             

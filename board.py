@@ -5,7 +5,7 @@ from hashkeys import PositionKey
 from globals import *
 from bitboards import SetBit, PopBit, CountBits, ClearBit
 from validate import SqOnBoard, PieceValid, SideValid
-from attack import SqAttacked
+from attack import is_sqaure_attacked
 from move import MOVE
 from pvtable import PVTABLE
 from helper import FR2SQ
@@ -590,7 +590,7 @@ class Board:
         
         assert_condition(self.check_board())
         
-        if(SqAttacked(self.KingSq[side], self.side, self)): # side is the side which made the move, self.side now is now the opposite side, so we check if after making the move, the opposite side is attacking the KingSq, means king is in check, then its an illegal move
+        if(is_sqaure_attacked(self.KingSq[side], self.side, self)): # side is the side which made the move, self.side now is now the opposite side, so we check if after making the move, the opposite side is attacking the KingSq, means king is in check, then its an illegal move
             self.take_move()  # take back the move
             return False
         

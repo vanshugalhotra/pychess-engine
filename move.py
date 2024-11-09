@@ -3,11 +3,10 @@ from globals import *
 from debug import assert_condition
 from validate import SqOnBoard, PieceValid, PieceValidEmpty
 from constants import SQUARES, PIECE, RANK, CASTLING
-from attack import SqAttacked
+from attack import is_sqaure_attacked
 
 def SQOFFBOARD(sq):
     return FilesBrd[sq] == SQUARES.OFFBOARD.value
-
 
 class MOVE:
     # move flags, to retrieve information from the move
@@ -196,14 +195,14 @@ class MOVELIST:
             # king side castling
             if(board.castlePerm & CASTLING.WKCA.value): #if white can castle king side
                 if(board.pieces[SQUARES.F1.value] == PIECE.EMPTY.value and board.pieces[SQUARES.G1.value] == PIECE.EMPTY.value): # if between the king and rook squares are empty
-                    if(not SqAttacked(SQUARES.E1.value, COLORS.BLACK.value, board) and not SqAttacked(SQUARES.F1.value, COLORS.BLACK.value, board)): # if the square F1, E1 are not attacked, only then king can castle, beacause, king cannot castle in between check
+                    if(not is_sqaure_attacked(SQUARES.E1.value, COLORS.BLACK.value, board) and not is_sqaure_attacked(SQUARES.F1.value, COLORS.BLACK.value, board)): # if the square F1, E1 are not attacked, only then king can castle, beacause, king cannot castle in between check
                         
                         # adding the castle move white king side castle
                         self.add_quite_move(board, MOVE(SQUARES.E1.value, SQUARES.G1.value, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_CA))
                         
             if(board.castlePerm & CASTLING.WQCA.value):
                 if(board.pieces[SQUARES.D1.value] == PIECE.EMPTY.value and board.pieces[SQUARES.C1.value] == PIECE.EMPTY.value and board.pieces[SQUARES.B1.value] == PIECE.EMPTY.value): # if between the king and rook squares are empty
-                    if(not SqAttacked(SQUARES.E1.value, COLORS.BLACK.value, board) and not SqAttacked(SQUARES.D1.value, COLORS.BLACK.value, board)): # if the square D1, E1 are not attacked, only then king can castle, beacause, king cannot castle in between check
+                    if(not is_sqaure_attacked(SQUARES.E1.value, COLORS.BLACK.value, board) and not is_sqaure_attacked(SQUARES.D1.value, COLORS.BLACK.value, board)): # if the square D1, E1 are not attacked, only then king can castle, beacause, king cannot castle in between check
                         
                         # adding the castle move white queen side castle
                         self.add_quite_move(board, MOVE(SQUARES.E1.value, SQUARES.C1.value, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_CA))
@@ -236,14 +235,14 @@ class MOVELIST:
             # king side castling
             if(board.castlePerm & CASTLING.BKCA.value):
                 if(board.pieces[SQUARES.F8.value] == PIECE.EMPTY.value and board.pieces[SQUARES.G8.value] == PIECE.EMPTY.value): # if between the king and rook squares are empty
-                    if(not SqAttacked(SQUARES.E8.value, COLORS.WHITE.value, board) and not SqAttacked(SQUARES.F8.value, COLORS.WHITE.value, board)): # if the square F8, E8 are not attacked, only then king can castle, beacause, king cannot castle in between check
+                    if(not is_sqaure_attacked(SQUARES.E8.value, COLORS.WHITE.value, board) and not is_sqaure_attacked(SQUARES.F8.value, COLORS.WHITE.value, board)): # if the square F8, E8 are not attacked, only then king can castle, beacause, king cannot castle in between check
                         
                         # adding the castle move black king side castle
                         self.add_quite_move(board, MOVE(SQUARES.E8.value, SQUARES.G8.value, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_CA))
                         
             if(board.castlePerm & CASTLING.BQCA.value):
                 if(board.pieces[SQUARES.D8.value] == PIECE.EMPTY.value and board.pieces[SQUARES.C8.value] == PIECE.EMPTY.value and board.pieces[SQUARES.B8.value] == PIECE.EMPTY.value): # if between the king and rook squares are empty
-                    if(not SqAttacked(SQUARES.E8.value, COLORS.WHITE.value, board) and not SqAttacked(SQUARES.D8.value, COLORS.WHITE.value, board)): # if the square D8, E8 are not attacked, only then king can castle, beacause, king cannot castle in between check
+                    if(not is_sqaure_attacked(SQUARES.E8.value, COLORS.WHITE.value, board) and not is_sqaure_attacked(SQUARES.D8.value, COLORS.WHITE.value, board)): # if the square D8, E8 are not attacked, only then king can castle, beacause, king cannot castle in between check
                         
                         # adding the castle move black queen side castle
                         self.add_quite_move(board, MOVE(SQUARES.E8.value, SQUARES.C8.value, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_CA))

@@ -1,7 +1,7 @@
 from debug import assert_condition
 from constants import BRD_SQ_NUM, MAXDEPTH
 from misc import GetTimeMs, ReadInput
-from attack import SqAttacked
+from attack import is_sqaure_attacked
 from board import Board
 from move import MOVE, MOVELIST
 from helper import execution_time
@@ -175,7 +175,7 @@ def AlphaBeta(alpha, beta, depth: int, board:Board, info, DoNull):
                 board.searchHistory[board.pieces[BestMove.FROMSQ()]][BestMove.TOSQ()] += depth
     
     if(Legal == 0): # checkmate
-        if(SqAttacked(board.KingSq[board.side], board.side^1, board)):
+        if(is_sqaure_attacked(board.KingSq[board.side], board.side^1, board)):
             return -MATE + board.ply # how many moves it was to mate
         else: # stalemate
             return 0
