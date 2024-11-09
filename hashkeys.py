@@ -1,7 +1,6 @@
-from globals import PieceKeys, SideKey, CastleKeys
-from constants import PIECE, BRD_SQ_NUM, SQUARES, COLORS, RAND_64
+from constants import PIECE, BRD_SQ_NUM, SQUARES, COLORS
 from debug import assert_condition
-
+from helper import RAND_64
 
 class PositionKey:
     PieceKeys = [[RAND_64() for _ in range(120)] for _ in range(13)]
@@ -13,16 +12,16 @@ class PositionKey:
         self.key = 0
         
     def hash_piece(self, piece, square) -> None:
-        self.key ^= PieceKeys[piece][square]
+        self.key ^= PositionKey.PieceKeys[piece][square]
         
     def hash_castle(self, castlePerm: int) -> None:
-        self.key ^= CastleKeys[castlePerm]
+        self.key ^= PositionKey.CastleKeys[castlePerm]
         
     def hash_side(self) -> None:
-        self.key ^= SideKey
+        self.key ^= PositionKey.SideKey
         
     def hash_enPas(self, enPas: int) -> None:
-        self.key ^= PieceKeys[PIECE.EMPTY.value][enPas]
+        self.key ^= PositionKey.PieceKeys[PIECE.EMPTY.value][enPas]
         
     def generate_key(self, board) -> None:
         finalKey = 0
@@ -31,16 +30,16 @@ class PositionKey:
             piece = board.pieces[sq]
             if(piece != SQUARES.OFFBOARD.value and piece != PIECE.EMPTY.value):
                 assert_condition(piece >= PIECE.wP.value and piece <= PIECE.bK.value)
-                finalKey ^= PieceKeys[piece][sq]
+                finalKey ^= PositionKey.PieceKeys[piece][sq]
         
         if(board.side == COLORS.WHITE.value):
-            finalKey ^= SideKey
+            finalKey ^= PositionKey.SideKey
             
         if(board.enPas != SQUARES.NO_SQ.value):
             assert_condition(board.enPas >= 0 and board.enPas < BRD_SQ_NUM)
-            finalKey ^= PieceKeys[PIECE.EMPTY.value][board.enPas]
+            finalKey ^= PositionKey.PieceKeys[PIECE.EMPTY.value][board.enPas]
             
         assert_condition(board.castlePerm >= 0 and board.castlePerm <= 15)
-        finalKey ^= CastleKeys[board.castlePerm]
+        finalKey ^= PositionKey.CastleKeys[board.castlePerm]
         
         self.key = finalKey

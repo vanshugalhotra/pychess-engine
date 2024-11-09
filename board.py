@@ -1,13 +1,14 @@
 from constants import *
-from globals import Sq64ToSq120, Sq120ToSq64, RanksBrd, PieceKeys, SideKey, CastleKeys
+from globals import Sq64ToSq120, Sq120ToSq64, RanksBrd
 from debug import assert_condition, DEBUG
 from hashkeys import PositionKey
-from data import *
+from globals import *
 from bitboards import SetBit, PopBit, CountBits, ClearBit
 from validate import SqOnBoard, PieceValid, SideValid
 from attack import SqAttacked
 from move import MOVE
 from pvtable import PVTABLE
+from helper import FR2SQ
 
 class Board:
     """
@@ -659,3 +660,5 @@ class Board:
             return score
         else:
             return -score # negating the score for black (because we are calculating score based on white, lets say black's score is better than our score value will be -ve because score = whiteMaterial - blackMaterial and later on we are subtracting for black and adding for white)
+        
+    

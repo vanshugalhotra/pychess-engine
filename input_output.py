@@ -1,8 +1,9 @@
-from constants import FR2SQ, PIECE
-from data import PieceKnight, PieceBishopQueen, PieceRookQueen
+from constants import PIECE
+from globals import PieceKnight, PieceBishopQueen, PieceRookQueen
 from debug import assert_condition
 from validate import SqOnBoard
 from move import MOVELIST
+from helper import FR2SQ
 
 NOMOVE = 0
 
@@ -46,8 +47,6 @@ def parseMove(userMove: str, board):
     
     return NOMOVE # if we didn't found the move in movelist
     
-    
-
 def PrintMoveList(list):
     print("MoveList: ")
     for i in range(0, list.count):

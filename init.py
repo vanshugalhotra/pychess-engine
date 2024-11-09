@@ -1,13 +1,13 @@
 import constants
 import globals
-from data import InitMvvLva
+from helper import FR2SQ
 
 def InitSq120To64AndSq64To120():
     sq = 0
     sq64 = 0
     for rank in range(constants.RANK.R1.value, constants.RANK.R8.value+1): # from rank 1 -> rank 8
         for file in range(constants.FILE.A.value, constants.FILE.H.value + 1): # from file A -> file H
-            sq = constants.FR2SQ(file, rank) # calculating the square for 120 bit representation
+            sq = FR2SQ(file, rank) # calculating the square for 120 bit representation
             globals.Sq64ToSq120[sq64] = sq  # at 0 i.e A1 -> we put 21 i.e FR2SQ(file, rank) 120 bit representation of A1 is 21
             globals.Sq120ToSq64[sq] = sq64  # now sq has 21, so at sq in 120to64 array we put sq64
             sq64 += 1
@@ -19,25 +19,15 @@ def InitBitMasks():
         # lets say, on index 3, setMask[3] will be (In binary) 000000.....1000
         # clearMask[3] will be (IN binary) 11111111.....0111 
 
-def InitHashKeys():
-    for i in range(0, 13):
-        for j in range(0, 120):
-            globals.PieceKeys[i][j] = constants.RAND_64()
-    globals.SideKey = constants.RAND_64()
-    for i in range(0, 16):
-        globals.CastleKeys[i] = constants.RAND_64()
-    
 def InitFilesRanksBrd():
     for rank in range(constants.RANK.R1.value, constants.RANK.R8.value+1):
         for file in range(constants.FILE.A.value, constants.FILE.H.value + 1):
-            sq = constants.FR2SQ(file, rank)
+            sq = FR2SQ(file, rank)
             globals.FilesBrd[sq] = file
             globals.RanksBrd[sq] = rank     
 
 def AllInit():
     InitSq120To64AndSq64To120()
     InitBitMasks()
-    InitHashKeys()
     InitFilesRanksBrd()
-    InitMvvLva()
 

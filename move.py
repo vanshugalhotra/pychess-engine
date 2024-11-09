@@ -1,5 +1,5 @@
 from globals import FilesBrd, RanksBrd
-from data import *
+from globals import *
 from debug import assert_condition
 from validate import SqOnBoard, PieceValid, PieceValidEmpty
 from constants import SQUARES, PIECE, RANK, CASTLING

@@ -1,5 +1,5 @@
 from constants import PIECE, COLORS, SQUARES
-from data import PieceKnight, PieceKing, PieceRookQueen, PieceBishopQueen, PieceCol
+from globals import PieceKnight, PieceKing, PieceRookQueen, PieceBishopQueen, PieceCol
 from validate import SqOnBoard, SideValid, PieceValidEmpty
 from debug import assert_condition
 
