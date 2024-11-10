@@ -1,11 +1,12 @@
-from constants import START_FEN, COLORS, MAXDEPTH
+from constants import COLORS, MAXDEPTH
 from board import Board
 from input_output import parseMove, PrintMoveList
 from misc import GetTimeMs
 from search import SearchPosition
 from perft import PerftTest
 from move import MOVELIST
-from engine import EngineControls, Engine
+from engine import EngineControls
+from fens import START_FEN
 
 NAME = "UstaadJi"
 AUTHOR = "Vanshu Galhotra"
