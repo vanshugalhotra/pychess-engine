@@ -30,7 +30,7 @@ def parseMove(userMove: str, board):
     PromPce = PIECE.EMPTY.value
     
     for MoveNum in range(0, list.count): # traversing the move list
-        Move = list.moves[MoveNum].move # getting the move of MOVE()
+        Move = list.moves[MoveNum] # getting the move of MOVE()
         if(Move.FROMSQ() == fromSq and Move.TOSQ() == toSq): # if both the to and from sqaures are same, then move is also same, provided promoted piece can be different
             PromPce = Move.PROMOTED()
             if(PromPce != PIECE.EMPTY.value): # if there is a promotion, we need to check
@@ -50,7 +50,7 @@ def parseMove(userMove: str, board):
 def PrintMoveList(list):
     print("MoveList: ")
     for i in range(0, list.count):
-        move = list.moves[i].move
+        move = list.moves[i]
         score = list.moves[i].score
         
         print(f"Move: {i+1} --> {move.alpha_move()} (Score: {score})")

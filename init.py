@@ -26,7 +26,7 @@ def InitFilesRanksBrd():
             globals.FilesBrd[sq] = file
             globals.RanksBrd[sq] = rank     
 
-def AllInit():
+def initialize():
     InitSq120To64AndSq64To120()
     InitBitMasks()
     InitFilesRanksBrd()

@@ -34,11 +34,11 @@ def PickNextMove(movenum, mlist):
 def ClearForSearch(board: Board, info): # clear all the stats , heuristics, searchHistory, searchKillers etc..
     for index in range(13):
         for index2 in range(BRD_SQ_NUM):
-            board.searchHistory[index][index] = 0
+            board.searchHistory[index][index] = MOVE()
             
     for index in range(2):
         for index2 in range(MAXDEPTH):
-            board.searchKillers[index][index2] = 0
+            board.searchKillers[index][index2] = MOVE()
             
     board.PvTable.clear_table()
     board.ply = 0
@@ -81,7 +81,7 @@ def Quiescence(alpha, beta, board: Board, info): # only captures
     
     for MoveNum in range(mlist.count):
         PickNextMove(MoveNum, mlist)
-        if(not  board.make_move(mlist.moves[MoveNum].move)):
+        if(not board.make_move(mlist.moves[MoveNum])):
             continue
         Legal +=1
         Score = -Quiescence(-beta, -alpha, board, info)
@@ -96,7 +96,7 @@ def Quiescence(alpha, beta, board: Board, info): # only captures
                 info.fh += 1
                 return beta
             alpha = Score
-            BestMove = mlist.moves[MoveNum].move
+            BestMove = mlist.moves[MoveNum]
 
     if(alpha != OldAlpha):
         board.PvTable.store_pv_move(board=board, move=BestMove)
@@ -140,7 +140,7 @@ def AlphaBeta(alpha, beta, depth: int, board:Board, info, DoNull):
     
     for MoveNum in range(mlist.count):
         PickNextMove(MoveNum, mlist)
-        if(not  board.make_move(mlist.moves[MoveNum].move)):
+        if(not  board.make_move(mlist.moves[MoveNum])):
             continue
         Legal +=1
         Score = -AlphaBeta(-beta, -alpha, depth-1, board, info, True)
@@ -165,14 +165,14 @@ def AlphaBeta(alpha, beta, depth: int, board:Board, info, DoNull):
                     info.fhf += 1
                 info.fh += 1
                 # killer moves are those which causes beta cutoff and are not captures
-                if(not (mlist.moves[MoveNum].move.move & MOVE.FLAG_CAP)): # if not a capture move
+                if(not (mlist.moves[MoveNum].move & MOVE.FLAG_CAP)): # if not a capture move
                     board.searchKillers[1][board.ply] = board.searchKillers[0][board.ply]
-                    board.searchKillers[0][board.ply] = mlist.moves[MoveNum].move
+                    board.searchKillers[0][board.ply] = mlist.moves[MoveNum]
                 return beta
             alpha = Score
-            BestMove = mlist.moves[MoveNum].move
-            if(not (mlist.moves[MoveNum].move.move & MOVE.FLAG_CAP)): # not a capture
-                board.searchHistory[board.pieces[BestMove.FROMSQ()]][BestMove.TOSQ()] += depth
+            BestMove = mlist.moves[MoveNum]
+            if(not (mlist.moves[MoveNum].move & MOVE.FLAG_CAP)): # not a capture
+                board.searchHistory[board.pieces[BestMove.FROMSQ()]][BestMove.TOSQ()].score += depth
     
     if(Legal == 0): # checkmate
         if(is_sqaure_attacked(board.KingSq[board.side], board.side^1, board)):

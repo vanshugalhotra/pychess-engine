@@ -1,10 +1,11 @@
-from constants import SEARCHINFO, START_FEN, COLORS, MAXDEPTH
+from constants import START_FEN, COLORS, MAXDEPTH
 from board import Board
 from input_output import parseMove, PrintMoveList
 from misc import GetTimeMs
 from search import SearchPosition
 from perft import PerftTest
 from move import MOVELIST
+from engine import EngineControls, Engine
 
 NAME = "UstaadJi"
 AUTHOR = "Vanshu Galhotra"
@@ -120,7 +121,7 @@ def Uci_Loop():
     print(f"uciok")
     
     pos = Board()
-    info = SEARCHINFO()
+    info = EngineControls()
     
     while(True):
         print()
@@ -157,7 +158,8 @@ def Uci_Loop():
             elif(move == "movelist"):
                 mlist = MOVELIST()
                 mlist.generate_all_moves(board=pos)
-                PrintMoveList(mlist)    
+                PrintMoveList(mlist)
+                print(mlist.get_move_list())    
             
             elif(move != "take" and move):
                 parsed_move = parseMove(move, pos)

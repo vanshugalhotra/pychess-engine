@@ -75,10 +75,10 @@ class Board:
         #needed for move ordering
         # searchHistory[13][120] indexed by piece type and board square, everytime a move improves by alpha we reset all the values stored in this array to 0, 
         # when a piece beats alpha for that piece type and TOSQ we increment by 1
-        self.searchHistory = [[0 for _ in range(BRD_SQ_NUM)] for _ in range(13)]
+        self.searchHistory = [[MOVE() for _ in range(BRD_SQ_NUM)] for _ in range(13)] 
         
         # searchKillers[2][MAXDEPTH], stores 2 recent moves which caused the beta cutoff which aren't captures
-        self.searchKillers = [[0 for _ in range(MAXDEPTH)] for _ in range(2)]
+        self.searchKillers = [[MOVE() for _ in range(MAXDEPTH)] for _ in range(2)]
         
     def reset_board(self):
         """
@@ -178,9 +178,10 @@ class Board:
                     self.pawns[COLORS.BLACK.value] = SetBit(self.pawns[COLORS.BLACK.value], Sq120ToSq64[sq] )
                     self.pawns[COLORS.BOTH.value] = SetBit(self.pawns[COLORS.BOTH.value], Sq120ToSq64[sq] )
 
-    def parse_fen(self, fen):
-        assert_condition(fen != None)
-        
+    def parse_fen(self, fen) -> bool:
+        if (not fen):
+            return False
+
         fen_parts = fen.split(" ")
         piece, count, sq64, sq120 = 0, 0, 0, 0
         rank = RANK.R8.value
@@ -224,7 +225,7 @@ class Board:
                 continue
             else:
                 print("Wrong FEN")
-                return -1
+                return False
             for i in range(0, count):
                 sq64 = rank * 8 + file # calculating the sqaure64 using file and rank for example. D4 -> 27
                 sq120 = Sq64ToSq120[sq64]
@@ -245,7 +246,6 @@ class Board:
             else: 
                 pass
         assert_condition(self.castlePerm >= 0 and self.castlePerm <= 15)
-        print(fen_parts[3])
         
         if(fen_parts[3] != "-"):
             file = ord(fen_parts[3][0]) - ord('a')
@@ -258,7 +258,7 @@ class Board:
             self.enPas = FR2SQ(file, rank)
         self.posKey.generate_key(self) #generating the hashkey
         self.update_list_material()
-        return 0
+        return True
 
     def check_board(self):
         if(not DEBUG):

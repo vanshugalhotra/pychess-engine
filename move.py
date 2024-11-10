@@ -66,11 +66,11 @@ class MOVE:
         mlist.generate_all_moves(board)
         
         for MoveNum in range(0, mlist.count):
-            if(not board.make_move(mlist.moves[MoveNum].move) ):
+            if(not board.make_move(mlist.moves[MoveNum]) ):
                 continue
             
             board.take_move()
-            if(mlist.moves[MoveNum].move.move == self.move):
+            if(mlist.moves[MoveNum].move == self.move):
                 return True
         
         return False
@@ -83,29 +83,28 @@ class MOVELIST:
     def add_quite_move(self, board, move: MOVE):
         assert_condition(SqOnBoard(move.FROMSQ()))
         assert_condition(SqOnBoard(move.TOSQ()))
-        self.moves[self.count].move = move
+        self.moves[self.count] = move
         self.moves[self.count].score = 0
-        
-        if(board.searchKillers[0][board.ply] == move):
+        if(board.searchKillers[0][board.ply].move == move.move):
             self.moves[self.count].score = 900000
-        elif (board.searchKillers[1][board.ply] == move):
+        elif (board.searchKillers[1][board.ply].move == move.move):
             self.moves[self.count].score = 800000
         else:
-            self.moves[self.count].score = board.searchHistory[board.pieces[move.FROMSQ()]][move.TOSQ()]
+            self.moves[self.count].score = board.searchHistory[board.pieces[move.FROMSQ()]][move.TOSQ()].score
         self.count += 1
         
     def add_capture_move(self, board, move: MOVE):
         assert_condition(SqOnBoard(move.FROMSQ()))
         assert_condition(SqOnBoard(move.TOSQ()))
         assert_condition(PieceValid(move.CAPTURED()))
-        self.moves[self.count].move = move
+        self.moves[self.count] = move
         self.moves[self.count].score = MvvLvaScores[move.CAPTURED()][board.pieces[move.FROMSQ()]] + 1000000 # victim , attacker
         self.count += 1
         
     def add_enpas_move(self, board, move: MOVE):
         assert_condition(SqOnBoard(move.FROMSQ()))
         assert_condition(SqOnBoard(move.TOSQ()))
-        self.moves[self.count].move = move
+        self.moves[self.count] = move
         self.moves[self.count].score = 105 + 1000000 # pawn takes pawn
         self.count += 1
         
@@ -420,4 +419,6 @@ class MOVELIST:
                     # Normal Move
             
             pceIndex += 1
-     
+
+    def get_move_list(self) -> list:
+        return list(map(lambda move: move.alpha_move(), self.moves[:self.count]))  

@@ -142,23 +142,3 @@ class CASTLING(Enum):
     WQCA = 2 # white queen side castling
     BKCA = 4
     BQCA = 8
-
-class SEARCHINFO:
-    def __init__(self):
-        # we need all of these to control how long engine needs to think (search)
-        self.starttime = 0
-        self.stoptime = 0
-        self.depth = 0
-        self.depthset = 0
-        self.timeset = 0
-        self.movestogo = 0
-        self.infinite = 0
-        
-        self.nodes = 0 # count of all the positions that the engine visited
-        
-        self.quit = 0 # quit if GUI wants to quit the search
-        self.stopped = 0
-        
-        # fail high , fail high first
-        self.fh = 0 # A "fail high" means that the evaluation of a move exceeded the beta value
-        self.fhf = 0 # Fail High First refers to the situation where the first move evaluated in a position causes a fail high, This is a good sign because it means the engine is ordering its moves well. If the first move fails high, it indicates that the best move (or one of the best moves) was tried first, allowing the engine to prune the rest of the search tree early.
