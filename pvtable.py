@@ -16,7 +16,6 @@ class PVTABLE:
         self.numEntries = MAXPVENTRIES - 2
         self.pTable = [PVENTRY() for _ in range(self.numEntries)] # to store the entry of PVENTRY
         self.clear_table()
-        print(f"PvTable init complete with {self.numEntries} entries")
         
     def clear_table(self) -> None:
         for i in range(0, self.numEntries):

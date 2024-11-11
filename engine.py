@@ -1,6 +1,7 @@
 from board import Board
 from move import MOVELIST
 import init
+from fens import START_FEN
 
 class EngineControls:
     def __init__(self):
@@ -24,7 +25,6 @@ class EngineControls:
 
 class Engine:
     MAX_ELO = 1500
-    START_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
     def __init__(self, elo=1500):
         self.name = "UstaadJi"
         self.author = "Vanshu Galhotra"
@@ -34,15 +34,16 @@ class Engine:
         self.board = Board()
         
         init.initialize()
-        self.load_fen(fen=Engine.START_FEN)
+        self.load_fen(fen=START_FEN)
         
     def legal_moves(self) -> list:
         mlist = MOVELIST()
-        mlist.generate_all_moves(self.board)
+        mlist.generate_all_moves(board=self.board)
         return mlist.get_move_list()
     
     def reset_board(self) -> None:
-        pass
+        self.board.reset_board()
+        self.board.parse_fen(fen=START_FEN)
     
     def load_fen(self, fen: str) -> bool:
         return self.board.parse_fen(fen=fen)

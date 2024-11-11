@@ -1,12 +1,14 @@
-from globals import FilesBrd, RanksBrd
 from globals import *
 from debug import assert_condition
 from validate import SqOnBoard, PieceValid, PieceValidEmpty
 from constants import SQUARES, PIECE, RANK, CASTLING
 from attack import is_sqaure_attacked
+from helper import FR2SQ
 
 def SQOFFBOARD(sq):
     return FilesBrd[sq] == SQUARES.OFFBOARD.value
+
+NOMOVE = 0
 
 class MOVE:
     # move flags, to retrieve information from the move
@@ -27,6 +29,9 @@ class MOVE:
         # castle move? (0 - 1) - 1 bit
         self.score = 0
         
+    def __str__(self):
+        return self.alpha_move()
+        
     def FROMSQ(self):
         return self.move & 0x7F #extracting the last 7 bits from the move number
     
@@ -39,7 +44,7 @@ class MOVE:
     def PROMOTED(self):
         return (self.move >> 20) & 0xF
     
-    def alpha_move(self):
+    def alpha_move(self) -> str:
         ff = FilesBrd[self.FROMSQ()] # file from 
         rf = RanksBrd[self.FROMSQ()] # rank from 
         ft = FilesBrd[self.TOSQ()] # file TO
@@ -74,6 +79,46 @@ class MOVE:
                 return True
         
         return False
+    
+    @staticmethod
+    def parse_move(alpha_move: str, board): # parsing a move from user input, like a2a3 --> getting the specific move from this string
+        assert_condition(board.check_board())
+        
+        if(alpha_move[1] > '8' or alpha_move[1] < '1'):
+            return NOMOVE
+        if(alpha_move[3] > '8' or alpha_move[3] < '1'):
+            return NOMOVE
+        if(alpha_move[0] > 'h' or alpha_move[0] < 'a'):
+            return NOMOVE
+        if(alpha_move[2] > 'h' or alpha_move[2] < 'a'):
+            return NOMOVE
+        
+        fromSq = FR2SQ(ord(alpha_move[0]) - ord('a'), ord(alpha_move[1]) - ord('1'))
+        toSq = FR2SQ(ord(alpha_move[2]) - ord('a'), ord(alpha_move[3]) - ord('1'))
+        
+        assert_condition(SqOnBoard(fromSq) and SqOnBoard(toSq))
+        list = MOVELIST()
+        list.generate_all_moves(board)
+        Move = NOMOVE
+        PromPce = PIECE.EMPTY.value
+        
+        for MoveNum in range(0, list.count): # traversing the move list
+            Move = list.moves[MoveNum] # getting the move of MOVE()
+            if(Move.FROMSQ() == fromSq and Move.TOSQ() == toSq): # if both the to and from sqaures are same, then move is also same, provided promoted piece can be different
+                PromPce = Move.PROMOTED()
+                if(PromPce != PIECE.EMPTY.value): # if there is a promotion, we need to check
+                    if(PieceRookQueen[PromPce] and not PieceBishopQueen[PromPce] and alpha_move[4] == 'r'): # promoted piece is a rook
+                        return Move
+                    elif(not PieceRookQueen[PromPce] and PieceBishopQueen[PromPce] and alpha_move[4] == 'b'): # promoted piece is bishop
+                        return Move
+                    elif(PieceBishopQueen[PromPce] and PieceRookQueen[PromPce] and alpha_move[4] == 'q'): #is a queen
+                        return Move
+                    elif(PieceKnight[PromPce] and alpha_move[4] == 'n'): 
+                        return Move
+                    continue
+                return Move # else , if there was no promotion, then indeed move has matched, 
+        
+        return NOMOVE # if we didn't found the move in movelist
     
 class MOVELIST:
     def __init__(self):
@@ -155,7 +200,7 @@ class MOVELIST:
         else: # if it is not an promotion move
             self.add_quite_move(board, MOVE(fromSq, toSq, PIECE.EMPTY.value, PIECE.EMPTY.value, 0))
         
-    def generate_all_moves(self, board):
+    def generate_all_moves(self, board) -> None:
         assert_condition(board.check_board())
     
         # generating white pawn moves
@@ -310,7 +355,7 @@ class MOVELIST:
             
             pceIndex += 1
             
-    def generate_capture_moves(self, board):
+    def generate_capture_moves(self, board) -> None:
         assert_condition(board.check_board())
         
         # generating white pawn moves
@@ -421,4 +466,13 @@ class MOVELIST:
             pceIndex += 1
 
     def get_move_list(self) -> list:
-        return list(map(lambda move: move.alpha_move(), self.moves[:self.count]))  
+        return list(map(lambda move: move.alpha_move(), self.moves[:self.count])) 
+    
+    def print_move_list(self) -> None:
+        print("Move List: ")
+        for i in range(0, self.count):
+            move = self.moves[i]
+            score = self.moves[i].score
+            
+            print(f"Move: {i+1} --> {move.alpha_move()} (Score: {score})")
+        print(f"Move List Total {self.count} Moves: \n")

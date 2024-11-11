@@ -6,7 +6,7 @@ from globals import *
 from bitboards import SetBit, PopBit, CountBits, ClearBit
 from validate import SqOnBoard, PieceValid, SideValid
 from attack import is_sqaure_attacked
-from move import MOVE
+from move import MOVE, MOVELIST
 from pvtable import PVTABLE
 from helper import FR2SQ
 
@@ -71,6 +71,9 @@ class Board:
         self.PvTable = PVTABLE()
         self.PvArray = [0] * MAXDEPTH
         
+        # legal moves list
+        # self.legal_moves = MOVELIST()
+        
         # !explanation needed
         #needed for move ordering
         # searchHistory[13][120] indexed by piece type and board square, everytime a move improves by alpha we reset all the values stored in this array to 0, 
@@ -114,6 +117,8 @@ class Board:
         
         self.castlePerm = 0
         self.posKey.key = 0
+        
+        self.legal_moves = MOVELIST()
 
     def print_board(self):
         """
@@ -498,8 +503,8 @@ class Board:
         
         assert_condition(self.check_board())
 
-    # it returns 0 (meaning illegal move) when? when after making the move, the king of the side which made the move is in CHECK.
-    def make_move(self, move: MOVE):
+    # it returns false (meaning illegal move) when? when after making the move, the king of the side which made the move is in CHECK.
+    def make_move(self, move: MOVE) -> bool:
         assert_condition(self.check_board())
         fromSq = move.FROMSQ()
         toSq = move.TOSQ()

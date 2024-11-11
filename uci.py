@@ -1,10 +1,9 @@
 from constants import COLORS, MAXDEPTH
 from board import Board
-from input_output import parseMove, PrintMoveList
 from misc import GetTimeMs
 from search import SearchPosition
 from perft import PerftTest
-from move import MOVELIST
+from move import MOVELIST, MOVE
 from engine import EngineControls
 from fens import START_FEN
 
@@ -106,7 +105,7 @@ def ParsePosition(lineIn, board: Board):
         charIndex += 6 # skipped the "moves"
         moves = lineIn[charIndex:].split(" ")
         for mov in moves:
-            move = parseMove(mov, board)
+            move = MOVE.parse_move(alpha_move=mov, board=board)
             if(move == NOMOVE):
                 break
             board.make_move(move)
@@ -159,11 +158,10 @@ def Uci_Loop():
             elif(move == "movelist"):
                 mlist = MOVELIST()
                 mlist.generate_all_moves(board=pos)
-                PrintMoveList(mlist)
-                print(mlist.get_move_list())    
+                mlist.print_move_list()
             
             elif(move != "take" and move):
-                parsed_move = parseMove(move, pos)
+                parsed_move = MOVE.parse_move(alpha_move=move, board=pos)
                 if(parsed_move):
                     pos.make_move(parsed_move)
                     test_moves += 1
