@@ -9,7 +9,6 @@ def SQOFFBOARD(sq):
     return FilesBrd[sq] == SQUARES.OFFBOARD.value
 
 NOMOVE = 0
-
 class MOVE:
     # move flags, to retrieve information from the move
     FLAG_EP = 0x40000 # to check if the capture was EnPassant or not

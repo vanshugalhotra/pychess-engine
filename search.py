@@ -194,8 +194,7 @@ def SearchPosition(board: Board, info): # class BOARD, class SEARCHINFO
     # ? why don't we just search directly on depth n 
     # * because in iterative deepening first of all we will have our principal variation which will help in pruning more in AlphaBeta & Move Ordering. also we are maitaining the heurisitsc (searchHistory & searchKillers) which will help in move ordering
     
-    
-    bestMove = 0
+    bestMove = MOVE()
     bestScore = -INFINITE
     pvMoves = 0
     

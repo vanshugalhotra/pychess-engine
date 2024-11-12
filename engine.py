@@ -1,5 +1,5 @@
 from board import Board
-from move import MOVELIST
+from move import MOVELIST, MOVE
 import init
 from fens import START_FEN
 
@@ -52,7 +52,10 @@ class Engine:
         pass
     
     def make_move(self, move: str) -> bool:
-        pass
+        enc_move = MOVE.parse_move(alpha_move=move, board=self.board)
+        if(enc_move == 0): # not a valid move
+            return False
+        return self.board.make_move(move=enc_move) # if move is not legal it returns True
     
     def is_move_legal(self, move: str) -> bool:
         pass
