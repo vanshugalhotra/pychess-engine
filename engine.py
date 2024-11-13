@@ -2,6 +2,9 @@ from board import Board
 from move import MOVELIST, MOVE
 import init
 from fens import START_FEN
+from misc import GetTimeMs, ReadInput
+from helper import execution_time
+from search import Search
 
 class EngineControls:
     def __init__(self):
@@ -22,6 +25,13 @@ class EngineControls:
         # fail high , fail high first
         self.fh = 0 # A "fail high" means that the evaluation of a move exceeded the beta value
         self.fhf = 0 # Fail High First refers to the situation where the first move evaluated in a position causes a fail high, This is a good sign because it means the engine is ordering its moves well. If the first move fails high, it indicates that the best move (or one of the best moves) was tried first, allowing the engine to prune the rest of the search tree early.
+        
+    def check_up(self):
+        # check if time up or interrupt from GUI
+        if (self.timeset == True and GetTimeMs() > self.stoptime):
+            self.stopped = True
+            
+        ReadInput(self)
 
 class Engine:
     MAX_ELO = 1500
@@ -32,6 +42,7 @@ class Engine:
         self.elo = elo
         self.controls = EngineControls()
         self.board = Board()
+        self.search = Search(self.board, self.controls)
         
         init.initialize()
         self.load_fen(fen=START_FEN)
@@ -53,12 +64,13 @@ class Engine:
     
     def make_move(self, move: str) -> bool:
         enc_move = MOVE.parse_move(alpha_move=move, board=self.board)
-        if(enc_move == 0): # not a valid move
+        if(enc_move == MOVE.NOMOVE):
             return False
         return self.board.make_move(move=enc_move) # if move is not legal it returns True
     
     def is_move_legal(self, move: str) -> bool:
-        pass
+        enc_move = MOVE.parse_move(alpha_move=move, board=self.board)
+        return enc_move == MOVE.NOMOVE
     
     def set_elo(self, elo: int) -> None:
         self.elo = elo
@@ -67,7 +79,13 @@ class Engine:
         return self.elo
     
     def evaluate(self) -> int:
-        pass
+        return self.board.evaluate_position()
     
-    def best_move(self) -> str:
-        pass
+    @execution_time
+    def best_move(self, depth=5, ) -> str:
+        self.controls.depth = depth
+        self.controls.starttime = GetTimeMs()
+
+        self.search.update(board=self.board, info=self.controls)
+        
+        return self.search.iterative_deepening()

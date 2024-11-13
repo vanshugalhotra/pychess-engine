@@ -258,8 +258,6 @@ class Board:
             
             assert_condition(file >= FILE.A.value and file <= FILE.H.value)
             assert_condition(rank >= RANK.R1.value and rank <= RANK.R8.value)
-            
-            
             self.enPas = FR2SQ(file, rank)
         self.posKey.generate_key(self) #generating the hashkey
         self.update_list_material()
@@ -609,7 +607,7 @@ class Board:
             
         return False
     
-    def evaluate_position(self):
+    def evaluate_position(self) -> int:
         pce = 0
         score = self.material[COLORS.WHITE.value] - self.material[COLORS.BLACK.value]
         

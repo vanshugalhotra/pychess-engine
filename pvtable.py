@@ -3,7 +3,6 @@ from debug import assert_condition
 from move import MOVE
 from hashkeys import PositionKey
 
-NOMOVE = 0
 MAXPVENTRIES = 131072
 
 class PVENTRY:
@@ -20,7 +19,7 @@ class PVTABLE:
     def clear_table(self) -> None:
         for i in range(0, self.numEntries):
             self.pTable[i].posKey = PositionKey()
-            self.pTable[i].move = NOMOVE
+            self.pTable[i].move = MOVE.NOMOVE
             
     def store_pv_move(self, board, move: MOVE) -> None:
         index = board.posKey.key % self.numEntries
@@ -42,7 +41,7 @@ class PVTABLE:
     
         move_obj = self.probe_pv_table(board=board) # instance of MOVE()
         count = 0
-        while(move_obj.move != NOMOVE and count < depth):
+        while(move_obj.move != MOVE.NOMOVE and count < depth):
             assert_condition(count < depth)
             if(move_obj.move_exists(board)): # legal move
                 board.make_move(move_obj)

@@ -1,15 +1,13 @@
 from constants import COLORS, MAXDEPTH
 from board import Board
 from misc import GetTimeMs
-from search import SearchPosition
 from perft import PerftTest
 from move import MOVELIST, MOVE
-from engine import EngineControls
+from engine import EngineControls, Engine
 from fens import START_FEN
 
 NAME = "UstaadJi"
 AUTHOR = "Vanshu Galhotra"
-NOMOVE = 0
 
 test_moves = 0
 
@@ -21,6 +19,7 @@ def ParseGo(line, info, board: Board):
     time = -1
     inc = 0
     info.timeset = False
+    engine = Engine()
     
     tokens = line.split(" ")
     i = 1 # skip the go keyword
@@ -64,22 +63,22 @@ def ParseGo(line, info, board: Board):
         time = movetime
         movestogo = 1
     
-    info.starttime = GetTimeMs()
-    info.depth = depth
+    engine.search.info.starttime = GetTimeMs()
+    engine.search.info.depth = depth
     
     if(time != -1): # if time is specified in total , then time is divided into movestogo, like 30 mins and movestogo is 40, so each move get 30 mins / 40
-        info.timeset = True
+        engine.search.info.timeset = True
         time /= movestogo
         time -= 50 # just to be on safe side
-        info.stoptime = info.starttime + time + inc
+        engine.search.info.stoptime = engine.search.info.starttime + time + inc
         
     if(depth == -1): # if depth is not set
         info.depth = MAXDEPTH         
         
     
-    print(f"time:{time:.2f} depth:{info.depth} timeset:{info.timeset}")
+    print(f"time:{time:.2f} depth:{engine.search.info.depth} timeset:{engine.search.info.timeset}")
     
-    SearchPosition(board, info)
+    engine.search.iterative_deepening()
             
 # position fen SOMEFENSTRING
 # position startpos
@@ -106,7 +105,7 @@ def ParsePosition(lineIn, board: Board):
         moves = lineIn[charIndex:].split(" ")
         for mov in moves:
             move = MOVE.parse_move(alpha_move=mov, board=board)
-            if(move == NOMOVE):
+            if(move == MOVE.NOMOVE):
                 break
             board.make_move(move)
             board.ply = 0

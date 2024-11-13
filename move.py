@@ -8,8 +8,8 @@ from helper import FR2SQ
 def SQOFFBOARD(sq):
     return FilesBrd[sq] == SQUARES.OFFBOARD.value
 
-NOMOVE = 0
 class MOVE:
+    NOMOVE = None
     # move flags, to retrieve information from the move
     FLAG_EP = 0x40000 # to check if the capture was EnPassant or not
     FLAG_PS = 0x80000 # to check if it was a pawn move
@@ -84,13 +84,13 @@ class MOVE:
         assert_condition(board.check_board())
         
         if(alpha_move[1] > '8' or alpha_move[1] < '1'):
-            return NOMOVE
+            return MOVE.NOMOVE
         if(alpha_move[3] > '8' or alpha_move[3] < '1'):
-            return NOMOVE
+            return MOVE.NOMOVE
         if(alpha_move[0] > 'h' or alpha_move[0] < 'a'):
-            return NOMOVE
+            return MOVE.NOMOVE
         if(alpha_move[2] > 'h' or alpha_move[2] < 'a'):
-            return NOMOVE
+            return MOVE.NOMOVE
         
         fromSq = FR2SQ(ord(alpha_move[0]) - ord('a'), ord(alpha_move[1]) - ord('1'))
         toSq = FR2SQ(ord(alpha_move[2]) - ord('a'), ord(alpha_move[3]) - ord('1'))
@@ -98,7 +98,7 @@ class MOVE:
         assert_condition(SqOnBoard(fromSq) and SqOnBoard(toSq))
         list = MOVELIST()
         list.generate_all_moves(board)
-        Move = NOMOVE
+        Move = MOVE.NOMOVE
         PromPce = PIECE.EMPTY.value
         
         for MoveNum in range(0, list.count): # traversing the move list
@@ -117,7 +117,9 @@ class MOVE:
                     continue
                 return Move # else , if there was no promotion, then indeed move has matched, 
         
-        return NOMOVE # if we didn't found the move in movelist
+        return MOVE.NOMOVE # if we didn't found the move in movelist
+    
+MOVE.NOMOVE = MOVE()
     
 class MOVELIST:
     def __init__(self):
@@ -475,3 +477,18 @@ class MOVELIST:
             
             print(f"Move: {i+1} --> {move.alpha_move()} (Score: {score})")
         print(f"Move List Total {self.count} Moves: \n")
+        
+    def pick_next_move(self, movenum: int) -> None:
+        """
+        The function iterates through a list of moves and selects the move with the highest score (the most promising move) from the remaining moves. 
+        It then swaps the selected move with the current move (movenum). This helps ensure the most promising move is evaluated first in AlphaBeta, which improves the chances of pruning.
+        
+        """
+        bestScore = 0
+        bestNum = movenum
+        for index in range(movenum, self.count): # from given moveNum to end of movelist
+            if(self.moves[index].score > bestScore):
+                bestScore = self.moves[index].score
+                bestNum = index
+        # swapping it (move ordering)    
+        self.moves[movenum], self.moves[bestNum] = self.moves[bestNum], self.moves[movenum]
