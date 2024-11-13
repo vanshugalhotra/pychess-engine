@@ -211,4 +211,3 @@ class Search:
         print(f"bestmove {bestMove.alpha_move()}")
         return bestMove.alpha_move()
     
-    # Horizon Effect: caused by depth limitation of the search algorithm. Lets say at the last depth White queen captures a knight and since its the last depth we stop evaluating further, so right now white is up a knight but what if black takes the white queen (But this move is not considered due to limited depth)
