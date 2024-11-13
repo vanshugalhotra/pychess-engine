@@ -1,9 +1,7 @@
 from constants import COLORS, MAXDEPTH
-from board import Board
-from misc import GetTimeMs
 from perft import PerftTest
 from move import MOVELIST, MOVE
-from engine import EngineControls, Engine
+from engine import Engine
 from fens import START_FEN
 
 NAME = "UstaadJi"
@@ -11,34 +9,35 @@ AUTHOR = "Vanshu Galhotra"
 
 test_moves = 0
 
+engine = Engine()
+
 # go depth 6 wtime 180000 btime 100000 binc 1000 winc 1000 movetime 1000 movestogo 40
-def ParseGo(line, info, board: Board):
-    depth = -1
+def ParseGo(line):
+    global engine
+    depth = MAXDEPTH
     movestogo = 30
-    movetime = -1
-    time = -1
+    movetime = None
+    time = None
     inc = 0
-    info.timeset = False
-    engine = Engine()
     
     tokens = line.split(" ")
     i = 1 # skip the go keyword
     while i < len(tokens):
         token = tokens[i]
         if(token == "binc"):
-            inc = int(tokens[i+1]) if board.side == COLORS.BLACK.value else inc
+            inc = int(tokens[i+1]) if engine.board.side == COLORS.BLACK.value else inc
             i += 2
             
         elif(token == "winc"):
-            inc = int(tokens[i+1]) if board.side == COLORS.WHITE.value else inc
+            inc = int(tokens[i+1]) if engine.board.side == COLORS.WHITE.value else inc
             i += 2
             
         elif(token == "wtime"):
-            time = int(tokens[i+1]) if board.side == COLORS.WHITE.value else time 
+            time = int(tokens[i+1]) if engine.board.side == COLORS.WHITE.value else time 
             i += 2
             
         elif(token == "btime"):
-            time = int(tokens[i+1]) if board.side == COLORS.BLACK.value else time 
+            time = int(tokens[i+1]) if engine.board.side == COLORS.BLACK.value else time 
             i += 2
             
         elif(token == "movestogo"):
@@ -58,44 +57,26 @@ def ParseGo(line, info, board: Board):
         
         else:
             i += 1
-            
-    if(movetime != -1): # if movetime is specified
-        time = movetime
-        movestogo = 1
     
-    engine.search.info.starttime = GetTimeMs()
-    engine.search.info.depth = depth
-    
-    if(time != -1): # if time is specified in total , then time is divided into movestogo, like 30 mins and movestogo is 40, so each move get 30 mins / 40
-        engine.search.info.timeset = True
-        time /= movestogo
-        time -= 50 # just to be on safe side
-        engine.search.info.stoptime = engine.search.info.starttime + time + inc
-        
-    if(depth == -1): # if depth is not set
-        info.depth = MAXDEPTH         
-        
-    
-    print(f"time:{time:.2f} depth:{engine.search.info.depth} timeset:{engine.search.info.timeset}")
-    
-    engine.search.iterative_deepening()
+    engine.best_move(depth=depth, movestogo=movestogo, movetime=movetime, increment=inc, time=time)
             
 # position fen SOMEFENSTRING
 # position startpos
 # .... moves e2e4 e7e5 b7b8q
-def ParsePosition(lineIn, board: Board):
+def ParsePosition(lineIn):
+    global engine
     lineIn = lineIn[9:] # skipping the "Postion "
     charIndex = lineIn
     
     if(lineIn == "startpos"):
-        board.parse_fen(START_FEN)
+        engine.load_fen(fen=START_FEN)
     else:
         charIndex = lineIn.find("fen")
         if(charIndex < 0): # fen not found
-            board.parse_fen(START_FEN)
+            engine.load_fen(fen=START_FEN)
         else:
             charIndex += 4
-            board.parse_fen(lineIn[charIndex:])
+            engine.load_fen(lineIn[charIndex:])
             
     # processing the moves
     charIndex = lineIn.find("moves")
@@ -104,12 +85,9 @@ def ParsePosition(lineIn, board: Board):
         charIndex += 6 # skipped the "moves"
         moves = lineIn[charIndex:].split(" ")
         for mov in moves:
-            move = MOVE.parse_move(alpha_move=mov, board=board)
-            if(move == MOVE.NOMOVE):
-                break
-            board.make_move(move)
-            board.ply = 0
-    board.print_board()
+            engine.make_move(move=mov)
+            engine.board.ply = 0
+    engine.board.print_board()
             
 
 def Uci_Loop():
@@ -118,10 +96,7 @@ def Uci_Loop():
     print(f"id name {NAME}")
     print(f"id author {AUTHOR}")
     print(f"uciok")
-    
-    pos = Board()
-    info = EngineControls()
-    
+        
     while(True):
         print()
         line = input()
@@ -134,13 +109,13 @@ def Uci_Loop():
             print("readyok")
             continue
         elif(line[:8] == "position"):
-            ParsePosition(line, pos)
+            ParsePosition(line)
         elif(line == "ucinewgame"):
-            ParsePosition("position startpos\n", pos)
+            ParsePosition("position startpos\n")
         elif(line[:2] == "go"):
-            ParseGo(line, info, pos)
+            ParseGo(line)
         elif(line[:4] == "quit"):
-            info.quit = True
+            engine.controls.quit = True
             break
         elif(line == "uci"):
             print(f"id name {NAME}")
@@ -153,26 +128,23 @@ def Uci_Loop():
                 move = coms[1]
             
             if(move == "perft" and len(coms) > 2):
-                PerftTest(int(coms[2]), pos)
+                PerftTest(int(coms[2]), engine.board)
             elif(move == "movelist"):
                 mlist = MOVELIST()
-                mlist.generate_all_moves(board=pos)
+                mlist.generate_all_moves(board=engine.board)
                 mlist.print_move_list()
             
             elif(move != "take" and move):
-                parsed_move = MOVE.parse_move(alpha_move=move, board=pos)
-                if(parsed_move):
-                    pos.make_move(parsed_move)
-                    test_moves += 1
-                    pos.print_board()
-                else:
-                    print("Invalid Move!")
+                engine.make_move(move=move)
+                test_moves += 1
+                engine.board.print_board()
+
             elif(move == "take"):
                 if(test_moves):
-                    pos.take_move()
-                    pos.print_board()
+                    engine.board.take_move()
+                    engine.board.print_board()
                     test_moves -= 1
                 
-        if(info.quit):
+        if(engine.controls.quit):
             break
 
