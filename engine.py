@@ -241,3 +241,6 @@ class Engine:
         print(self.controls)
         
         return self.search.iterative_deepening()
+    
+    def print_board(self) -> None:
+        self.board.print_board()
