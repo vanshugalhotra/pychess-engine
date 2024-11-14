@@ -90,7 +90,7 @@ def ParsePosition(lineIn):
     engine.board.print_board()
             
 
-def Uci_Loop():
+def uci_game():
     global test_moves
     line = ""
     print(f"id name {NAME}")

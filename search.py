@@ -161,7 +161,7 @@ class Search:
                     self.board.searchHistory[self.board.pieces[BestMove.FROMSQ()]][BestMove.TOSQ()].score += depth
         
         if(Legal == 0): # checkmate
-            if(is_sqaure_attacked(self.board.KingSq[self.board.side], self.board.side^1, self.board)):
+            if(is_sqaure_attacked(self.board.king_square[self.board.side], self.board.side^1, self.board)):
                 return -MATE + self.board.ply # how many moves it was to mate
             else: # stalemate
                 return 0

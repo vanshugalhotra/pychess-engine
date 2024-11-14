@@ -12,76 +12,66 @@ from helper import FR2SQ
 
 class Board:
     """
-    class Board representing the Chess Board
-    
+    Representing the game board for a chess game. Handles
+    the initialization of the board, managing the pieces, and checking the state 
+    of the game. It includes methods for piece movement, validation, and board display.
+
+    Attributes:
+        pieces (list): A list representing on which square we have which piece indexed by squares (0 - 119)
+        pawns(list): list of pawn bitboards indexed by colors (0 - `WHITE`, 1 -`BLACK` , 2 - `BOTH` )
+        king_square(list): representing sqaure on which king is placed indexed by colors `WHITE` & `BLACK`
+        side(int): Side to move (0 - `WHITE`, 1 - `BLACK`)
+        enPas(int): EnPassant Square
+        fiftyMove(int): Fifty-move rule counter
+        ply(int): depth of search in current game (number of half moves)
+        hisPly(int): History of half moves in game
+        castlePerm(int): Castle Permission (`15<1111>` - All Castles Possible, `14<1110> - White can't castle King Side`, ...)
+        posKey(PositionKey): Unique Position Key for each position
+        pceNum(list): Total Number of a particular piece indexed by piece number (0 - `EMPTY`, 1 - `wP`, ... 12 - `bK`)
+        bigPce(list): Number big pieces i.e Non-Pawn pieces (Queens, rooks, bishops, knights) indexed by colors (0 - `WHITE` , 1 - `BLACK`)
+        majPce(list): Number of major pieces (Queens, Rooks) indexed by colors (0 - `WHITE` , 1 - `BLACK`)
+        minPce(list): Number of minor pieces (Knights, Bishops) indexed by colors (0 - `WHITE` , 1 - `BLACK`)
+        material(list): Total material value for each side indexed by colors (0 - `WHITE` , 1 - `BLACK`)
+        history(list of UNDO()): Storing Past Positions
+        pList(list of list): piece list specifying a square of a particular piece indexed by [pieceType][kth piece]example, pList[wN][0] = E1; adds a white knight on e1
+        PvTable(PVTABLE): principal variation table
+        PvArray(list): principal variation array
+        searchHistory(list of MOVE()): for heuristics, indexed by [pieceType][BoardSquare]
+        searchKillers(list of MOVE()): for heuristics, stores 2 recent moves which caused the beta cutoff which aren't captures
+            
     """
     def __init__(self):
-        # 120 squares to represent the board
         self.pieces = [0] * BRD_SQ_NUM
-
-        # represent the pawns of both sides (0 for white, 1 for black, 2 for both)
-        self.pawns = [0] * 3  
-
-        # Position of kings (0 for white, 1 for black)
-        self.KingSq = [0] * 2
-
-        # Side to move (0 for white, 1 for black)
-        self.side = 0
-
-        # En passant square (-1 means no en passant square)
-        self.enPas = -1
-
-        # Fifty-move rule counter
+        self.pawns = [0] * 3  # pawn bitboards
+        self.king_square = [0] * 2 # position of king (0 - WHITE, 1 - BLACK)
+        self.side = 0 # Side to move (0 for white, 1 for black)
+        self.enPas = -1 # En passant square (-1 means no en passant square)
         self.fiftyMove = 0
-
-        # Ply (depth of search in current game)
-        self.ply = 0
-
-        # history of half moves in game
-        self.hisPly = 0
-        
-        # castle permission
+        self.ply = 0 # Ply (depth of search in current game)
+        self.hisPly = 0 # history of half moves in game
         self.castlePerm = 0
 
-        # Unique Position key for each Position
-        self.posKey = PositionKey()
+        self.posKey = PositionKey() # Unique Position key for each Position
 
-        # 
         self.pceNum = [0] * 13  # Total Number of pieces (Like pceNum[1] = 6 means we have 6 white pawns)
-
-        # Number of non-pawn big pieces (Queens, rooks, bishops, knights)
-        self.bigPce = [0] * 2  # 0 for white, 1 for black
-
-        # Number of major pieces (Queens and Rooks)
-        self.majPce = [0] * 2  # 0 for white, 1 for black 
-
-        # Number of minor pieces (Bishops and Knights)
-        self.minPce = [0] * 2  # 0 for white, 1 for black
+        self.bigPce = [0] * 2  # Number of non-pawn big pieces (Queens, rooks, bishops, knights)
+        self.majPce = [0] * 2  # Number of major pieces (Queens and Rooks)
+        self.minPce = [0] * 2  # Number of minor pieces (Bishops and Knights)
         
-        # Material Value of Pieces  
-        self.material = [0] * 2
+        self.material = [0] * 2 # Material Value of Pieces  
         
-        # Declare an array of UNDO class instances
         self.history = [UNDO() for _ in range(MAXGAMEMOVES)]
+        self.pList = [[0 for _ in range(10)] for _ in range(13)] #piece list, pList[wN][0] = E1; adds a white knight on e1
         
-        #piece list, pList[wN][0] = E1; adds a white knight on e1
-        self.pList = [[0 for _ in range(10)] for _ in range(13)] 
-        
-        #declaring pvTable
         self.PvTable = PVTABLE()
         self.PvArray = [0] * MAXDEPTH
         
-        # legal moves list
-        # self.legal_moves = MOVELIST()
-        
-        # !explanation needed
         #needed for move ordering
         # searchHistory[13][120] indexed by piece type and board square, everytime a move improves by alpha we reset all the values stored in this array to 0, 
         # when a piece beats alpha for that piece type and TOSQ we increment by 1
         self.searchHistory = [[MOVE() for _ in range(BRD_SQ_NUM)] for _ in range(13)] 
         
-        # searchKillers[2][MAXDEPTH], stores 2 recent moves which caused the beta cutoff which aren't captures
-        self.searchKillers = [[MOVE() for _ in range(MAXDEPTH)] for _ in range(2)]
+        self.searchKillers = [[MOVE() for _ in range(MAXDEPTH)] for _ in range(2)] # searchKillers[2][MAXDEPTH], stores 2 recent moves which caused the beta cutoff which aren't captures
         
     def reset_board(self):
         """
@@ -101,12 +91,13 @@ class Board:
             self.minPce[i] = 0
             self.material[i] = 0
             self.pawns[i] = 0
+        self.pawns[2] = 0
         
         for i in range(0, 13):
             self.pceNum[i] = 0
             
-        self.KingSq[COLORS.WHITE.value] = SQUARES.NO_SQ.value
-        self.KingSq[COLORS.BLACK.value] = SQUARES.NO_SQ.value
+        self.king_square[COLORS.WHITE.value] = SQUARES.NO_SQ.value
+        self.king_square[COLORS.BLACK.value] = SQUARES.NO_SQ.value
         
         self.side = COLORS.BOTH.value
         self.enPas = SQUARES.NO_SQ.value
@@ -116,7 +107,7 @@ class Board:
         self.hisPly = 0
         
         self.castlePerm = 0
-        self.posKey.key = 0
+        self.posKey = PositionKey()
         
         self.legal_moves = MOVELIST()
 
@@ -171,9 +162,9 @@ class Board:
                 self.pList[piece][self.pceNum[piece]] = sq #the inner [] represents the number of the piece, I mean if its 1st white pawn, or 2nd or etc....
                 self.pceNum[piece] += 1 # incrementing the pceNum
                 
-                # setting the kingSquare
+                # setting the king_squareuare
                 if(piece == PIECE.wK.value or piece == PIECE.bK.value):
-                    self.KingSq[colour] = sq
+                    self.king_square[colour] = sq
                     
                 # setting the pawn bits
                 if(piece == PIECE.wP.value):
@@ -338,11 +329,10 @@ class Board:
         assert_condition(t_bigPce[COLORS.WHITE.value] == self.bigPce[COLORS.WHITE.value] and t_bigPce[COLORS.BLACK.value] == self.bigPce[COLORS.BLACK.value], message="Number of Big (Non-Pawn) Pieces not Matched!!")
         
         assert_condition(self.side == COLORS.WHITE.value or self.side == COLORS.BLACK.value, message="SIDE can either be WHITE or BLACK")
-
         assert_condition(self.enPas == SQUARES.NO_SQ.value or (RanksBrd[self.enPas] == RANK.R6.value and self.side == COLORS.WHITE.value) or (RanksBrd[self.enPas] == RANK.R3.value and self.side == COLORS.BLACK.value), message="Invalid EnPas Square") # enPas square is either on rank 3 or rank 6
         
-        assert_condition(self.pieces[self.KingSq[COLORS.WHITE.value]] == PIECE.wK.value, message="WHITE King Square not Matched!!")
-        assert_condition(self.pieces[self.KingSq[COLORS.BLACK.value]] == PIECE.bK.value, message="BLACK King Square not Matched!!")
+        assert_condition(self.pieces[self.king_square[COLORS.WHITE.value]] == PIECE.wK.value, message="WHITE King Square not Matched!!")
+        assert_condition(self.pieces[self.king_square[COLORS.BLACK.value]] == PIECE.bK.value, message="BLACK King Square not Matched!!")
         
         return True
 
@@ -485,7 +475,7 @@ class Board:
         self.move_piece(toSq, fromSq)
         
         if(PieceKing[self.pieces[fromSq]]):
-            self.KingSq[self.side] = fromSq # moving back the king
+            self.king_square[self.side] = fromSq # moving back the king
             
         captured = move.CAPTURED()
         if(captured != PIECE.EMPTY.value):
@@ -584,16 +574,16 @@ class Board:
             self.clear_piece(toSq) # clearing the toSq
             self.add_piece(toSq, prPce) # adding the promoted piece on the toSq
             
-        # updating the kingsquare
+        # updating the king_squareuare
         if(PieceKing[self.pieces[toSq]]):
-            self.KingSq[self.side] = toSq
+            self.king_square[self.side] = toSq
         
         self.side ^= 1 # changing the side
         self.posKey.hash_side()
         
         assert_condition(self.check_board())
         
-        if(is_sqaure_attacked(self.KingSq[side], self.side, self)): # side is the side which made the move, self.side now is now the opposite side, so we check if after making the move, the opposite side is attacking the KingSq, means king is in check, then its an illegal move
+        if(is_sqaure_attacked(self.king_square[side], self.side, self)): # side is the side which made the move, self.side now is now the opposite side, so we check if after making the move, the opposite side is attacking the king_square, means king is in check, then its an illegal move
             self.take_move()  # take back the move
             return False
         

@@ -1,16 +1,11 @@
 import init
-from uci import Uci_Loop
+from uci import uci_game
 from engine import Engine
 from fens import WAC1
 
 if __name__ == "__main__":
     init.initialize()
-    eng = Engine()
+    engine = Engine()
     
-    eng.load_fen(fen=WAC1)
-    # eng.best_move(depth=5)
     
-    Uci_Loop()
-        
-    
-     
+    uci_game()
