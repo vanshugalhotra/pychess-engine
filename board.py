@@ -73,7 +73,7 @@ class Board:
         
         self.searchKillers = [[MOVE() for _ in range(MAXDEPTH)] for _ in range(2)] # searchKillers[2][MAXDEPTH], stores 2 recent moves which caused the beta cutoff which aren't captures
         
-    def reset_board(self):
+    def reset_board(self) -> None:
         """
         Resetting the board to initial state
         
@@ -111,9 +111,9 @@ class Board:
         
         self.legal_moves = MOVELIST()
 
-    def print_board(self):
+    def print_board(self) -> None:
         """
-        Printing the board
+        Prints the current state of the board in a human-readable format.
         
         """
         print("\nGame Board: \n")
@@ -137,10 +137,10 @@ class Board:
         
         print(hex(self.posKey.key))
 
-    def update_list_material(self):
+    def _update_list_material(self) -> None:
         """
-        Updating the list material
-        
+        Updates material lists and metadata for pieces on the board.
+
         """
         for index in range(0, BRD_SQ_NUM):
             sq = index
@@ -174,7 +174,18 @@ class Board:
                     self.pawns[Colors.BLACK] = SetBit(self.pawns[Colors.BLACK], Sq120ToSq64[sq] )
                     self.pawns[Colors.BOTH] = SetBit(self.pawns[Colors.BOTH], Sq120ToSq64[sq] )
 
-    def parse_fen(self, fen) -> bool:
+    def parse_fen(self, fen: str) -> bool:
+        """
+        Parses a FEN (Forsyth-Edwards Notation) string to set up the board state.
+
+        Args:
+            fen (str): The FEN string representing the board setup.
+
+        Returns:
+            bool: True if the FEN is successfully parsed and the board state is set; 
+                False if the FEN string is invalid.
+
+        """
         if (not fen):
             return False
 
@@ -251,10 +262,18 @@ class Board:
             assert_condition(rank >= Ranks.R1 and rank <= Ranks.R8)
             self.enPas = FR2SQ(file, rank)
         self.posKey.generate_key(self) #generating the hashkey
-        self.update_list_material()
+        self._update_list_material()
         return True
 
-    def check_board(self):
+    def check_board(self) -> bool:
+        """
+        Verifies the consistency and integrity of the current board state.
+
+        Returns:
+            bool: True if the board is valid and consistent; False if not
+            
+        If DEBUG mode is disabled, this function simply returns True without performing checks.
+        """
         if(not DEBUG):
             return True
         
@@ -336,16 +355,22 @@ class Board:
         
         return True
 
-    def clear_piece(self, sq):
-        assert_condition(SqOnBoard(sq))
+    def _clear_piece(self, square: int) -> None:
+        """
+        Removes a piece from the specified square on the board, updating the board state and related data structures.
+
+        Args:
+            square (int): The square index from which the piece is to be cleared.
+        """
+        assert_condition(SqOnBoard(square))
     
-        pce = self.pieces[sq]
+        pce = self.pieces[square]
         assert_condition(PieceValid(pce))
         
-        self.posKey.hash_piece(piece=pce, square=sq)
+        self.posKey.hash_piece(piece=pce, square=square)
         
         col = PieceCol[pce] # getting the color of the piece
-        self.pieces[sq] = Pieces.EMPTY # making that square empty
+        self.pieces[square] = Pieces.EMPTY # making that square empty
         self.material[col] -= PieceVal[pce] # subtracting its value
         
         if(PieceBig[pce]): # if its a non-pawn piece
@@ -355,14 +380,14 @@ class Board:
             else: # if its a minor piece (knights , bishops)
                 self.minPce[col] -= 1
         else: # if its a pawn
-            self.pawns[col] = ClearBit(self.pawns[col], Sq120ToSq64[sq]) # bitboard, sq64
-            self.pawns[Colors.BOTH] = ClearBit(self.pawns[Colors.BOTH], Sq120ToSq64[sq])
+            self.pawns[col] = ClearBit(self.pawns[col], Sq120ToSq64[square]) # bitboard, sq64
+            self.pawns[Colors.BOTH] = ClearBit(self.pawns[Colors.BOTH], Sq120ToSq64[square])
 
 
         # removing that particular piece from the pList[][]  
         t_pceIndex = -1
         for index in range(0, self.pceNum[pce]): # looping all the pieces , for example, lets say we want to clear a white pawn on e4, we loop all the whitePawns
-            if(self.pList[pce][index] == sq): # we find the index of whitePawn on e4 sqaure particularly
+            if(self.pList[pce][index] == square): # we find the index of whitePawn on e4 sqaure particularly
                 t_pceIndex = index
                 break   
         
@@ -372,59 +397,78 @@ class Board:
         # ?why because, we decremented the pceNum, instead of shifting all the [piece][] & squares, we just move the last one.
         self.pList[pce][t_pceIndex] = self.pList[pce][self.pceNum[pce]]
 
-    def add_piece(self, sq, pce):
-        assert_condition(PieceValid(pce))
-        assert_condition(SqOnBoard(sq))
+    def _add_piece(self, square: int, piece: int) -> None:
+        """
+        Adds a piece to the specified square on the board, updating the board state and related data structures.
+
+        Args:
+            square (int): The square index where the piece is to be added.
+            piece (int): The piece code representing the type of piece being added.
+            
+        """
+        assert_condition(PieceValid(piece))
+        assert_condition(SqOnBoard(square))
         
-        col = PieceCol[pce]
-        self.posKey.hash_piece(piece=pce, square=sq)
+        col = PieceCol[piece]
+        self.posKey.hash_piece(piece=piece, square=square)
         
-        self.pieces[sq] = pce
+        self.pieces[square] = piece
         
-        if(PieceBig[pce]):
+        if(PieceBig[piece]):
             self.bigPce[col] += 1
-            if(PieceMaj[pce]):
+            if(PieceMaj[piece]):
                 self.majPce[col] += 1
             else:
                 self.minPce[col] += 1
         else: 
-            self.pawns[col] = SetBit(self.pawns[col], Sq120ToSq64[sq])
-            self.pawns[Colors.BOTH] = SetBit(self.pawns[Colors.BOTH], Sq120ToSq64[sq])
+            self.pawns[col] = SetBit(self.pawns[col], Sq120ToSq64[square])
+            self.pawns[Colors.BOTH] = SetBit(self.pawns[Colors.BOTH], Sq120ToSq64[square])
             
-        self.material[col] += PieceVal[pce] #updating the material value
-        self.pList[pce][self.pceNum[pce]] = sq # setting the pce on pList
-        self.pceNum[pce] += 1
+        self.material[col] += PieceVal[piece] #updating the material value
+        self.pList[piece][self.pceNum[piece]] = square # setting the pce on pList
+        self.pceNum[piece] += 1
 
-    def move_piece(self, fromSq, toSq):
-        assert_condition(SqOnBoard(fromSq))
-        assert_condition(SqOnBoard(toSq))
+    def _move_piece(self, from_square: int, to_square: int) -> None:
+        """
+        Moves a piece from one square to another, updating the board and relevant data structures.
+
+        Args:
+            from_square (int): The starting square index of the piece.
+            to_square (int): The target square index where the piece will be moved.
+        """
+        assert_condition(SqOnBoard(from_square))
+        assert_condition(SqOnBoard(to_square))
         
-        pce = self.pieces[fromSq]
+        pce = self.pieces[from_square]
         col = PieceCol[pce]
         
         t_PieceIndex = False
         
-        self.posKey.hash_piece(piece=pce, square=fromSq)
-        self.pieces[fromSq] = Pieces.EMPTY
+        self.posKey.hash_piece(piece=pce, square=from_square)
+        self.pieces[from_square] = Pieces.EMPTY
         
-        self.posKey.hash_piece(piece=pce, square=toSq)
-        self.pieces[toSq] = pce
+        self.posKey.hash_piece(piece=pce, square=to_square)
+        self.pieces[to_square] = pce
         
         if(not PieceBig[pce]): # if its a pawn
-            self.pawns[col] = ClearBit(self.pawns[col], Sq120ToSq64[fromSq])
-            self.pawns[Colors.BOTH] = ClearBit(self.pawns[Colors.BOTH], Sq120ToSq64[fromSq])
-            self.pawns[col] = SetBit(self.pawns[col], Sq120ToSq64[toSq])
-            self.pawns[Colors.BOTH] = SetBit(self.pawns[Colors.BOTH], Sq120ToSq64[toSq])
+            self.pawns[col] = ClearBit(self.pawns[col], Sq120ToSq64[from_square])
+            self.pawns[Colors.BOTH] = ClearBit(self.pawns[Colors.BOTH], Sq120ToSq64[from_square])
+            self.pawns[col] = SetBit(self.pawns[col], Sq120ToSq64[to_square])
+            self.pawns[Colors.BOTH] = SetBit(self.pawns[Colors.BOTH], Sq120ToSq64[to_square])
             
         for index in range(0, self.pceNum[pce]):
-            if(self.pList[pce][index] == fromSq):
-                self.pList[pce][index] = toSq
+            if(self.pList[pce][index] == from_square):
+                self.pList[pce][index] = to_square
                 t_PieceIndex = True
                 break
         
         assert_condition(t_PieceIndex)
         
-    def take_move(self):
+    def take_move(self) -> None:
+        """
+        Reverts the most recent move, restoring the board state to its previous configuration.
+        
+        """
         assert_condition(self.check_board())
         
         # resetting the counters
@@ -455,24 +499,24 @@ class Board:
         
         if(move.move & MOVE.FLAG_EP): # if it was an enPas capture, then we add back the pieces
             if(self.side == Colors.WHITE):
-                self.add_piece(toSq-10, Pieces.bP)
+                self._add_piece(toSq-10, Pieces.bP)
             else:
-                self.add_piece(toSq+10, Pieces.wP)
+                self._add_piece(toSq+10, Pieces.wP)
                 
         elif(move.move & MOVE.FLAG_CA): # if it was a castle move
             if(toSq == Squares.C1):
-                self.move_piece(Squares.D1, Squares.A1) # moving back the rook
+                self._move_piece(Squares.D1, Squares.A1) # moving back the rook
             elif(toSq == Squares.C8):
-                self.move_piece(Squares.D8, Squares.A8) # moving back the rook
+                self._move_piece(Squares.D8, Squares.A8) # moving back the rook
             elif(toSq == Squares.G1):
-                self.move_piece(Squares.F1, Squares.H1) # moving back the rook
+                self._move_piece(Squares.F1, Squares.H1) # moving back the rook
             elif(toSq == Squares.G8):
-                self.move_piece(Squares.F8, Squares.H8) # moving back the rook
+                self._move_piece(Squares.F8, Squares.H8) # moving back the rook
             else:
                 assert_condition(False)
                 
         # moving back the piece
-        self.move_piece(toSq, fromSq)
+        self._move_piece(toSq, fromSq)
         
         if(PieceKing[self.pieces[fromSq]]):
             self.king_square[self.side] = fromSq # moving back the king
@@ -480,19 +524,25 @@ class Board:
         captured = move.CAPTURED()
         if(captured != Pieces.EMPTY):
             assert_condition(PieceValid(captured))
-            self.add_piece(toSq, captured) # adding back the captured piece
+            self._add_piece(toSq, captured) # adding back the captured piece
             
         prPce = move.PROMOTED()
         if(prPce != Pieces.EMPTY): #  ! explanation is needed
             assert_condition(PieceValid(prPce) and not PiecePawn[prPce])
-            self.clear_piece(fromSq)
+            self._clear_piece(fromSq)
             toAdd = Pieces.wP if PieceCol[prPce] == Colors.WHITE else Pieces.bP
-            self.add_piece(fromSq, toAdd)
+            self._add_piece(fromSq, toAdd)
         
         assert_condition(self.check_board())
 
-    # it returns false (meaning illegal move) when? when after making the move, the king of the side which made the move is in CHECK.
     def make_move(self, move: MOVE) -> bool:
+        """
+        Executes a move on the board, updating game state and validating legality.
+        
+        Returns:
+            bool: False if the move results in check against the moving side (illegal), True otherwise.
+
+        """
         assert_condition(self.check_board())
         fromSq = move.FROMSQ()
         toSq = move.TOSQ()
@@ -508,18 +558,18 @@ class Board:
         
         if(move.move & MOVE.FLAG_EP): # if its an enpassant capture
             if(side == Colors.WHITE):
-                self.clear_piece(toSq-10) # capturing the black pawn
+                self._clear_piece(toSq-10) # capturing the black pawn
             else:
-                self.clear_piece(toSq+10) # capturing the white pawn
+                self._clear_piece(toSq+10) # capturing the white pawn
         elif(move.move & MOVE.FLAG_CA): # if its an castle MOVE
             if(toSq == Squares.C1):
-                self.move_piece(Squares.A1, Squares.D1)
+                self._move_piece(Squares.A1, Squares.D1)
             elif(toSq == Squares.C8):
-                self.move_piece(Squares.A8, Squares.D8)
+                self._move_piece(Squares.A8, Squares.D8)
             elif(toSq == Squares.G1): # white king side castling
-                self.move_piece(Squares.H1, Squares.F1) # moving the rook from h1 -> f1
+                self._move_piece(Squares.H1, Squares.F1) # moving the rook from h1 -> f1
             elif(toSq == Squares.G8):
-                self.move_piece(Squares.H8, Squares.F8)
+                self._move_piece(Squares.H8, Squares.F8)
             else:
                 assert_condition(False)
                 
@@ -544,7 +594,7 @@ class Board:
         
         if(captured != Pieces.EMPTY):
             assert_condition(PieceValid(captured))
-            self.clear_piece(toSq) # first we capture on the toSq, then we move
+            self._clear_piece(toSq) # first we capture on the toSq, then we move
             self.fiftyMove = 0 # if a capture is made, then fifty move is set to 0
         
         self.hisPly += 1
@@ -563,7 +613,7 @@ class Board:
                 self.posKey.hash_enPas(enPas=self.enPas) # hashing in the new enPas
         
         # finally moving the piece on the board
-        self.move_piece(fromSq, toSq)
+        self._move_piece(fromSq, toSq)
         
         # checking for promotions
         prPce = move.PROMOTED()
@@ -571,8 +621,8 @@ class Board:
             assert_condition(PieceValid(prPce) and not PiecePawn[prPce])
             
             # ! explanation needed
-            self.clear_piece(toSq) # clearing the toSq
-            self.add_piece(toSq, prPce) # adding the promoted piece on the toSq
+            self._clear_piece(toSq) # clearing the toSq
+            self._add_piece(toSq, prPce) # adding the promoted piece on the toSq
             
         # updating the king_squareuare
         if(PieceKing[self.pieces[toSq]]):
@@ -590,7 +640,16 @@ class Board:
         return True
 
     def is_repetition(self) -> bool :
-        for index in range(self.hisPly - self.fiftyMove, self.hisPly-1): # checking from only when last time fiftyMove was set to 0 because once fifty move is set to 0 there won't be no repetetions(captures and pawn moves cant repeat)
+        """
+        Checks if the current game position has occurred before in the game history, 
+        considering only positions after the last reset of the fifty-move rule. 
+        This prevents repetition of captures and pawn moves, which are not allowed to repeat.
+
+        Returns:
+            bool: True if the current position has been seen before in the game history, 
+                indicating a repetition. False otherwise.
+        """
+        for index in range(self.hisPly - self.fiftyMove, self.hisPly-1):
             if(self.posKey.key == self.history[index].posKey.key):
                 assert_condition(index >=0 and index <= MAXGAMEMOVES)
                 return True
@@ -598,6 +657,16 @@ class Board:
         return False
     
     def evaluate_position(self) -> int:
+        """
+        Evaluates the current position on the chessboard by calculating the material balance 
+        and piece-specific scores based on their positions. The evaluation takes into account 
+        the current side (white or black) and adds or subtracts scores based on piece placement 
+        using pre-defined evaluation tables for pawns, knights, bishops, and rooks. The final score 
+        is positive for white and negative for black.
+
+        Returns:
+            int: The evaluation score of the position. Positive for white's advantage, negative for black's advantage.
+        """
         pce = 0
         score = self.material[Colors.WHITE] - self.material[Colors.BLACK]
         

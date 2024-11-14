@@ -1,5 +1,5 @@
-import constants
-import globals
+from constants import Ranks, Files
+from globals import Sq120ToSq64, setMask, clearMask
 from helper import FR2SQ
 
 bitTable = [
@@ -9,15 +9,15 @@ bitTable = [
   58, 20, 37, 17, 36, 8
   ]
 
-def PrintBitBoard(bb):
+def print_bit_board(bb):
     shiftMe = 1
     sq = 0
     sq64 = 0
     print()
-    for rank in range(constants.Ranks.R8, constants.Ranks.R1 - 1, -1): #7-0
-        for file in range(constants.Files.A, constants.Files.H+1): #0-7
+    for rank in range(Ranks.R8, Ranks.R1 - 1, -1): #7-0
+        for file in range(Files.A, Files.H+1): #0-7
             sq = FR2SQ(file, rank) # calculating the square for 120 bit
-            sq64 = globals.Sq120ToSq64[sq] # converting the square for 64 bit
+            sq64 = Sq120ToSq64[sq] # converting the square for 64 bit
             if((shiftMe << sq64) & bb):
                 print("X", end=" ")
             else:
@@ -38,9 +38,9 @@ def PopBit(bb):
     return bitTable[((fold * 0x783a9b23)%4294967296) >> 26], bb # Modulo 2**32 to keep number in range
 
 def SetBit(bb, sq):
-    bb |= globals.setMask[sq]
+    bb |= setMask[sq]
     return bb
 
 def ClearBit(bb, sq):
-    bb &= globals.clearMask[sq]
+    bb &= clearMask[sq]
     return bb
