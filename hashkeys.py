@@ -1,4 +1,4 @@
-from constants import PIECE, BRD_SQ_NUM, SQUARES, COLORS
+from constants import BRD_SQ_NUM, Pieces, Colors, Squares
 from debug import assert_condition
 from helper import RAND_64
 
@@ -21,23 +21,23 @@ class PositionKey:
         self.key ^= PositionKey.SideKey
         
     def hash_enPas(self, enPas: int) -> None:
-        self.key ^= PositionKey.PieceKeys[PIECE.EMPTY.value][enPas]
+        self.key ^= PositionKey.PieceKeys[Pieces.EMPTY][enPas]
         
     def generate_key(self, board) -> None:
         finalKey = 0
-        piece = PIECE.EMPTY.value
+        piece = Pieces.EMPTY
         for sq in range(0, BRD_SQ_NUM):
             piece = board.pieces[sq]
-            if(piece != SQUARES.OFFBOARD.value and piece != PIECE.EMPTY.value):
-                assert_condition(piece >= PIECE.wP.value and piece <= PIECE.bK.value)
+            if(piece != Squares.OFFBOARD and piece != Pieces.EMPTY):
+                assert_condition(piece >= Pieces.wP and piece <= Pieces.bK)
                 finalKey ^= PositionKey.PieceKeys[piece][sq]
         
-        if(board.side == COLORS.WHITE.value):
+        if(board.side == Colors.WHITE):
             finalKey ^= PositionKey.SideKey
             
-        if(board.enPas != SQUARES.NO_SQ.value):
+        if(board.enPas != Squares.NO_SQ):
             assert_condition(board.enPas >= 0 and board.enPas < BRD_SQ_NUM)
-            finalKey ^= PositionKey.PieceKeys[PIECE.EMPTY.value][board.enPas]
+            finalKey ^= PositionKey.PieceKeys[Pieces.EMPTY][board.enPas]
             
         assert_condition(board.castlePerm >= 0 and board.castlePerm <= 15)
         finalKey ^= PositionKey.CastleKeys[board.castlePerm]

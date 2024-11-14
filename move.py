@@ -1,12 +1,12 @@
 from globals import *
 from debug import assert_condition
 from validate import SqOnBoard, PieceValid, PieceValidEmpty
-from constants import SQUARES, PIECE, RANK, CASTLING
+from constants import Pieces, Ranks, Castling, Squares
 from attack import is_sqaure_attacked
 from helper import FR2SQ
 
 def SQOFFBOARD(sq):
-    return FilesBrd[sq] == SQUARES.OFFBOARD.value
+    return FilesBrd[sq] == Squares.OFFBOARD
 
 class MOVE:
     NOMOVE = None
@@ -99,13 +99,13 @@ class MOVE:
         list = MOVELIST()
         list.generate_all_moves(board)
         Move = MOVE.NOMOVE
-        PromPce = PIECE.EMPTY.value
+        PromPce = Pieces.EMPTY
         
         for MoveNum in range(0, list.count): # traversing the move list
             Move = list.moves[MoveNum] # getting the move of MOVE()
             if(Move.FROMSQ() == fromSq and Move.TOSQ() == toSq): # if both the to and from sqaures are same, then move is also same, provided promoted piece can be different
                 PromPce = Move.PROMOTED()
-                if(PromPce != PIECE.EMPTY.value): # if there is a promotion, we need to check
+                if(PromPce != Pieces.EMPTY): # if there is a promotion, we need to check
                     if(PieceRookQueen[PromPce] and not PieceBishopQueen[PromPce] and alpha_move[4] == 'r'): # promoted piece is a rook
                         return Move
                     elif(not PieceRookQueen[PromPce] and PieceBishopQueen[PromPce] and alpha_move[4] == 'b'): # promoted piece is bishop
@@ -159,138 +159,138 @@ class MOVELIST:
         assert_condition(SqOnBoard(toSq))
         assert_condition(PieceValidEmpty(cap))
         
-        if(RanksBrd[fromSq] == RANK.R7.value): # if a white pawn captures something from rank 7, then it is promotion move
-            self.add_capture_move(board, MOVE(fromSq, toSq,cap,PIECE.wQ.value, 0)) # promoted to white Queen
-            self.add_capture_move(board, MOVE(fromSq, toSq,cap,PIECE.wR.value, 0)) # promoted to white Rook
-            self.add_capture_move(board, MOVE(fromSq, toSq,cap,PIECE.wB.value, 0)) # promoted to white Bishop
-            self.add_capture_move(board, MOVE(fromSq, toSq,cap,PIECE.wN.value, 0)) # promoted to white Knight
+        if(RanksBrd[fromSq] == Ranks.R7): # if a white pawn captures something from rank 7, then it is promotion move
+            self.add_capture_move(board, MOVE(fromSq, toSq,cap,Pieces.wQ, 0)) # promoted to white Queen
+            self.add_capture_move(board, MOVE(fromSq, toSq,cap,Pieces.wR, 0)) # promoted to white Rook
+            self.add_capture_move(board, MOVE(fromSq, toSq,cap,Pieces.wB, 0)) # promoted to white Bishop
+            self.add_capture_move(board, MOVE(fromSq, toSq,cap,Pieces.wN, 0)) # promoted to white Knight
         else: # if it is not an promotion move
-            self.add_capture_move(board, MOVE(fromSq, toSq, cap, PIECE.EMPTY.value, 0))
+            self.add_capture_move(board, MOVE(fromSq, toSq, cap, Pieces.EMPTY, 0))
             
     def add_white_pawn_move(self, board, fromSq, toSq): # same as above, the difference is it doesn't capture any piece
         assert_condition(SqOnBoard(fromSq))
         assert_condition(SqOnBoard(toSq))
-        if(RanksBrd[fromSq] == RANK.R7.value): # if a white pawn captures something from rank 7, then it is promotion move
-            self.add_quite_move(board, MOVE(fromSq, toSq,PIECE.EMPTY.value,PIECE.wQ.value, 0)) # promoted to white Queen
-            self.add_quite_move(board, MOVE(fromSq, toSq,PIECE.EMPTY.value,PIECE.wR.value, 0)) # promoted to white Rook
-            self.add_quite_move(board, MOVE(fromSq, toSq,PIECE.EMPTY.value,PIECE.wB.value, 0)) # promoted to white Bishop
-            self.add_quite_move(board, MOVE(fromSq, toSq,PIECE.EMPTY.value,PIECE.wN.value, 0)) # promoted to white Knight
+        if(RanksBrd[fromSq] == Ranks.R7): # if a white pawn captures something from rank 7, then it is promotion move
+            self.add_quite_move(board, MOVE(fromSq, toSq,Pieces.EMPTY,Pieces.wQ, 0)) # promoted to white Queen
+            self.add_quite_move(board, MOVE(fromSq, toSq,Pieces.EMPTY,Pieces.wR, 0)) # promoted to white Rook
+            self.add_quite_move(board, MOVE(fromSq, toSq,Pieces.EMPTY,Pieces.wB, 0)) # promoted to white Bishop
+            self.add_quite_move(board, MOVE(fromSq, toSq,Pieces.EMPTY,Pieces.wN, 0)) # promoted to white Knight
         else: # if it is not an promotion move
-            self.add_quite_move(board, MOVE(fromSq, toSq, PIECE.EMPTY.value, PIECE.EMPTY.value, 0))
+            self.add_quite_move(board, MOVE(fromSq, toSq, Pieces.EMPTY, Pieces.EMPTY, 0))
             
     def add_black_pawn_cap_move(self, board, fromSq, toSq, cap):
         assert_condition(SqOnBoard(fromSq))
         assert_condition(SqOnBoard(toSq))
         assert_condition(PieceValidEmpty(cap))
-        if(RanksBrd[fromSq] == RANK.R2.value): # if a black pawn captures something from rank 2, then it is promotion move
-            self.add_capture_move(board, MOVE(fromSq, toSq,cap,PIECE.bQ.value, 0)) # promoted to black Queen
-            self.add_capture_move(board, MOVE(fromSq, toSq,cap,PIECE.bR.value, 0)) # promoted to black Rook
-            self.add_capture_move(board, MOVE(fromSq, toSq,cap,PIECE.bB.value, 0)) # promoted to black Bishop
-            self.add_capture_move(board, MOVE(fromSq, toSq,cap,PIECE.bN.value, 0)) # promoted to black Knight
+        if(RanksBrd[fromSq] == Ranks.R1): # if a black pawn captures something from rank 2, then it is promotion move
+            self.add_capture_move(board, MOVE(fromSq, toSq,cap,Pieces.bQ, 0)) # promoted to black Queen
+            self.add_capture_move(board, MOVE(fromSq, toSq,cap,Pieces.bR, 0)) # promoted to black Rook
+            self.add_capture_move(board, MOVE(fromSq, toSq,cap,Pieces.bB, 0)) # promoted to black Bishop
+            self.add_capture_move(board, MOVE(fromSq, toSq,cap,Pieces.bN, 0)) # promoted to black Knight
         else: # if it is not an promotion move
-            self.add_capture_move(board, MOVE(fromSq, toSq, cap, PIECE.EMPTY.value, 0))
+            self.add_capture_move(board, MOVE(fromSq, toSq, cap, Pieces.EMPTY, 0))
             
     def add_black_pawn_move(self, board, fromSq, toSq):
         assert_condition(SqOnBoard(fromSq))
         assert_condition(SqOnBoard(toSq))
-        if(RanksBrd[fromSq] == RANK.R2.value): # if a Black pawn captures something from rank 2, then it is promotion move
-            self.add_quite_move(board, MOVE(fromSq, toSq,PIECE.EMPTY.value,PIECE.bQ.value, 0)) # promoted to Black Queen
-            self.add_quite_move(board, MOVE(fromSq, toSq,PIECE.EMPTY.value,PIECE.bR.value, 0)) # promoted to Black Rook
-            self.add_quite_move(board, MOVE(fromSq, toSq,PIECE.EMPTY.value,PIECE.bB.value, 0)) # promoted to Black Bishop
-            self.add_quite_move(board, MOVE(fromSq, toSq,PIECE.EMPTY.value,PIECE.bN.value, 0)) # promoted to Black Knight
+        if(RanksBrd[fromSq] == Ranks.R1): # if a Black pawn captures something from rank 2, then it is promotion move
+            self.add_quite_move(board, MOVE(fromSq, toSq,Pieces.EMPTY,Pieces.bQ, 0)) # promoted to Black Queen
+            self.add_quite_move(board, MOVE(fromSq, toSq,Pieces.EMPTY,Pieces.bR, 0)) # promoted to Black Rook
+            self.add_quite_move(board, MOVE(fromSq, toSq,Pieces.EMPTY,Pieces.bB, 0)) # promoted to Black Bishop
+            self.add_quite_move(board, MOVE(fromSq, toSq,Pieces.EMPTY,Pieces.bN, 0)) # promoted to Black Knight
         else: # if it is not an promotion move
-            self.add_quite_move(board, MOVE(fromSq, toSq, PIECE.EMPTY.value, PIECE.EMPTY.value, 0))
+            self.add_quite_move(board, MOVE(fromSq, toSq, Pieces.EMPTY, Pieces.EMPTY, 0))
         
     def generate_all_moves(self, board) -> None:
         assert_condition(board.check_board())
     
         # generating white pawn moves
         self.count = 0
-        pce = PIECE.EMPTY.value
+        pce = Pieces.EMPTY
         side = board.side
         sq = 0
         t_sq = 0
         
-        if(side == COLORS.WHITE.value):
+        if(side == Colors.WHITE):
             # looping to total number of white pawns on the board
-            for pceNum in range(0, board.pceNum[PIECE.wP.value]):
-                sq = board.pList[PIECE.wP.value][pceNum] # to get the square on which there is a white Pawn
+            for pceNum in range(0, board.pceNum[Pieces.wP]):
+                sq = board.pList[Pieces.wP][pceNum] # to get the square on which there is a white Pawn
                 assert_condition(SqOnBoard(sq))
                 
                 # if it is a no capture move
-                if(board.pieces[sq + 10] == PIECE.EMPTY.value):
+                if(board.pieces[sq + 10] == Pieces.EMPTY):
                     self.add_white_pawn_move(board, sq, sq+10) # board, fromSq, ToSq
                     #
-                    if(RanksBrd[sq] == RANK.R2.value and board.pieces[sq + 20] == PIECE.EMPTY.value):
-                        self.add_quite_move(board, MOVE(sq, sq+20, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_PS)) # added a quite move, because there was no capture, also setted the Pawn Start Flag
+                    if(RanksBrd[sq] == Ranks.R1 and board.pieces[sq + 20] == Pieces.EMPTY):
+                        self.add_quite_move(board, MOVE(sq, sq+20, Pieces.EMPTY, Pieces.EMPTY, MOVE.FLAG_PS)) # added a quite move, because there was no capture, also setted the Pawn Start Flag
                         
                 # if it is a capture move            
-                if(not SQOFFBOARD(sq + 9) and PieceCol[board.pieces[sq + 9]] == COLORS.BLACK.value): # if the capturing piece is black
+                if(not SQOFFBOARD(sq + 9) and PieceCol[board.pieces[sq + 9]] == Colors.BLACK): # if the capturing piece is black
                     self.add_white_pawn_cap_move(board, sq, sq+9, board.pieces[sq+9]) # board, fromSq, ToSq, CapturedPiece
                     
-                if(not SQOFFBOARD(sq + 11) and PieceCol[board.pieces[sq + 11]] == COLORS.BLACK.value): # if the capturing piece is black
+                if(not SQOFFBOARD(sq + 11) and PieceCol[board.pieces[sq + 11]] == Colors.BLACK): # if the capturing piece is black
                     self.add_white_pawn_cap_move(board, sq, sq+11, board.pieces[sq+11]) # board, fromSq, ToSq, CapturedPiece
-                if(board.enPas != SQUARES.NO_SQ.value):
+                if(board.enPas != Squares.NO_SQ):
                     if(sq + 9 == board.enPas):
-                        self.add_enpas_move(board, MOVE(sq, sq+9, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_EP))
+                        self.add_enpas_move(board, MOVE(sq, sq+9, Pieces.EMPTY, Pieces.EMPTY, MOVE.FLAG_EP))
                     if(sq + 11 == board.enPas):
-                        self.add_enpas_move(board, MOVE(sq, sq+11, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_EP))
+                        self.add_enpas_move(board, MOVE(sq, sq+11, Pieces.EMPTY, Pieces.EMPTY, MOVE.FLAG_EP))
                     
             # castling for white
             # king side castling
-            if(board.castlePerm & CASTLING.WKCA.value): #if white can castle king side
-                if(board.pieces[SQUARES.F1.value] == PIECE.EMPTY.value and board.pieces[SQUARES.G1.value] == PIECE.EMPTY.value): # if between the king and rook squares are empty
-                    if(not is_sqaure_attacked(SQUARES.E1.value, COLORS.BLACK.value, board) and not is_sqaure_attacked(SQUARES.F1.value, COLORS.BLACK.value, board)): # if the square F1, E1 are not attacked, only then king can castle, beacause, king cannot castle in between check
+            if(board.castlePerm & Castling.WKCA): #if white can castle king side
+                if(board.pieces[Squares.F1] == Pieces.EMPTY and board.pieces[Squares.G1] == Pieces.EMPTY): # if between the king and rook squares are empty
+                    if(not is_sqaure_attacked(Squares.E1, Colors.BLACK, board) and not is_sqaure_attacked(Squares.F1, Colors.BLACK, board)): # if the square F1, E1 are not attacked, only then king can castle, beacause, king cannot castle in between check
                         
                         # adding the castle move white king side castle
-                        self.add_quite_move(board, MOVE(SQUARES.E1.value, SQUARES.G1.value, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_CA))
+                        self.add_quite_move(board, MOVE(Squares.E1, Squares.G1, Pieces.EMPTY, Pieces.EMPTY, MOVE.FLAG_CA))
                         
-            if(board.castlePerm & CASTLING.WQCA.value):
-                if(board.pieces[SQUARES.D1.value] == PIECE.EMPTY.value and board.pieces[SQUARES.C1.value] == PIECE.EMPTY.value and board.pieces[SQUARES.B1.value] == PIECE.EMPTY.value): # if between the king and rook squares are empty
-                    if(not is_sqaure_attacked(SQUARES.E1.value, COLORS.BLACK.value, board) and not is_sqaure_attacked(SQUARES.D1.value, COLORS.BLACK.value, board)): # if the square D1, E1 are not attacked, only then king can castle, beacause, king cannot castle in between check
+            if(board.castlePerm & Castling.WQCA):
+                if(board.pieces[Squares.D1] == Pieces.EMPTY and board.pieces[Squares.C1] == Pieces.EMPTY and board.pieces[Squares.B1] == Pieces.EMPTY): # if between the king and rook squares are empty
+                    if(not is_sqaure_attacked(Squares.E1, Colors.BLACK, board) and not is_sqaure_attacked(Squares.D1, Colors.BLACK, board)): # if the square D1, E1 are not attacked, only then king can castle, beacause, king cannot castle in between check
                         
                         # adding the castle move white queen side castle
-                        self.add_quite_move(board, MOVE(SQUARES.E1.value, SQUARES.C1.value, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_CA))
+                        self.add_quite_move(board, MOVE(Squares.E1, Squares.C1, Pieces.EMPTY, Pieces.EMPTY, MOVE.FLAG_CA))
         else: 
             # looping to total number of black pawns on the board
-            for pceNum in range(0, board.pceNum[PIECE.bP.value]):
-                sq = board.pList[PIECE.bP.value][pceNum] # to get the square on which there is a black Pawn
+            for pceNum in range(0, board.pceNum[Pieces.bP]):
+                sq = board.pList[Pieces.bP][pceNum] # to get the square on which there is a black Pawn
                 assert_condition(SqOnBoard(sq))
                 
                 # if it is a no capture move
-                if(board.pieces[sq - 10] == PIECE.EMPTY.value):
+                if(board.pieces[sq - 10] == Pieces.EMPTY):
                     self.add_black_pawn_move(board, sq, sq-10) # board, fromSq, ToSq
                     #
-                    if(RanksBrd[sq] == RANK.R7.value and board.pieces[sq - 20] == PIECE.EMPTY.value):
-                        self.add_quite_move(board, MOVE(sq, sq-20, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_PS)) # added a quite move, because there was no capture, also setted the Pawn Start Flag
+                    if(RanksBrd[sq] == Ranks.R7 and board.pieces[sq - 20] == Pieces.EMPTY):
+                        self.add_quite_move(board, MOVE(sq, sq-20, Pieces.EMPTY, Pieces.EMPTY, MOVE.FLAG_PS)) # added a quite move, because there was no capture, also setted the Pawn Start Flag
                         
                 # if it is a capture move            
-                if(not SQOFFBOARD(sq - 9) and PieceCol[board.pieces[sq - 9]] == COLORS.WHITE.value): # if the capturing piece is WHITE
+                if(not SQOFFBOARD(sq - 9) and PieceCol[board.pieces[sq - 9]] == Colors.WHITE): # if the capturing piece is WHITE
                     self.add_black_pawn_cap_move(board, sq, sq-9, board.pieces[sq-9]) # board, fromSq, ToSq, CapturedPiece
                     
-                if(not SQOFFBOARD(sq - 11) and PieceCol[board.pieces[sq - 11]] == COLORS.WHITE.value): # if the capturing piece is WHITE
+                if(not SQOFFBOARD(sq - 11) and PieceCol[board.pieces[sq - 11]] == Colors.WHITE): # if the capturing piece is WHITE
                     self.add_black_pawn_cap_move(board, sq, sq-11, board.pieces[sq-11]) # board, fromSq, ToSq, CapturedPiece
-                if(board.enPas != SQUARES.NO_SQ.value):
+                if(board.enPas != Squares.NO_SQ):
                     if(sq - 9 == board.enPas):
-                        self.add_enpas_move(board, MOVE(sq, sq-9, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_EP))
+                        self.add_enpas_move(board, MOVE(sq, sq-9, Pieces.EMPTY, Pieces.EMPTY, MOVE.FLAG_EP))
                     if(sq - 11 == board.enPas):
-                        self.add_enpas_move(board, MOVE(sq, sq-11, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_EP))
+                        self.add_enpas_move(board, MOVE(sq, sq-11, Pieces.EMPTY, Pieces.EMPTY, MOVE.FLAG_EP))
                     
             # castling for black
             # king side castling
-            if(board.castlePerm & CASTLING.BKCA.value):
-                if(board.pieces[SQUARES.F8.value] == PIECE.EMPTY.value and board.pieces[SQUARES.G8.value] == PIECE.EMPTY.value): # if between the king and rook squares are empty
-                    if(not is_sqaure_attacked(SQUARES.E8.value, COLORS.WHITE.value, board) and not is_sqaure_attacked(SQUARES.F8.value, COLORS.WHITE.value, board)): # if the square F8, E8 are not attacked, only then king can castle, beacause, king cannot castle in between check
+            if(board.castlePerm & Castling.BKCA):
+                if(board.pieces[Squares.F8] == Pieces.EMPTY and board.pieces[Squares.G8] == Pieces.EMPTY): # if between the king and rook squares are empty
+                    if(not is_sqaure_attacked(Squares.E8, Colors.WHITE, board) and not is_sqaure_attacked(Squares.F8, Colors.WHITE, board)): # if the square F8, E8 are not attacked, only then king can castle, beacause, king cannot castle in between check
                         
                         # adding the castle move black king side castle
-                        self.add_quite_move(board, MOVE(SQUARES.E8.value, SQUARES.G8.value, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_CA))
+                        self.add_quite_move(board, MOVE(Squares.E8, Squares.G8, Pieces.EMPTY, Pieces.EMPTY, MOVE.FLAG_CA))
                         
-            if(board.castlePerm & CASTLING.BQCA.value):
-                if(board.pieces[SQUARES.D8.value] == PIECE.EMPTY.value and board.pieces[SQUARES.C8.value] == PIECE.EMPTY.value and board.pieces[SQUARES.B8.value] == PIECE.EMPTY.value): # if between the king and rook squares are empty
-                    if(not is_sqaure_attacked(SQUARES.E8.value, COLORS.WHITE.value, board) and not is_sqaure_attacked(SQUARES.D8.value, COLORS.WHITE.value, board)): # if the square D8, E8 are not attacked, only then king can castle, beacause, king cannot castle in between check
+            if(board.castlePerm & Castling.BQCA):
+                if(board.pieces[Squares.D8] == Pieces.EMPTY and board.pieces[Squares.C8] == Pieces.EMPTY and board.pieces[Squares.B8] == Pieces.EMPTY): # if between the king and rook squares are empty
+                    if(not is_sqaure_attacked(Squares.E8, Colors.WHITE, board) and not is_sqaure_attacked(Squares.D8, Colors.WHITE, board)): # if the square D8, E8 are not attacked, only then king can castle, beacause, king cannot castle in between check
                         
                         # adding the castle move black queen side castle
-                        self.add_quite_move(board, MOVE(SQUARES.E8.value, SQUARES.C8.value, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_CA))
+                        self.add_quite_move(board, MOVE(Squares.E8, Squares.C8, Pieces.EMPTY, Pieces.EMPTY, MOVE.FLAG_CA))
 
         # Move generation for sliding pieces (Bishops, Rooks, Queen)
         pceIndex = LoopSlideIndex[side] # WHITE - 0, BLACK - 4
@@ -310,16 +310,16 @@ class MOVELIST:
                     
                     while(not SQOFFBOARD(t_sq)):   # for sliding pieces we need to iterate in that direction till we are offboard 
                         # capture move, BLACK(1) ^ 1 == WHITE(0)
-                        if(board.pieces[t_sq] != PIECE.EMPTY.value):
+                        if(board.pieces[t_sq] != Pieces.EMPTY):
                             if(PieceCol[board.pieces[t_sq]] == side ^ 1): # opposite color
                                 
                                 # addding a capture move
-                                self.add_capture_move(board, MOVE(sq, t_sq, board.pieces[t_sq], PIECE.EMPTY.value, 0))
+                                self.add_capture_move(board, MOVE(sq, t_sq, board.pieces[t_sq], Pieces.EMPTY, 0))
                                 
                             break #if same color piece is found then break, we can't move further
                         
                         # Normal Move
-                        self.add_quite_move(board, MOVE(sq, t_sq, PIECE.EMPTY.value, PIECE.EMPTY.value, 0))
+                        self.add_quite_move(board, MOVE(sq, t_sq, Pieces.EMPTY, Pieces.EMPTY, 0))
                         t_sq += dir
             
             pceIndex += 1
@@ -345,14 +345,14 @@ class MOVELIST:
                         continue
                     
                     # capture move, BLACK(1) ^ 1 == WHITE(0)
-                    if(board.pieces[t_sq] != PIECE.EMPTY.value):
+                    if(board.pieces[t_sq] != Pieces.EMPTY):
                         if(PieceCol[board.pieces[t_sq]] == side ^ 1): # opposite color
                             # addding a capture move
-                            self.add_capture_move(board, MOVE(sq, t_sq, board.pieces[t_sq], PIECE.EMPTY.value, 0))
+                            self.add_capture_move(board, MOVE(sq, t_sq, board.pieces[t_sq], Pieces.EMPTY, 0))
                         continue #if same color then skip
                     
                     # Normal Move
-                    self.add_quite_move(board, MOVE(sq, t_sq, PIECE.EMPTY.value, PIECE.EMPTY.value, 0))
+                    self.add_quite_move(board, MOVE(sq, t_sq, Pieces.EMPTY, Pieces.EMPTY, 0))
             
             pceIndex += 1
             
@@ -361,47 +361,47 @@ class MOVELIST:
         
         # generating white pawn moves
         self.count = 0
-        pce = PIECE.EMPTY.value
+        pce = Pieces.EMPTY
         side = board.side
         sq = 0
         t_sq = 0
         
-        if(side == COLORS.WHITE.value):
+        if(side == Colors.WHITE):
             # looping to total number of white pawns on the board
-            for pceNum in range(0, board.pceNum[PIECE.wP.value]):
-                sq = board.pList[PIECE.wP.value][pceNum] # to get the square on which there is a white Pawn
+            for pceNum in range(0, board.pceNum[Pieces.wP]):
+                sq = board.pList[Pieces.wP][pceNum] # to get the square on which there is a white Pawn
                 assert_condition(SqOnBoard(sq))
                                     
                 # if it is a capture move            
-                if(not SQOFFBOARD(sq + 9) and PieceCol[board.pieces[sq + 9]] == COLORS.BLACK.value): # if the capturing piece is black
+                if(not SQOFFBOARD(sq + 9) and PieceCol[board.pieces[sq + 9]] == Colors.BLACK): # if the capturing piece is black
                     self.add_white_pawn_cap_move(board, sq, sq+9, board.pieces[sq+9]) # board, fromSq, ToSq, CapturedPiece, list
                     
-                if(not SQOFFBOARD(sq + 11) and PieceCol[board.pieces[sq + 11]] == COLORS.BLACK.value): # if the capturing piece is black
+                if(not SQOFFBOARD(sq + 11) and PieceCol[board.pieces[sq + 11]] == Colors.BLACK): # if the capturing piece is black
                     self.add_white_pawn_cap_move(board, sq, sq+11, board.pieces[sq+11]) # board, fromSq, ToSq, CapturedPiece, list
-                if(board.enPas != SQUARES.NO_SQ.value):
+                if(board.enPas != Squares.NO_SQ):
                     if(sq + 9 == board.enPas):
-                        self.add_enpas_move(board, MOVE(sq, sq+9, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_EP))
+                        self.add_enpas_move(board, MOVE(sq, sq+9, Pieces.EMPTY, Pieces.EMPTY, MOVE.FLAG_EP))
                     if(sq + 11 == board.enPas):
-                        self.add_enpas_move(board, MOVE(sq, sq+11, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_EP))
+                        self.add_enpas_move(board, MOVE(sq, sq+11, Pieces.EMPTY, Pieces.EMPTY, MOVE.FLAG_EP))
                     
 
         else: 
             # looping to total number of black pawns on the board
-            for pceNum in range(0, board.pceNum[PIECE.bP.value]):
-                sq = board.pList[PIECE.bP.value][pceNum] # to get the square on which there is a black Pawn
+            for pceNum in range(0, board.pceNum[Pieces.bP]):
+                sq = board.pList[Pieces.bP][pceNum] # to get the square on which there is a black Pawn
                 assert_condition(SqOnBoard(sq))
                         
                 # if it is a capture move            
-                if(not SQOFFBOARD(sq - 9) and PieceCol[board.pieces[sq - 9]] == COLORS.WHITE.value): # if the capturing piece is WHITE
+                if(not SQOFFBOARD(sq - 9) and PieceCol[board.pieces[sq - 9]] == Colors.WHITE): # if the capturing piece is WHITE
                     self.add_black_pawn_cap_move(board, sq, sq-9, board.pieces[sq-9]) # board, fromSq, ToSq, CapturedPiece, list
                     
-                if(not SQOFFBOARD(sq - 11) and PieceCol[board.pieces[sq - 11]] == COLORS.WHITE.value): # if the capturing piece is WHITE
+                if(not SQOFFBOARD(sq - 11) and PieceCol[board.pieces[sq - 11]] == Colors.WHITE): # if the capturing piece is WHITE
                     self.add_black_pawn_cap_move(board, sq, sq-11, board.pieces[sq-11]) # board, fromSq, ToSq, CapturedPiece, list
-                if(board.enPas != SQUARES.NO_SQ.value):
+                if(board.enPas != Squares.NO_SQ):
                     if(sq - 9 == board.enPas):
-                        self.add_enpas_move(board, MOVE(sq, sq-9, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_EP))
+                        self.add_enpas_move(board, MOVE(sq, sq-9, Pieces.EMPTY, Pieces.EMPTY, MOVE.FLAG_EP))
                     if(sq - 11 == board.enPas):
-                        self.add_enpas_move(board, MOVE(sq, sq-11, PIECE.EMPTY.value, PIECE.EMPTY.value, MOVE.FLAG_EP))
+                        self.add_enpas_move(board, MOVE(sq, sq-11, Pieces.EMPTY, Pieces.EMPTY, MOVE.FLAG_EP))
                     
         # Move generation for sliding pieces (Bishops, Rooks, Queen)
         pceIndex = LoopSlideIndex[side] # WHITE - 0, BLACK - 4
@@ -421,11 +421,11 @@ class MOVELIST:
                     
                     while(not SQOFFBOARD(t_sq)):   # for sliding pieces we need to iterate in that direction till we are offboard 
                         # capture move, BLACK(1) ^ 1 == WHITE(0)
-                        if(board.pieces[t_sq] != PIECE.EMPTY.value):
+                        if(board.pieces[t_sq] != Pieces.EMPTY):
                             if(PieceCol[board.pieces[t_sq]] == side ^ 1): # opposite color
                                 
                                 # addding a capture move
-                                self.add_capture_move(board, MOVE(sq, t_sq, board.pieces[t_sq], PIECE.EMPTY.value, 0))
+                                self.add_capture_move(board, MOVE(sq, t_sq, board.pieces[t_sq], Pieces.EMPTY, 0))
                                 
                             break #if same color piece is found then break, we can't move further
                         
@@ -456,10 +456,10 @@ class MOVELIST:
                         continue
                     
                     # capture move, BLACK(1) ^ 1 == WHITE(0)
-                    if(board.pieces[t_sq] != PIECE.EMPTY.value):
+                    if(board.pieces[t_sq] != Pieces.EMPTY):
                         if(PieceCol[board.pieces[t_sq]] == side ^ 1): # opposite color
                             # addding a capture move
-                            self.add_capture_move(board, MOVE(sq, t_sq, board.pieces[t_sq], PIECE.EMPTY.value, 0))
+                            self.add_capture_move(board, MOVE(sq, t_sq, board.pieces[t_sq], Pieces.EMPTY, 0))
                         continue #if same color then skip
                     
                     # Normal Move

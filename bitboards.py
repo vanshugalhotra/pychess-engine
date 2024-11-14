@@ -14,8 +14,8 @@ def PrintBitBoard(bb):
     sq = 0
     sq64 = 0
     print()
-    for rank in range(constants.RANK.R8.value, constants.RANK.R1.value - 1, -1): #7-0
-        for file in range(constants.FILE.A.value, constants.FILE.H.value+1): #0-7
+    for rank in range(constants.Ranks.R8, constants.Ranks.R1 - 1, -1): #7-0
+        for file in range(constants.Files.A, constants.Files.H+1): #0-7
             sq = FR2SQ(file, rank) # calculating the square for 120 bit
             sq64 = globals.Sq120ToSq64[sq] # converting the square for 64 bit
             if((shiftMe << sq64) & bb):

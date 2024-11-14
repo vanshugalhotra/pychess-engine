@@ -79,11 +79,11 @@ class Board:
         
         """
         for i in range(0, BRD_SQ_NUM):
-            self.pieces[i] = SQUARES.OFFBOARD.value
+            self.pieces[i] = Squares.OFFBOARD
     
         # clearing the board, I mean placing every box empty (there's no piece on it)
         for i in range(0, 64):
-            self.pieces[Sq64ToSq120[i]] = PIECE.EMPTY.value
+            self.pieces[Sq64ToSq120[i]] = Pieces.EMPTY
             
         for i in range(0, 2): # for white, black
             self.bigPce[i] = 0
@@ -96,11 +96,11 @@ class Board:
         for i in range(0, 13):
             self.pceNum[i] = 0
             
-        self.king_square[COLORS.WHITE.value] = SQUARES.NO_SQ.value
-        self.king_square[COLORS.BLACK.value] = SQUARES.NO_SQ.value
+        self.king_square[Colors.WHITE] = Squares.NO_SQ
+        self.king_square[Colors.BLACK] = Squares.NO_SQ
         
-        self.side = COLORS.BOTH.value
-        self.enPas = SQUARES.NO_SQ.value
+        self.side = Colors.BOTH
+        self.enPas = Squares.NO_SQ
         self.fiftyMove = 0
         
         self.ply = 0
@@ -117,23 +117,23 @@ class Board:
         
         """
         print("\nGame Board: \n")
-        for rank in range(RANK.R8.value, RANK.R1.value-1, -1):
+        for rank in range(Ranks.R8, Ranks.R1-1, -1):
             print(rank+1, end="   ")
-            for file in range(FILE.A.value, FILE.H.value+1):
+            for file in range(Files.A, Files.H+1):
                 sq = FR2SQ(file, rank)
                 piece = self.pieces[sq]
                 print(f"{PceChar[piece]:3}", end=" ")
             print()
         print()
         print("    ", end="")
-        for file in range(FILE.A.value, FILE.H.value + 1):
+        for file in range(Files.A, Files.H + 1):
             print(f"{chr(ord('a') + file):3}", end=" ")
             
         print()
         print(f"Side: {SideChar[self.side]}")
         print(f"En Passant: {(self.enPas)}")
         
-        print(f"Castle: {'K' if self.castlePerm & CASTLING.WKCA.value else '-'} {'Q' if self.castlePerm & CASTLING.WQCA.value else '-'} {'k' if self.castlePerm & CASTLING.BKCA.value else '-'} {'q' if self.castlePerm & CASTLING.BQCA.value else '-'} ")
+        print(f"Castle: {'K' if self.castlePerm & Castling.WKCA else '-'} {'Q' if self.castlePerm & Castling.WQCA else '-'} {'k' if self.castlePerm & Castling.BKCA else '-'} {'q' if self.castlePerm & Castling.BQCA else '-'} ")
         
         print(hex(self.posKey.key))
 
@@ -145,7 +145,7 @@ class Board:
         for index in range(0, BRD_SQ_NUM):
             sq = index
             piece = self.pieces[index]
-            if(piece != SQUARES.OFFBOARD.value and piece != PIECE.EMPTY.value):
+            if(piece != Squares.OFFBOARD and piece != Pieces.EMPTY):
                 colour = PieceCol[piece]
                 if(PieceBig[piece]):
                     self.bigPce[colour] += 1
@@ -163,16 +163,16 @@ class Board:
                 self.pceNum[piece] += 1 # incrementing the pceNum
                 
                 # setting the king_squareuare
-                if(piece == PIECE.wK.value or piece == PIECE.bK.value):
+                if(piece == Pieces.wK or piece == Pieces.bK):
                     self.king_square[colour] = sq
                     
                 # setting the pawn bits
-                if(piece == PIECE.wP.value):
-                    self.pawns[COLORS.WHITE.value] = SetBit(self.pawns[COLORS.WHITE.value], Sq120ToSq64[sq] )
-                    self.pawns[COLORS.BOTH.value] = SetBit(self.pawns[COLORS.BOTH.value], Sq120ToSq64[sq] )
-                elif(piece == PIECE.bP.value):
-                    self.pawns[COLORS.BLACK.value] = SetBit(self.pawns[COLORS.BLACK.value], Sq120ToSq64[sq] )
-                    self.pawns[COLORS.BOTH.value] = SetBit(self.pawns[COLORS.BOTH.value], Sq120ToSq64[sq] )
+                if(piece == Pieces.wP):
+                    self.pawns[Colors.WHITE] = SetBit(self.pawns[Colors.WHITE], Sq120ToSq64[sq] )
+                    self.pawns[Colors.BOTH] = SetBit(self.pawns[Colors.BOTH], Sq120ToSq64[sq] )
+                elif(piece == Pieces.bP):
+                    self.pawns[Colors.BLACK] = SetBit(self.pawns[Colors.BLACK], Sq120ToSq64[sq] )
+                    self.pawns[Colors.BOTH] = SetBit(self.pawns[Colors.BOTH], Sq120ToSq64[sq] )
 
     def parse_fen(self, fen) -> bool:
         if (not fen):
@@ -180,44 +180,44 @@ class Board:
 
         fen_parts = fen.split(" ")
         piece, count, sq64, sq120 = 0, 0, 0, 0
-        rank = RANK.R8.value
-        file = FILE.A.value
+        rank = Ranks.R8
+        file = Files.A
         
         self.reset_board()
         for char in fen_parts[0]:
             count = 1
             if(char == 'p'):
-                piece = PIECE.bP.value
+                piece = Pieces.bP
             elif(char == 'r'):
-                piece = PIECE.bR.value
+                piece = Pieces.bR
             elif(char == 'n'):
-                piece = PIECE.bN.value
+                piece = Pieces.bN
             elif(char == 'b'):
-                piece = PIECE.bB.value
+                piece = Pieces.bB
             elif(char == 'k'):
-                piece = PIECE.bK.value
+                piece = Pieces.bK
             elif(char == 'q'):
-                piece = PIECE.bQ.value
+                piece = Pieces.bQ
             elif(char == 'P'):
-                piece = PIECE.wP.value
+                piece = Pieces.wP
             elif(char == 'R'):
-                piece = PIECE.wR.value
+                piece = Pieces.wR
             elif(char == 'N'):
-                piece = PIECE.wN.value
+                piece = Pieces.wN
             elif(char == 'B'):
-                piece = PIECE.wB.value
+                piece = Pieces.wB
             elif(char == 'K'):
-                piece = PIECE.wK.value
+                piece = Pieces.wK
             elif(char == 'Q'):
-                piece = PIECE.wQ.value
+                piece = Pieces.wQ
             
             elif(char == '1' or char == '2' or char == '3' or char == '4' or char == '5' or char == '6' or char == '7' or char == '8'):
-                piece = PIECE.EMPTY.value
+                piece = Pieces.EMPTY
                 count = ord(char) - ord('0')
                 
             elif(char == '/' or char == ' '):
                 rank -= 1
-                file = FILE.A.value
+                file = Files.A
                 continue
             else:
                 print("Wrong FEN")
@@ -225,20 +225,20 @@ class Board:
             for i in range(0, count):
                 sq64 = rank * 8 + file # calculating the sqaure64 using file and rank for example. D4 -> 27
                 sq120 = Sq64ToSq120[sq64]
-                if(piece != PIECE.EMPTY.value):
+                if(piece != Pieces.EMPTY):
                     self.pieces[sq120] = piece
                 file += 1
         
-        self.side = COLORS.WHITE.value if fen_parts[1] == 'w' else COLORS.BLACK.value
+        self.side = Colors.WHITE if fen_parts[1] == 'w' else Colors.BLACK
         for castleCase in fen_parts[2]:
             if(castleCase == "K"):
-                self.castlePerm |= CASTLING.WKCA.value
+                self.castlePerm |= Castling.WKCA
             elif(castleCase == "Q"):
-                self.castlePerm |= CASTLING.WQCA.value
+                self.castlePerm |= Castling.WQCA
             elif(castleCase == "k"):
-                self.castlePerm |= CASTLING.BKCA.value
+                self.castlePerm |= Castling.BKCA
             elif(castleCase == "q"):
-                self.castlePerm |= CASTLING.BQCA.value
+                self.castlePerm |= Castling.BQCA
             else: 
                 pass
         assert_condition(self.castlePerm >= 0 and self.castlePerm <= 15)
@@ -247,8 +247,8 @@ class Board:
             file = ord(fen_parts[3][0]) - ord('a')
             rank = ord(fen_parts[3][1]) - ord('1')
             
-            assert_condition(file >= FILE.A.value and file <= FILE.H.value)
-            assert_condition(rank >= RANK.R1.value and rank <= RANK.R8.value)
+            assert_condition(file >= Files.A and file <= Files.H)
+            assert_condition(rank >= Ranks.R1 and rank <= Ranks.R8)
             self.enPas = FR2SQ(file, rank)
         self.posKey.generate_key(self) #generating the hashkey
         self.update_list_material()
@@ -265,13 +265,13 @@ class Board:
         t_material = [0,0]
         
         t_pawns = [0, 0, 0]
-        t_pawns[COLORS.WHITE.value] = self.pawns[COLORS.WHITE.value]
-        t_pawns[COLORS.BLACK.value] = self.pawns[COLORS.BLACK.value]
-        t_pawns[COLORS.BOTH.value] = self.pawns[COLORS.BOTH.value]
+        t_pawns[Colors.WHITE] = self.pawns[Colors.WHITE]
+        t_pawns[Colors.BLACK] = self.pawns[Colors.BLACK]
+        t_pawns[Colors.BOTH] = self.pawns[Colors.BOTH]
         
         
         # check piece lists
-        for t_piece in range(PIECE.wP.value, PIECE.bK.value+1):
+        for t_piece in range(Pieces.wP, Pieces.bK+1):
             for t_pce_num in range(0, self.pceNum[t_piece]): # lets say we have 3 white pawns, this loop will loop form 0 - 2
                 sq120 = self.pList[t_piece][t_pce_num] # getting the sqaure of the pawn
                 assert_condition(self.pieces[sq120] == t_piece, message="Mismatch between the pList and pieces (12x10 board)") # checking if on actual 12x10 board, that piece exists on that square or not
@@ -293,46 +293,46 @@ class Board:
                 
                 t_material[colour] += PieceVal[t_piece]
             
-        for t_piece in range(PIECE.wP.value, PIECE.bK.value+1):
+        for t_piece in range(Pieces.wP, Pieces.bK+1):
             assert_condition(t_pceNum[t_piece] == self.pceNum[t_piece], message="Piece Number Not Matched!") #checking if the piece number on the board is equal to the piece num we calculated
             
         # check pawn bitboards
-        pcount = CountBits(t_pawns[COLORS.WHITE.value])
-        assert_condition(pcount == self.pceNum[PIECE.wP.value], message="Mismatch between WHITE Pawns Bitboard and No. of White Pawns")
-        pcount = CountBits(t_pawns[COLORS.BLACK.value])
-        assert_condition(pcount == self.pceNum[PIECE.bP.value], message="Mismatch between BLACK Pawns Bitboard and No. of BLack Pawns")
-        pcount = CountBits(t_pawns[COLORS.BOTH.value])
-        assert_condition(pcount == self.pceNum[PIECE.wP.value] + self.pceNum[PIECE.bP.value], message="Mismatch between BOTH Pawns Bitboard and No. of BOTH Pawns")
+        pcount = CountBits(t_pawns[Colors.WHITE])
+        assert_condition(pcount == self.pceNum[Pieces.wP], message="Mismatch between WHITE Pawns Bitboard and No. of White Pawns")
+        pcount = CountBits(t_pawns[Colors.BLACK])
+        assert_condition(pcount == self.pceNum[Pieces.bP], message="Mismatch between BLACK Pawns Bitboard and No. of BLack Pawns")
+        pcount = CountBits(t_pawns[Colors.BOTH])
+        assert_condition(pcount == self.pceNum[Pieces.wP] + self.pceNum[Pieces.bP], message="Mismatch between BOTH Pawns Bitboard and No. of BOTH Pawns")
         
         #check bitboards square
-        tp = t_pawns[COLORS.WHITE.value]
+        tp = t_pawns[Colors.WHITE]
         while(tp):
             sq64, tp = PopBit(tp)
-            assert_condition(self.pieces[Sq64ToSq120[sq64]] == PIECE.wP.value, message="WHITE Pawn on bitboard and actual Board not Matched!!")
+            assert_condition(self.pieces[Sq64ToSq120[sq64]] == Pieces.wP, message="WHITE Pawn on bitboard and actual Board not Matched!!")
             
-        tp = t_pawns[COLORS.BLACK.value]
+        tp = t_pawns[Colors.BLACK]
         while(tp):
             sq64, tp = PopBit(tp)
-            assert_condition(self.pieces[Sq64ToSq120[sq64]] == PIECE.bP.value, message="BLACK Pawn on bitboard and actual Board not Matched!!")
+            assert_condition(self.pieces[Sq64ToSq120[sq64]] == Pieces.bP, message="BLACK Pawn on bitboard and actual Board not Matched!!")
             
-        tp = t_pawns[COLORS.BOTH.value]
+        tp = t_pawns[Colors.BOTH]
         while(tp):
             sq64, tp = PopBit(tp)
-            assert_condition((self.pieces[Sq64ToSq120[sq64]] == PIECE.wP.value) or (self.pieces[Sq64ToSq120[sq64]] == PIECE.bP.value), message="WHITE or BLACK Pawn on bitboard and actual Board not Matched!!")
+            assert_condition((self.pieces[Sq64ToSq120[sq64]] == Pieces.wP) or (self.pieces[Sq64ToSq120[sq64]] == Pieces.bP), message="WHITE or BLACK Pawn on bitboard and actual Board not Matched!!")
             
-        assert_condition(t_material[COLORS.WHITE.value] == self.material[COLORS.WHITE.value] and t_material[COLORS.BLACK.value] == self.material[COLORS.BLACK.value], message="Material Value Not Matched!!")
+        assert_condition(t_material[Colors.WHITE] == self.material[Colors.WHITE] and t_material[Colors.BLACK] == self.material[Colors.BLACK], message="Material Value Not Matched!!")
         
-        assert_condition(t_minPce[COLORS.WHITE.value] == self.minPce[COLORS.WHITE.value] and t_minPce[COLORS.BLACK.value] == self.minPce[COLORS.BLACK.value], message="Number of Min Pieces not Matched!!")
+        assert_condition(t_minPce[Colors.WHITE] == self.minPce[Colors.WHITE] and t_minPce[Colors.BLACK] == self.minPce[Colors.BLACK], message="Number of Min Pieces not Matched!!")
         
-        assert_condition(t_majPce[COLORS.WHITE.value] == self.majPce[COLORS.WHITE.value] and t_majPce[COLORS.BLACK.value] == self.majPce[COLORS.BLACK.value], message="Number of Maj Pieces not Matched!!")
+        assert_condition(t_majPce[Colors.WHITE] == self.majPce[Colors.WHITE] and t_majPce[Colors.BLACK] == self.majPce[Colors.BLACK], message="Number of Maj Pieces not Matched!!")
         
-        assert_condition(t_bigPce[COLORS.WHITE.value] == self.bigPce[COLORS.WHITE.value] and t_bigPce[COLORS.BLACK.value] == self.bigPce[COLORS.BLACK.value], message="Number of Big (Non-Pawn) Pieces not Matched!!")
+        assert_condition(t_bigPce[Colors.WHITE] == self.bigPce[Colors.WHITE] and t_bigPce[Colors.BLACK] == self.bigPce[Colors.BLACK], message="Number of Big (Non-Pawn) Pieces not Matched!!")
         
-        assert_condition(self.side == COLORS.WHITE.value or self.side == COLORS.BLACK.value, message="SIDE can either be WHITE or BLACK")
-        assert_condition(self.enPas == SQUARES.NO_SQ.value or (RanksBrd[self.enPas] == RANK.R6.value and self.side == COLORS.WHITE.value) or (RanksBrd[self.enPas] == RANK.R3.value and self.side == COLORS.BLACK.value), message="Invalid EnPas Square") # enPas square is either on rank 3 or rank 6
+        assert_condition(self.side == Colors.WHITE or self.side == Colors.BLACK, message="SIDE can either be WHITE or BLACK")
+        assert_condition(self.enPas == Squares.NO_SQ or (RanksBrd[self.enPas] == Ranks.R6 and self.side == Colors.WHITE) or (RanksBrd[self.enPas] == Ranks.R3 and self.side == Colors.BLACK), message="Invalid EnPas Square") # enPas square is either on rank 3 or rank 6
         
-        assert_condition(self.pieces[self.king_square[COLORS.WHITE.value]] == PIECE.wK.value, message="WHITE King Square not Matched!!")
-        assert_condition(self.pieces[self.king_square[COLORS.BLACK.value]] == PIECE.bK.value, message="BLACK King Square not Matched!!")
+        assert_condition(self.pieces[self.king_square[Colors.WHITE]] == Pieces.wK, message="WHITE King Square not Matched!!")
+        assert_condition(self.pieces[self.king_square[Colors.BLACK]] == Pieces.bK, message="BLACK King Square not Matched!!")
         
         return True
 
@@ -345,7 +345,7 @@ class Board:
         self.posKey.hash_piece(piece=pce, square=sq)
         
         col = PieceCol[pce] # getting the color of the piece
-        self.pieces[sq] = PIECE.EMPTY.value # making that square empty
+        self.pieces[sq] = Pieces.EMPTY # making that square empty
         self.material[col] -= PieceVal[pce] # subtracting its value
         
         if(PieceBig[pce]): # if its a non-pawn piece
@@ -356,7 +356,7 @@ class Board:
                 self.minPce[col] -= 1
         else: # if its a pawn
             self.pawns[col] = ClearBit(self.pawns[col], Sq120ToSq64[sq]) # bitboard, sq64
-            self.pawns[COLORS.BOTH.value] = ClearBit(self.pawns[COLORS.BOTH.value], Sq120ToSq64[sq])
+            self.pawns[Colors.BOTH] = ClearBit(self.pawns[Colors.BOTH], Sq120ToSq64[sq])
 
 
         # removing that particular piece from the pList[][]  
@@ -389,7 +389,7 @@ class Board:
                 self.minPce[col] += 1
         else: 
             self.pawns[col] = SetBit(self.pawns[col], Sq120ToSq64[sq])
-            self.pawns[COLORS.BOTH.value] = SetBit(self.pawns[COLORS.BOTH.value], Sq120ToSq64[sq])
+            self.pawns[Colors.BOTH] = SetBit(self.pawns[Colors.BOTH], Sq120ToSq64[sq])
             
         self.material[col] += PieceVal[pce] #updating the material value
         self.pList[pce][self.pceNum[pce]] = sq # setting the pce on pList
@@ -405,16 +405,16 @@ class Board:
         t_PieceIndex = False
         
         self.posKey.hash_piece(piece=pce, square=fromSq)
-        self.pieces[fromSq] = PIECE.EMPTY.value
+        self.pieces[fromSq] = Pieces.EMPTY
         
         self.posKey.hash_piece(piece=pce, square=toSq)
         self.pieces[toSq] = pce
         
         if(not PieceBig[pce]): # if its a pawn
             self.pawns[col] = ClearBit(self.pawns[col], Sq120ToSq64[fromSq])
-            self.pawns[COLORS.BOTH.value] = ClearBit(self.pawns[COLORS.BOTH.value], Sq120ToSq64[fromSq])
+            self.pawns[Colors.BOTH] = ClearBit(self.pawns[Colors.BOTH], Sq120ToSq64[fromSq])
             self.pawns[col] = SetBit(self.pawns[col], Sq120ToSq64[toSq])
-            self.pawns[COLORS.BOTH.value] = SetBit(self.pawns[COLORS.BOTH.value], Sq120ToSq64[toSq])
+            self.pawns[Colors.BOTH] = SetBit(self.pawns[Colors.BOTH], Sq120ToSq64[toSq])
             
         for index in range(0, self.pceNum[pce]):
             if(self.pList[pce][index] == fromSq):
@@ -438,7 +438,7 @@ class Board:
         assert_condition(SqOnBoard(fromSq))
         assert_condition(SqOnBoard(toSq))
         
-        if(self.enPas != SQUARES.NO_SQ.value):
+        if(self.enPas != Squares.NO_SQ):
             self.posKey.hash_enPas(enPas=self.enPas)
         self.posKey.hash_castle(castlePerm=self.castlePerm) # hashing out the current castle Perm
         
@@ -446,7 +446,7 @@ class Board:
         self.fiftyMove = self.history[self.hisPly].fiftyMove
         self.enPas = self.history[self.hisPly].enPas
         
-        if(self.enPas != SQUARES.NO_SQ.value):
+        if(self.enPas != Squares.NO_SQ):
             self.posKey.hash_enPas(enPas=self.enPas)
         self.posKey.hash_castle(castlePerm=self.castlePerm) # hashing in the new castle permission
         
@@ -454,20 +454,20 @@ class Board:
         self.posKey.hash_side()
         
         if(move.move & MOVE.FLAG_EP): # if it was an enPas capture, then we add back the pieces
-            if(self.side == COLORS.WHITE.value):
-                self.add_piece(toSq-10, PIECE.bP.value)
+            if(self.side == Colors.WHITE):
+                self.add_piece(toSq-10, Pieces.bP)
             else:
-                self.add_piece(toSq+10, PIECE.wP.value)
+                self.add_piece(toSq+10, Pieces.wP)
                 
         elif(move.move & MOVE.FLAG_CA): # if it was a castle move
-            if(toSq == SQUARES.C1.value):
-                self.move_piece(SQUARES.D1.value, SQUARES.A1.value) # moving back the rook
-            elif(toSq == SQUARES.C8.value):
-                self.move_piece(SQUARES.D8.value, SQUARES.A8.value) # moving back the rook
-            elif(toSq == SQUARES.G1.value):
-                self.move_piece(SQUARES.F1.value, SQUARES.H1.value) # moving back the rook
-            elif(toSq == SQUARES.G8.value):
-                self.move_piece(SQUARES.F8.value, SQUARES.H8.value) # moving back the rook
+            if(toSq == Squares.C1):
+                self.move_piece(Squares.D1, Squares.A1) # moving back the rook
+            elif(toSq == Squares.C8):
+                self.move_piece(Squares.D8, Squares.A8) # moving back the rook
+            elif(toSq == Squares.G1):
+                self.move_piece(Squares.F1, Squares.H1) # moving back the rook
+            elif(toSq == Squares.G8):
+                self.move_piece(Squares.F8, Squares.H8) # moving back the rook
             else:
                 assert_condition(False)
                 
@@ -478,15 +478,15 @@ class Board:
             self.king_square[self.side] = fromSq # moving back the king
             
         captured = move.CAPTURED()
-        if(captured != PIECE.EMPTY.value):
+        if(captured != Pieces.EMPTY):
             assert_condition(PieceValid(captured))
             self.add_piece(toSq, captured) # adding back the captured piece
             
         prPce = move.PROMOTED()
-        if(prPce != PIECE.EMPTY.value): #  ! explanation is needed
+        if(prPce != Pieces.EMPTY): #  ! explanation is needed
             assert_condition(PieceValid(prPce) and not PiecePawn[prPce])
             self.clear_piece(fromSq)
-            toAdd = PIECE.wP.value if PieceCol[prPce] == COLORS.WHITE.value else PIECE.bP.value
+            toAdd = Pieces.wP if PieceCol[prPce] == Colors.WHITE else Pieces.bP
             self.add_piece(fromSq, toAdd)
         
         assert_condition(self.check_board())
@@ -507,23 +507,23 @@ class Board:
         self.history[self.hisPly].posKey = self.posKey # history array contains the objects of class UNDO()
         
         if(move.move & MOVE.FLAG_EP): # if its an enpassant capture
-            if(side == COLORS.WHITE.value):
+            if(side == Colors.WHITE):
                 self.clear_piece(toSq-10) # capturing the black pawn
             else:
                 self.clear_piece(toSq+10) # capturing the white pawn
         elif(move.move & MOVE.FLAG_CA): # if its an castle MOVE
-            if(toSq == SQUARES.C1.value):
-                self.move_piece(SQUARES.A1.value, SQUARES.D1.value)
-            elif(toSq == SQUARES.C8.value):
-                self.move_piece(SQUARES.A8.value, SQUARES.D8.value)
-            elif(toSq == SQUARES.G1.value): # white king side castling
-                self.move_piece(SQUARES.H1.value, SQUARES.F1.value) # moving the rook from h1 -> f1
-            elif(toSq == SQUARES.G8.value):
-                self.move_piece(SQUARES.H8.value, SQUARES.F8.value)
+            if(toSq == Squares.C1):
+                self.move_piece(Squares.A1, Squares.D1)
+            elif(toSq == Squares.C8):
+                self.move_piece(Squares.A8, Squares.D8)
+            elif(toSq == Squares.G1): # white king side castling
+                self.move_piece(Squares.H1, Squares.F1) # moving the rook from h1 -> f1
+            elif(toSq == Squares.G8):
+                self.move_piece(Squares.H8, Squares.F8)
             else:
                 assert_condition(False)
                 
-        if(self.enPas != SQUARES.NO_SQ.value):
+        if(self.enPas != Squares.NO_SQ):
             self.posKey.hash_enPas(enPas=self.enPas)
             
         self.posKey.hash_castle(castlePerm=self.castlePerm) # hashing out the castle permission
@@ -535,14 +535,14 @@ class Board:
         
         self.castlePerm &= CastlePerm[fromSq] # if king or rook has moved
         self.castlePerm &= CastlePerm[toSq] # if rook or king has moved
-        self.enPas = SQUARES.NO_SQ.value
+        self.enPas = Squares.NO_SQ
         
         self.posKey.hash_castle(castlePerm=self.castlePerm) # hashing in the new castle permission
         
         captured = move.CAPTURED()
         self.fiftyMove += 1
         
-        if(captured != PIECE.EMPTY.value):
+        if(captured != Pieces.EMPTY):
             assert_condition(PieceValid(captured))
             self.clear_piece(toSq) # first we capture on the toSq, then we move
             self.fiftyMove = 0 # if a capture is made, then fifty move is set to 0
@@ -554,12 +554,12 @@ class Board:
         if(PiecePawn[self.pieces[fromSq]]): # if the piece on fromSq was a pawn
             self.fiftyMove = 0 # if its a pawn move, reset the counter
             if(move.move & MOVE.FLAG_PS): # if it was a pawn start move
-                if(side == COLORS.WHITE.value):
+                if(side == Colors.WHITE):
                     self.enPas = fromSq + 10
-                    assert_condition(RanksBrd[self.enPas] == RANK.R3.value)
+                    assert_condition(RanksBrd[self.enPas] == Ranks.R3)
                 else:
                     self.enPas = fromSq - 10
-                    assert_condition(RanksBrd[self.enPas] == RANK.R6.value)
+                    assert_condition(RanksBrd[self.enPas] == Ranks.R6)
                 self.posKey.hash_enPas(enPas=self.enPas) # hashing in the new enPas
         
         # finally moving the piece on the board
@@ -567,7 +567,7 @@ class Board:
         
         # checking for promotions
         prPce = move.PROMOTED()
-        if(prPce != PIECE.EMPTY.value):
+        if(prPce != Pieces.EMPTY):
             assert_condition(PieceValid(prPce) and not PiecePawn[prPce])
             
             # ! explanation needed
@@ -599,57 +599,57 @@ class Board:
     
     def evaluate_position(self) -> int:
         pce = 0
-        score = self.material[COLORS.WHITE.value] - self.material[COLORS.BLACK.value]
+        score = self.material[Colors.WHITE] - self.material[Colors.BLACK]
         
-        pce=PIECE.wP.value
+        pce=Pieces.wP
         for pceNum in range(0, self.pceNum[pce]): # traversing all the white pawns
             sq = self.pList[pce][pceNum] # getting the 120 based square on which the piece is
             assert_condition(SqOnBoard(sq))
             score += PawnTable[Sq120ToSq64[sq]]
         
-        pce=PIECE.bP.value
+        pce=Pieces.bP
         for pceNum in range(0, self.pceNum[pce]): # traversing all the black pawns
             sq = self.pList[pce][pceNum] # getting the 120 based square on which the piece is
             assert_condition(SqOnBoard(sq))
             score -= PawnTable[Mirror64[Sq120ToSq64[sq]]] # mirroring the square for black
             
-        pce=PIECE.wN.value
+        pce=Pieces.wN
         for pceNum in range(0, self.pceNum[pce]): # traversing all the white knights
             sq = self.pList[pce][pceNum] # getting the 120 based square on which the piece is
             assert_condition(SqOnBoard(sq))
             score += KnightTable[Sq120ToSq64[sq]]
         
-        pce=PIECE.bN.value
+        pce=Pieces.bN
         for pceNum in range(0, self.pceNum[pce]): # traversing all the black knights
             sq = self.pList[pce][pceNum] # getting the 120 based square on which the piece is
             assert_condition(SqOnBoard(sq))
             score -= KnightTable[Mirror64[Sq120ToSq64[sq]]] # mirroring the square for black
             
-        pce=PIECE.wB.value
+        pce=Pieces.wB
         for pceNum in range(0, self.pceNum[pce]): # traversing all the white bishops
             sq = self.pList[pce][pceNum] # getting the 120 based square on which the piece is
             assert_condition(SqOnBoard(sq))
             score += BishopTable[Sq120ToSq64[sq]]
         
-        pce=PIECE.bB.value
+        pce=Pieces.bB
         for pceNum in range(0, self.pceNum[pce]): # traversing all the black bishops
             sq = self.pList[pce][pceNum] # getting the 120 based square on which the piece is
             assert_condition(SqOnBoard(sq))
             score -= BishopTable[Mirror64[Sq120ToSq64[sq]]] # mirroring the square for black
             
-        pce=PIECE.wR.value
+        pce=Pieces.wR
         for pceNum in range(0, self.pceNum[pce]): # traversing all the white rooks
             sq = self.pList[pce][pceNum] # getting the 120 based square on which the piece is
             assert_condition(SqOnBoard(sq))
             score += RookTable[Sq120ToSq64[sq]]
         
-        pce=PIECE.bR.value
+        pce=Pieces.bR
         for pceNum in range(0, self.pceNum[pce]): # traversing all the black rooks
             sq = self.pList[pce][pceNum] # getting the 120 based square on which the piece is
             assert_condition(SqOnBoard(sq))
             score -= RookTable[Mirror64[Sq120ToSq64[sq]]] # mirroring the square for black
             
-        if(self.side == COLORS.WHITE.value):
+        if(self.side == Colors.WHITE):
             return score
         else:
             return -score # negating the score for black (because we are calculating score based on white, lets say black's score is better than our score value will be -ve because score = whiteMaterial - blackMaterial and later on we are subtracting for black and adding for white)

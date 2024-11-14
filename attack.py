@@ -1,4 +1,4 @@
-from constants import PIECE, COLORS, SQUARES
+from constants import Pieces, Colors, Squares
 from globals import PieceKnight, PieceKing, PieceRookQueen, PieceBishopQueen, PieceCol
 from validate import SqOnBoard, SideValid, PieceValidEmpty
 from debug import assert_condition
@@ -24,11 +24,11 @@ def is_sqaure_attacked(sq, side, board):
     assert_condition(board.check_board())
     
     # checking for pawns
-    if(side == COLORS.WHITE.value):
-        if(board.pieces[sq - 11] == PIECE.wP.value or board.pieces[sq - 9] == PIECE.wP.value): # -9 -11 for white pieces, 
+    if(side == Colors.WHITE):
+        if(board.pieces[sq - 11] == Pieces.wP or board.pieces[sq - 9] == Pieces.wP): # -9 -11 for white pieces, 
             return True
     else:
-        if(board.pieces[sq + 11] == PIECE.bP.value or board.pieces[sq + 9] == PIECE.bP.value): # +9 and +11 for black pawns
+        if(board.pieces[sq + 11] == Pieces.bP or board.pieces[sq + 9] == Pieces.bP): # +9 and +11 for black pawns
             return True
         
     # checking for knights
@@ -42,8 +42,8 @@ def is_sqaure_attacked(sq, side, board):
         dir = rook_direction[i]
         t_sq = sq + dir
         pce = board.pieces[t_sq]
-        while(pce != SQUARES.OFFBOARD.value): # for moving pieces, till they reach the board end
-            if(pce != PIECE.EMPTY.value):
+        while(pce != Squares.OFFBOARD): # for moving pieces, till they reach the board end
+            if(pce != Pieces.EMPTY):
                 if(PieceRookQueen[pce] and PieceCol[pce] == side):
                     return True
                 break #if it hits another piece
@@ -55,8 +55,8 @@ def is_sqaure_attacked(sq, side, board):
         dir = bishop_direction[i]
         t_sq = sq + dir
         pce = board.pieces[t_sq]
-        while(pce != SQUARES.OFFBOARD.value): # for moving pieces, till they reach the board end
-            if(pce != PIECE.EMPTY.value):
+        while(pce != Squares.OFFBOARD): # for moving pieces, till they reach the board end
+            if(pce != Pieces.EMPTY):
                 if(PieceBishopQueen[pce] and PieceCol[pce] == side):
                     return True
                 break #if it hits another piece

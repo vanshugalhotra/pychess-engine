@@ -1,4 +1,4 @@
-from constants import BRD_SQ_NUM, COLORS, PIECE, SQUARES
+from constants import BRD_SQ_NUM, Pieces, Colors, Squares
 
 Sq120ToSq64 = [65] * BRD_SQ_NUM # initially every box is 65 (representing offboard)
 Sq64ToSq120 = [120] * 64 # initially every box is 120 doesn't mean anything we can put any value
@@ -6,8 +6,8 @@ Sq64ToSq120 = [120] * 64 # initially every box is 120 doesn't mean anything we c
 setMask = [0] * 64
 clearMask = [0] * 64
 
-FilesBrd = [SQUARES.OFFBOARD.value] * BRD_SQ_NUM
-RanksBrd = [SQUARES.OFFBOARD.value] * BRD_SQ_NUM
+FilesBrd = [Squares.OFFBOARD] * BRD_SQ_NUM
+RanksBrd = [Squares.OFFBOARD] * BRD_SQ_NUM
 
 
 PceChar = ".PNBRQKpnbrqk"
@@ -34,7 +34,7 @@ PieceBig = [False, False, True, True, True,True, True, False,True, True, True, T
 PieceMaj = [False, False, False, False, True, True, True, False, False, False,True, True, True]
 PieceMin = [False, False, True, True, False, False, False, False, True, True,False, False, False]
 PieceVal = [0, 100, 325,325,  550, 1000, 50000, 100, 325, 325, 550, 1000, 50000]
-PieceCol = [COLORS.BOTH.value, COLORS.WHITE.value, COLORS.WHITE.value, COLORS.WHITE.value, COLORS.WHITE.value, COLORS.WHITE.value, COLORS.WHITE.value, COLORS.BLACK.value, COLORS.BLACK.value, COLORS.BLACK.value, COLORS.BLACK.value, COLORS.BLACK.value, COLORS.BLACK.value]
+PieceCol = [Colors.BOTH, Colors.WHITE, Colors.WHITE, Colors.WHITE, Colors.WHITE, Colors.WHITE, Colors.WHITE, Colors.BLACK, Colors.BLACK, Colors.BLACK, Colors.BLACK, Colors.BLACK, Colors.BLACK]
 
 PiecePawn = [False, True, False, False, False, False, False, True, False, False, False, False, False] # is Piece a Pawn ?
 PieceKnight = [False, False, True, False, False, False, False, False, True, False, False, False, False] # is Piece a Knight ?
@@ -45,9 +45,9 @@ PieceBishopQueen = [False, False, False, True, False, True, False, False, False,
 PieceSlides = [False, False, False, True, True, True, False, False, False, True, True, True, False]
 
 
-LoopSlidePce = [PIECE.wB.value, PIECE.wR.value, PIECE.wQ.value, 0, PIECE.bB.value, PIECE.bR.value, PIECE.bQ.value, 0] # initially, lets say WHITE is generating moves then it will start from index 0 and loop till value is 0, means till number is 0, we generate moves for sliding pieces
+LoopSlidePce = [Pieces.wB, Pieces.wR, Pieces.wQ, 0, Pieces.bB, Pieces.bR, Pieces.bQ, 0] # initially, lets say WHITE is generating moves then it will start from index 0 and loop till value is 0, means till number is 0, we generate moves for sliding pieces
 
-LoopNonSlidePce = [PIECE.wN.value, PIECE.wK.value, 0, PIECE.bN.value, PIECE.bK.value, 0]
+LoopNonSlidePce = [Pieces.wN, Pieces.wK, 0, Pieces.bN, Pieces.bK, 0]
 
 LoopSlideIndex = [0, 4] # IF WHITE starts - 0, if BLACK - 4.
 LoopNonSlideIndex = [0, 3]
@@ -95,7 +95,7 @@ Victim R -> 400
 VictimScore = [0, 100, 200, 300, 400, 500, 600, 100, 200, 300, 400, 500, 600]
 
 # the following array also covers, white pawn takes white pawn and also similar illegal captures but we will deal with them later
-MvvLvaScores = [[VictimScore[victim] + 6 - (VictimScore[attacker] // 100) for attacker in range(0, PIECE.bK.value + 1)] for victim in range(0, PIECE.bK.value + 1)]
+MvvLvaScores = [[VictimScore[victim] + 6 - (VictimScore[attacker] // 100) for attacker in range(0, Pieces.bK + 1)] for victim in range(0, Pieces.bK + 1)]
 
 
 # basic evaluation values, like this says pawn on e5 is worth a 20 value than a pawn on a a5

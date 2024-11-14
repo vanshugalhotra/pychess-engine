@@ -1,128 +1,49 @@
-from enum import Enum
+from collections import namedtuple
 
 BRD_SQ_NUM = 120
 MAXGAMEMOVES = 2048
 MAXPOSITIONMOVES = 256
 MAXDEPTH = 64
 
-class PIECE(Enum):
-    EMPTY = 0
-    wP = 1 # white pawn
-    wN = 2 # white Knight
-    wB = 3 # white bishop
-    wR = 4
-    wQ = 5
-    wK = 6
-    bP = 7
-    bN = 8
-    bB = 9
-    bR = 10
-    bQ = 11
-    bK = 12
-    
-class FILE(Enum):
-    A = 0
-    B = 1
-    C = 2
-    D = 3
-    E = 4
-    F = 5
-    G = 6
-    H = 7
-    NONE = 8
-    
-class RANK(Enum):
-    R1 = 0
-    R2 = 1
-    R3 = 2
-    R4 = 3
-    R5 = 4
-    R6 = 5
-    R7 = 6
-    R8 = 7
-    RNONE = 8
-    
-class COLORS(Enum):
-    WHITE = 0
-    BLACK = 1
-    BOTH = 2
-    
-class SQUARES(Enum):
-    A1 = 21
-    A2 = 31
-    A3 = 41
-    A4 = 51
-    A5 = 61
-    A6 = 71
-    A7 = 81
-    A8 = 91
-    
-    B1 = 22
-    B2 = 32
-    B3 = 42
-    B4 = 52
-    B5 = 62
-    B6 = 72
-    B7 = 82
-    B8 = 92
-    
-    C1 = 23
-    C2 = 33
-    C3 = 43
-    C4 = 53
-    C5 = 63
-    C6 = 73
-    C7 = 83
-    C8 = 93
-    
-    D1 = 24
-    D2 = 34
-    D3 = 44
-    D4 = 54
-    D5 = 64
-    D6 = 74
-    D7 = 84
-    D8 = 94
-    
-    E1 = 25
-    E2 = 35
-    E3 = 45
-    E4 = 55
-    E5 = 65
-    E6 = 75
-    E7 = 85
-    E8 = 95
-    
-    F1 = 26
-    F2 = 36
-    F3 = 46
-    F4 = 56
-    F5 = 66
-    F6 = 76
-    F7 = 86
-    F8 = 96
-    
-    G1 = 27
-    G2 = 37
-    G3 = 47
-    G4 = 57
-    G5 = 67
-    G6 = 77
-    G7 = 87
-    G8 = 97
-    
-    H1 = 28
-    H2 = 38
-    H3 = 48
-    H4 = 58
-    H5 = 68
-    H6 = 78
-    H7 = 88
-    H8 = 98
-    
-    NO_SQ = 99
-    OFFBOARD = 100
-    
+Piece = namedtuple("Piece", ['EMPTY', 'wP', 'wN', 'wB','wR', 'wQ', 'wK', 'bP', 'bN', 'bB', 'bR', 'bQ', 'bK'])
+Pieces = Piece(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12)
+
+File = namedtuple("File", ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', "NONE"])
+Files = File(0, 1, 2, 3, 4, 5, 6, 7, 8)
+
+Rank = namedtuple("Rank", ['R1', 'R2', 'R3', 'R4', 'R5', 'R6', 'R7', 'R8', 'RNONE'])
+Ranks = Rank(0, 1, 2, 3, 4, 5, 6, 7, 8)
+
+Color = namedtuple("Color", ["WHITE", "BLACK", "BOTH"])
+Colors = Color(0, 1, 2)    
+
+Square = namedtuple("Square", [
+    "A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8",
+    "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8",
+    "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8",
+    "D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8",
+    "E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8",
+    "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8",
+    "G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8",
+    "H1", "H2", "H3", "H4", "H5", "H6", "H7", "H8",
+    "NO_SQ", "OFFBOARD"
+])
+
+Squares = Square(
+    21, 31, 41, 51, 61, 71, 81, 91,
+    22, 32, 42, 52, 62, 72, 82, 92,
+    23, 33, 43, 53, 63, 73, 83, 93,
+    24, 34, 44, 54, 64, 74, 84, 94,
+    25, 35, 45, 55, 65, 75, 85, 95,
+    26, 36, 46, 56, 66, 76, 86, 96,
+    27, 37, 47, 57, 67, 77, 87, 97,
+    28, 38, 48, 58, 68, 78, 88, 98,
+    99, 100
+)
+
+Castle = namedtuple("Castle", ['WKCA', 'WQCA', 'BKCA', 'BQCA'])
+Castling = Castle(1, 2, 4, 8)
+
 class UNDO:
     def __init__(self):
         self.move = 0 # the move number
@@ -131,8 +52,3 @@ class UNDO:
         self.fiftyMove = 0
         self.posKey = 0 #unqiue position key (object of PositionKey Class)
         # castling information
-class CASTLING(Enum):
-    WKCA = 1 # white king side castling
-    WQCA = 2 # white queen side castling
-    BKCA = 4
-    BQCA = 8

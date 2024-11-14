@@ -1,6 +1,6 @@
-from constants import COLORS, MAXDEPTH
+from constants import MAXDEPTH, Colors
 from perft import PerftTest
-from move import MOVELIST, MOVE
+from move import MOVELIST
 from engine import Engine
 from fens import START_FEN
 
@@ -25,19 +25,19 @@ def ParseGo(line):
     while i < len(tokens):
         token = tokens[i]
         if(token == "binc"):
-            inc = int(tokens[i+1]) if engine.board.side == COLORS.BLACK.value else inc
+            inc = int(tokens[i+1]) if engine.board.side == Colors.BLACK else inc
             i += 2
             
         elif(token == "winc"):
-            inc = int(tokens[i+1]) if engine.board.side == COLORS.WHITE.value else inc
+            inc = int(tokens[i+1]) if engine.board.side == Colors.WHITE else inc
             i += 2
             
         elif(token == "wtime"):
-            time = int(tokens[i+1]) if engine.board.side == COLORS.WHITE.value else time 
+            time = int(tokens[i+1]) if engine.board.side == Colors.WHITE else time 
             i += 2
             
         elif(token == "btime"):
-            time = int(tokens[i+1]) if engine.board.side == COLORS.BLACK.value else time 
+            time = int(tokens[i+1]) if engine.board.side == Colors.BLACK else time 
             i += 2
             
         elif(token == "movestogo"):
