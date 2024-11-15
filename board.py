@@ -1,4 +1,5 @@
 from constants import *
+from undo import UNDO
 from globals import Sq64ToSq120, Sq120ToSq64, RanksBrd
 from debug import _assert_condition, DEBUG
 from hashkeys import PositionKey
@@ -10,6 +11,7 @@ from move import MOVE, MOVELIST
 from pvtable import PVTABLE
 from helper import FR2SQ
 
+counter = 0
 class Board:
     """
     Representing the game board for a chess game. Handles
@@ -74,10 +76,7 @@ class Board:
         self.searchKillers = [[MOVE() for _ in range(MAXDEPTH)] for _ in range(2)] # searchKillers[2][MAXDEPTH], stores 2 recent moves which caused the beta cutoff which aren't captures
         
     def reset_board(self) -> None:
-        """
-        Resetting the board to initial state
-        
-        """
+        """Resetting the board to initial state"""
         for i in range(0, BRD_SQ_NUM):
             self.pieces[i] = Squares.OFFBOARD
     
@@ -554,7 +553,7 @@ class Board:
         _assert_condition(PieceValid(self.pieces[fromSq]))
         
         # storing the move in history, before changing any posKey, we store the posKey in history
-        self.history[self.hisPly].posKey = self.posKey # history array contains the objects of class UNDO()
+        self.history[self.hisPly].posKey = self.posKey.copy() # history array contains the objects of class UNDO()
         
         if(move.move & MOVE.FLAG_EP): # if its an enpassant capture
             if(side == Colors.WHITE):
@@ -575,7 +574,7 @@ class Board:
                 
         if(self.enPas != Squares.NO_SQ):
             self.posKey._hash_enPas(enPas=self.enPas)
-            
+        
         self.posKey._hash_castle(castlePerm=self.castlePerm) # hashing out the castle permission
         
         self.history[self.hisPly].move = move
@@ -649,9 +648,12 @@ class Board:
             bool: True if the current position has been seen before in the game history, 
                 indicating a repetition. False otherwise.
         """
+        global counter
         for index in range(self.hisPly - self.fiftyMove, self.hisPly-1):
             if(self.posKey.key == self.history[index].posKey.key):
                 _assert_condition(index >=0 and index <= MAXGAMEMOVES)
+                counter += 1
+                # print(f"{counter}")
                 return True
             
         return False

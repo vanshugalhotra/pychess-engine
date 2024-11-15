@@ -43,7 +43,12 @@ class PositionKey:
     def __init__(self):
         self.key = 0
         
-    def _hash_piece(self, piece, square) -> None:
+    def copy(self):
+        new_key = PositionKey()  # Create a new instance
+        new_key.key = self.key   # Copy the internal state
+        return new_key
+        
+    def _hash_piece(self, piece: int, square: int) -> None:
         self.key ^= PositionKey.PieceKeys[piece][square]
         
     def _hash_castle(self, castlePerm: int) -> None:

@@ -292,7 +292,7 @@ class MOVELIST:
         _assert_condition(SqOnBoard(from_square))
         _assert_condition(SqOnBoard(to_square))
         _assert_condition(PieceValidEmpty(cap))
-        if(RanksBrd[from_square] == Ranks.R1): # if a black pawn captures something from rank 2, then it is promotion move
+        if(RanksBrd[from_square] == Ranks.R2): # if a black pawn captures something from rank 2, then it is promotion move
             self._add_capture_move(board, MOVE(from_square, to_square,cap,Pieces.bQ, 0)) # promoted to black Queen
             self._add_capture_move(board, MOVE(from_square, to_square,cap,Pieces.bR, 0)) # promoted to black Rook
             self._add_capture_move(board, MOVE(from_square, to_square,cap,Pieces.bB, 0)) # promoted to black Bishop
@@ -303,7 +303,7 @@ class MOVELIST:
     def _add_black_pawn_move(self, board, from_square: int, to_square: int) -> None:
         _assert_condition(SqOnBoard(from_square))
         _assert_condition(SqOnBoard(to_square))
-        if(RanksBrd[from_square] == Ranks.R1): # if a Black pawn captures something from rank 2, then it is promotion move
+        if(RanksBrd[from_square] == Ranks.R2): # if a Black pawn captures something from rank 2, then it is promotion move
             self._add_quite_move(board, MOVE(from_square, to_square,Pieces.EMPTY,Pieces.bQ, 0)) # promoted to Black Queen
             self._add_quite_move(board, MOVE(from_square, to_square,Pieces.EMPTY,Pieces.bR, 0)) # promoted to Black Rook
             self._add_quite_move(board, MOVE(from_square, to_square,Pieces.EMPTY,Pieces.bB, 0)) # promoted to Black Bishop
@@ -337,8 +337,8 @@ class MOVELIST:
                 # if it is a no capture move
                 if(board.pieces[sq + 10] == Pieces.EMPTY):
                     self._add_white_pawn_move(board, sq, sq+10) # board, fromSq, ToSq
-                    #
-                    if(RanksBrd[sq] == Ranks.R1 and board.pieces[sq + 20] == Pieces.EMPTY):
+                    
+                    if(RanksBrd[sq] == Ranks.R2 and board.pieces[sq + 20] == Pieces.EMPTY):
                         self._add_quite_move(board, MOVE(sq, sq+20, Pieces.EMPTY, Pieces.EMPTY, MOVE.FLAG_PS)) # added a quite move, because there was no capture, also setted the Pawn Start Flag
                         
                 # if it is a capture move            
