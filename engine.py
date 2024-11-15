@@ -25,6 +25,14 @@ class EngineControls:
         fh (int): Count of fail-high occurrences during alpha-beta pruning.
         fhf (int): Count of fail-high occurrences on the first move.
     """
+    elo_to_depth = {
+        300  : 1,
+        700  : 2,
+        1000 : 3,
+        1300 : 4,
+        1500 : 5,
+        1700 : 6
+    }
     def __init__(self):
         self.starttime = 0
         self.stoptime = 0
@@ -101,7 +109,7 @@ class Engine:
         Determines the best move based on search parameters and constraints.    
     
     """
-    MAX_ELO = 1500
+    MAX_ELO = 1700
     def __init__(self, elo=1500):
         self.name = "UstaadJi"
         self.author = "Vanshu Galhotra"
@@ -207,7 +215,7 @@ class Engine:
         return self.board.evaluate_position()
     
     @execution_time
-    def best_move(self, depth=MAXDEPTH, movestogo=30, movetime=None, increment=0, time=None, display_calculation=True) -> str:
+    def best_move(self, depth=None, movestogo=30, movetime=None, increment=0, time=None, display_calculation=True) -> str:
         """
         Determines the best move using the specified search depth or time constraints.
         
@@ -222,9 +230,13 @@ class Engine:
         Returns:
             str: Best move in algebraic notation.
         """
-        self.controls.depth = depth # depth set according to elo
         self.controls.movestogo = movestogo
         self.controls.starttime = GetTimeMs()
+        
+        if depth is None:
+            depth = next((d for elo, d in sorted(EngineControls.elo_to_depth.items()) if self.elo <= elo), 6)
+        
+        self.controls.depth = depth
         
         if movetime:
             self.controls.movestogo = 1  # Only consider this move
