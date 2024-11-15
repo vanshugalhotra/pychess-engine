@@ -1,6 +1,6 @@
-from constants import Ranks, Files
-from globals import Sq120ToSq64, setMask, clearMask
-from helper import FR2SQ
+from pychess.globals import Sq120ToSq64, setMask, clearMask
+from pychess.helper import FR2SQ
+from pychess.constants import Ranks, Files
 
 bitTable = [
   63, 30, 3, 32, 25, 41, 22, 33, 15, 50, 42, 13, 11, 53, 19, 34, 61, 29, 2,

@@ -1,11 +1,11 @@
-from board import Board
-from move import MOVELIST, MOVE
-import init
-from fens import START_FEN
-from misc import GetTimeMs, ReadInput
-from helper import execution_time
-from search import Search
-from constants import MAXDEPTH
+from pychess.board import Board
+from pychess.move import MOVELIST, MOVE
+from pychess.init import initialize
+from pychess.fens import START_FEN
+from pychess.misc import GetTimeMs, ReadInput
+from pychess.helper import execution_time
+from pychess.search import Search
+from pychess.perft import PerftTest
 
 class EngineControls:
     """
@@ -119,7 +119,7 @@ class Engine:
         self.board = Board()
         self.search = Search(self.board, self.controls)
         
-        init.initialize()
+        initialize()
         self.load_fen(fen=START_FEN)
         
     def legal_moves(self) -> list:
@@ -259,3 +259,7 @@ class Engine:
     
     def print_board(self) -> None:
         self.board.print_board()
+    
+    def perft_test(self, depth=3) -> None:
+        """Perft Testing"""
+        PerftTest(depth=depth, board=self.board)

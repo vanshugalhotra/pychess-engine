@@ -1,2 +1,11 @@
-/venv
-/__pycache__
+# Python
+*.pyc
+__pycache__/
+
+# Distribution files
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+venv/

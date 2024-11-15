@@ -1,6 +1,6 @@
-from constants import Ranks, Files
-from globals import FilesBrd, RanksBrd, Sq64ToSq120, Sq120ToSq64, clearMask, setMask
-from helper import FR2SQ
+from pychess.constants import Ranks, Files
+from pychess.globals import FilesBrd, RanksBrd, Sq64ToSq120, Sq120ToSq64, clearMask, setMask
+from pychess.helper import FR2SQ
 
 def InitSq120To64AndSq64To120():
     sq = 0

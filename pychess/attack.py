@@ -1,7 +1,7 @@
-from constants import Pieces, Colors, Squares
-from globals import PieceKnight, PieceKing, PieceRookQueen, PieceBishopQueen, PieceCol
-from validate import SqOnBoard, SideValid, PieceValidEmpty
-from debug import _assert_condition
+from pychess.constants import Pieces, Colors, Squares
+from pychess.globals import PieceKnight, PieceKing, PieceRookQueen, PieceBishopQueen, PieceCol
+from pychess.validate import SqOnBoard, SideValid, PieceValidEmpty
+from pychess.debug import _assert_condition
 
 # Knight Direction
 knight_direction = [-8, -19, -21, -12, 8, 19, 21, 12]

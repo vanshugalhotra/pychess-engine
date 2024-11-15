@@ -1,9 +1,9 @@
-from debug import _assert_condition
-from constants import BRD_SQ_NUM, MAXDEPTH
-from misc import GetTimeMs
-from attack import is_sqaure_attacked
-from board import Board
-from move import MOVE, MOVELIST
+from pychess.debug import _assert_condition
+from pychess.constants import BRD_SQ_NUM, MAXDEPTH
+from pychess.misc import GetTimeMs
+from pychess.attack import is_sqaure_attacked
+from pychess.board import Board
+from pychess.move import MOVE, MOVELIST
 
 INFINITE = 30000
 MATE = 29000

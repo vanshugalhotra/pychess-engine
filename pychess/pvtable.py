@@ -1,7 +1,7 @@
-from constants import MAXDEPTH
-from debug import _assert_condition
-from move import MOVE
-from hashkeys import PositionKey
+from pychess.constants import MAXDEPTH
+from pychess.debug import _assert_condition
+from pychess.move import MOVE
+from pychess.hashkeys import PositionKey
 
 MAXPVENTRIES = 131072
 

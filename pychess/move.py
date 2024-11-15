@@ -1,9 +1,9 @@
-from globals import *
-from debug import _assert_condition
-from validate import SqOnBoard, PieceValid, PieceValidEmpty
-from constants import Pieces, Ranks, Castling, Squares
-from attack import is_sqaure_attacked
-from helper import FR2SQ
+from pychess.globals import *
+from pychess.debug import _assert_condition
+from pychess.validate import SqOnBoard, PieceValid, PieceValidEmpty
+from pychess.constants import Pieces, Ranks, Castling, Squares
+from pychess.attack import is_sqaure_attacked
+from pychess.helper import FR2SQ
 
 def SQOFFBOARD(sq):
     return FilesBrd[sq] == Squares.OFFBOARD

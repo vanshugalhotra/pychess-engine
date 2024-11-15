@@ -1,4 +1,4 @@
-from hashkeys import PositionKey
+from pychess.hashkeys import PositionKey
 
 class UNDO:
     def __init__(self):
