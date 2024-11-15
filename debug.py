@@ -3,7 +3,7 @@ import sys
 
 DEBUG = False
 
-def assert_condition(condition, message="Assertion failed"):
+def _assert_condition(condition, message="Assertion failed"):
     if(not DEBUG):
         return True
     if not condition:

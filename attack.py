@@ -1,7 +1,7 @@
 from constants import Pieces, Colors, Squares
 from globals import PieceKnight, PieceKing, PieceRookQueen, PieceBishopQueen, PieceCol
 from validate import SqOnBoard, SideValid, PieceValidEmpty
-from debug import assert_condition
+from debug import _assert_condition
 
 # Knight Direction
 knight_direction = [-8, -19, -21, -12, 8, 19, 21, 12]
@@ -31,9 +31,9 @@ def is_sqaure_attacked(square: int, side: int, board) -> bool:
 
     """
     
-    assert_condition(SqOnBoard(square))
-    assert_condition(SideValid(side))
-    assert_condition(board.check_board())
+    _assert_condition(SqOnBoard(square))
+    _assert_condition(SideValid(side))
+    _assert_condition(board._check_board())
     
     # checking for pawns
     if(side == Colors.WHITE):

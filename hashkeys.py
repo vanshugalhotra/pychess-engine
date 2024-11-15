@@ -1,5 +1,5 @@
 from constants import BRD_SQ_NUM, Pieces, Colors, Squares
-from debug import assert_condition
+from debug import _assert_condition
 from helper import RAND_64
 
 class PositionKey:
@@ -18,19 +18,19 @@ class PositionKey:
         key (int): Unique 64-bit HashKey
 
     Methods:
-        hash_piece(piece, square):
+        _hash_piece(piece, square):
             Updates the position key by XORing the hash for a piece on a given square.
 
-        hash_castle(castlePerm):
+        _hash_castle(castlePerm):
             Updates the position key by XORing the hash for the current castling rights.
 
-        hash_side():
+        _hash_side():
             Updates the position key by XORing the hash for the side to move.
 
-        hash_enPas(enPas):
+        _hash_enPas(enPas):
             Updates the position key by XORing the hash for the en passant square.
 
-        generate_key(board):
+        _generate_key(board):
             Generates the position key based on the board state, including pieces, side to move,
             en passant square, and castling rights.
     """
@@ -43,19 +43,19 @@ class PositionKey:
     def __init__(self):
         self.key = 0
         
-    def hash_piece(self, piece, square) -> None:
+    def _hash_piece(self, piece, square) -> None:
         self.key ^= PositionKey.PieceKeys[piece][square]
         
-    def hash_castle(self, castlePerm: int) -> None:
+    def _hash_castle(self, castlePerm: int) -> None:
         self.key ^= PositionKey.CastleKeys[castlePerm]
         
-    def hash_side(self) -> None:
+    def _hash_side(self) -> None:
         self.key ^= PositionKey.SideKey
         
-    def hash_enPas(self, enPas: int) -> None:
+    def _hash_enPas(self, enPas: int) -> None:
         self.key ^= PositionKey.PieceKeys[Pieces.EMPTY][enPas]
         
-    def generate_key(self, board) -> None:
+    def _generate_key(self, board) -> None:
         """
         Generate a unique position key for the given board configuration.
 
@@ -74,17 +74,17 @@ class PositionKey:
         for sq in range(0, BRD_SQ_NUM):
             piece = board.pieces[sq]
             if(piece != Squares.OFFBOARD and piece != Pieces.EMPTY):
-                assert_condition(piece >= Pieces.wP and piece <= Pieces.bK)
+                _assert_condition(piece >= Pieces.wP and piece <= Pieces.bK)
                 finalKey ^= PositionKey.PieceKeys[piece][sq]
         
         if(board.side == Colors.WHITE):
             finalKey ^= PositionKey.SideKey
             
         if(board.enPas != Squares.NO_SQ):
-            assert_condition(board.enPas >= 0 and board.enPas < BRD_SQ_NUM)
+            _assert_condition(board.enPas >= 0 and board.enPas < BRD_SQ_NUM)
             finalKey ^= PositionKey.PieceKeys[Pieces.EMPTY][board.enPas]
             
-        assert_condition(board.castlePerm >= 0 and board.castlePerm <= 15)
+        _assert_condition(board.castlePerm >= 0 and board.castlePerm <= 15)
         finalKey ^= PositionKey.CastleKeys[board.castlePerm]
         
         self.key = finalKey

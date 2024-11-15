@@ -123,7 +123,7 @@ class Engine:
         """
         mlist = MOVELIST()
         mlist.generate_all_moves(board=self.board)
-        return mlist.get_move_list()
+        return mlist._get_move_list()
     
     def reset_board(self) -> None:
         """Resets the board to the initial starting position."""

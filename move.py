@@ -1,5 +1,5 @@
 from globals import *
-from debug import assert_condition
+from debug import _assert_condition
 from validate import SqOnBoard, PieceValid, PieceValidEmpty
 from constants import Pieces, Ranks, Castling, Squares
 from attack import is_sqaure_attacked
@@ -161,7 +161,7 @@ class MOVE:
         Returns:
             MOVE: The corresponding move object, or MOVE.NOMOVE if the move is invalid or not found.
         """
-        assert_condition(board.check_board())
+        _assert_condition(board._check_board())
         
         if(alpha_move[1] > '8' or alpha_move[1] < '1'):
             return MOVE.NOMOVE
@@ -175,7 +175,7 @@ class MOVE:
         fromSq = FR2SQ(ord(alpha_move[0]) - ord('a'), ord(alpha_move[1]) - ord('1'))
         toSq = FR2SQ(ord(alpha_move[2]) - ord('a'), ord(alpha_move[3]) - ord('1'))
         
-        assert_condition(SqOnBoard(fromSq) and SqOnBoard(toSq))
+        _assert_condition(SqOnBoard(fromSq) and SqOnBoard(toSq))
         list = MOVELIST()
         list.generate_all_moves(board)
         Move = MOVE.NOMOVE
@@ -223,8 +223,8 @@ class MOVELIST:
             board (Board): The current state of the chess board.
             move (MOVE): The move object to be added to the move list.
         """
-        assert_condition(SqOnBoard(move.FROMSQ()))
-        assert_condition(SqOnBoard(move.TOSQ()))
+        _assert_condition(SqOnBoard(move.FROMSQ()))
+        _assert_condition(SqOnBoard(move.TOSQ()))
         self.moves[self.count] = move
         self.moves[self.count].score = 0
         if(board.searchKillers[0][board.ply].move == move.move):
@@ -243,9 +243,9 @@ class MOVELIST:
             board(Board): The current state of the chess board.
             move (MOVE): The capture move to be added to the move list.
         """
-        assert_condition(SqOnBoard(move.FROMSQ()))
-        assert_condition(SqOnBoard(move.TOSQ()))
-        assert_condition(PieceValid(move.CAPTURED()))
+        _assert_condition(SqOnBoard(move.FROMSQ()))
+        _assert_condition(SqOnBoard(move.TOSQ()))
+        _assert_condition(PieceValid(move.CAPTURED()))
         self.moves[self.count] = move
         self.moves[self.count].score = MvvLvaScores[move.CAPTURED()][board.pieces[move.FROMSQ()]] + 1000000 # victim , attacker
         self.count += 1
@@ -258,16 +258,16 @@ class MOVELIST:
             board (Board): The current state of the chess board.
             move (MOVE): The en passant move to be added to the move list.
         """
-        assert_condition(SqOnBoard(move.FROMSQ()))
-        assert_condition(SqOnBoard(move.TOSQ()))
+        _assert_condition(SqOnBoard(move.FROMSQ()))
+        _assert_condition(SqOnBoard(move.TOSQ()))
         self.moves[self.count] = move
         self.moves[self.count].score = 105 + 1000000 # pawn takes pawn
         self.count += 1
         
     def _add_white_pawn_cap_move(self, board, from_square: int, to_square: int, cap: int) -> None:
-        assert_condition(SqOnBoard(from_square))
-        assert_condition(SqOnBoard(to_square))
-        assert_condition(PieceValidEmpty(cap))
+        _assert_condition(SqOnBoard(from_square))
+        _assert_condition(SqOnBoard(to_square))
+        _assert_condition(PieceValidEmpty(cap))
         
         if(RanksBrd[from_square] == Ranks.R7): # if a white pawn captures something from rank 7, then it is promotion move
             self._add_capture_move(board, MOVE(from_square, to_square,cap,Pieces.wQ, 0)) # promoted to white Queen
@@ -278,8 +278,8 @@ class MOVELIST:
             self._add_capture_move(board, MOVE(from_square, to_square, cap, Pieces.EMPTY, 0))
             
     def _add_white_pawn_move(self, board, from_square: int, to_square: int) -> None: # same as above, the difference is it doesn't capture any piece
-        assert_condition(SqOnBoard(from_square))
-        assert_condition(SqOnBoard(to_square))
+        _assert_condition(SqOnBoard(from_square))
+        _assert_condition(SqOnBoard(to_square))
         if(RanksBrd[from_square] == Ranks.R7): # if a white pawn captures something from rank 7, then it is promotion move
             self._add_quite_move(board, MOVE(from_square, to_square,Pieces.EMPTY,Pieces.wQ, 0)) # promoted to white Queen
             self._add_quite_move(board, MOVE(from_square, to_square,Pieces.EMPTY,Pieces.wR, 0)) # promoted to white Rook
@@ -289,9 +289,9 @@ class MOVELIST:
             self._add_quite_move(board, MOVE(from_square, to_square, Pieces.EMPTY, Pieces.EMPTY, 0))
             
     def _add_black_pawn_cap_move(self, board, from_square: int, to_square: int, cap: int) -> None:
-        assert_condition(SqOnBoard(from_square))
-        assert_condition(SqOnBoard(to_square))
-        assert_condition(PieceValidEmpty(cap))
+        _assert_condition(SqOnBoard(from_square))
+        _assert_condition(SqOnBoard(to_square))
+        _assert_condition(PieceValidEmpty(cap))
         if(RanksBrd[from_square] == Ranks.R1): # if a black pawn captures something from rank 2, then it is promotion move
             self._add_capture_move(board, MOVE(from_square, to_square,cap,Pieces.bQ, 0)) # promoted to black Queen
             self._add_capture_move(board, MOVE(from_square, to_square,cap,Pieces.bR, 0)) # promoted to black Rook
@@ -301,8 +301,8 @@ class MOVELIST:
             self._add_capture_move(board, MOVE(from_square, to_square, cap, Pieces.EMPTY, 0))
             
     def _add_black_pawn_move(self, board, from_square: int, to_square: int) -> None:
-        assert_condition(SqOnBoard(from_square))
-        assert_condition(SqOnBoard(to_square))
+        _assert_condition(SqOnBoard(from_square))
+        _assert_condition(SqOnBoard(to_square))
         if(RanksBrd[from_square] == Ranks.R1): # if a Black pawn captures something from rank 2, then it is promotion move
             self._add_quite_move(board, MOVE(from_square, to_square,Pieces.EMPTY,Pieces.bQ, 0)) # promoted to Black Queen
             self._add_quite_move(board, MOVE(from_square, to_square,Pieces.EMPTY,Pieces.bR, 0)) # promoted to Black Rook
@@ -319,7 +319,7 @@ class MOVELIST:
         possible legal moves to a move list, taking into account piece types and board conditions. 
     
         """
-        assert_condition(board.check_board())
+        _assert_condition(board._check_board())
     
         # generating white pawn moves
         self.count = 0
@@ -332,7 +332,7 @@ class MOVELIST:
             # looping to total number of white pawns on the board
             for pceNum in range(0, board.pceNum[Pieces.wP]):
                 sq = board.pList[Pieces.wP][pceNum] # to get the square on which there is a white Pawn
-                assert_condition(SqOnBoard(sq))
+                _assert_condition(SqOnBoard(sq))
                 
                 # if it is a no capture move
                 if(board.pieces[sq + 10] == Pieces.EMPTY):
@@ -372,7 +372,7 @@ class MOVELIST:
             # looping to total number of black pawns on the board
             for pceNum in range(0, board.pceNum[Pieces.bP]):
                 sq = board.pList[Pieces.bP][pceNum] # to get the square on which there is a black Pawn
-                assert_condition(SqOnBoard(sq))
+                _assert_condition(SqOnBoard(sq))
                 
                 # if it is a no capture move
                 if(board.pieces[sq - 10] == Pieces.EMPTY):
@@ -414,11 +414,11 @@ class MOVELIST:
         pce = LoopSlidePce[pceIndex] # for white First piece is White Bishop
         
         while(pce != 0):
-            assert_condition(PieceValid(pce))
+            _assert_condition(PieceValid(pce))
             pce = LoopSlidePce[pceIndex]
             for pceNum in range(0, board.pceNum[pce]):
                 sq = board.pList[pce][pceNum] # accesing the square on which that particular piece is
-                assert_condition(SqOnBoard(sq))
+                _assert_condition(SqOnBoard(sq))
                 
                 #generating the moves
                 for index in range(NumDir[pce]): # looping till no of directions for each piece
@@ -447,12 +447,12 @@ class MOVELIST:
         pce = LoopNonSlidePce[pceIndex] # for white First piece is White Knight
         
         while(pce != 0):
-            assert_condition(PieceValid(pce))
+            _assert_condition(PieceValid(pce))
             pce = LoopNonSlidePce[pceIndex]
             
             for pceNum in range(0, board.pceNum[pce]):
                 sq = board.pList[pce][pceNum] # accesing the square on which that particular piece is
-                assert_condition(SqOnBoard(sq))
+                _assert_condition(SqOnBoard(sq))
                 
                 #generating the moves
                 for index in range(NumDir[pce]): # looping till no of directions for each piece
@@ -473,7 +473,7 @@ class MOVELIST:
             
             pceIndex += 1
             
-    def generate_capture_moves(self, board) -> None:
+    def _generate_capture_moves(self, board) -> None:
         """
         Generates a list of all legal **capture** moves for the current side in a given board state.
         
@@ -481,7 +481,7 @@ class MOVELIST:
         possible legal capture moves to a move list, taking into account piece types and board conditions. 
     
         """
-        assert_condition(board.check_board())
+        _assert_condition(board._check_board())
         
         # generating white pawn moves
         self.count = 0
@@ -494,7 +494,7 @@ class MOVELIST:
             # looping to total number of white pawns on the board
             for pceNum in range(0, board.pceNum[Pieces.wP]):
                 sq = board.pList[Pieces.wP][pceNum] # to get the square on which there is a white Pawn
-                assert_condition(SqOnBoard(sq))
+                _assert_condition(SqOnBoard(sq))
                                     
                 # if it is a capture move            
                 if(not SQOFFBOARD(sq + 9) and PieceCol[board.pieces[sq + 9]] == Colors.BLACK): # if the capturing piece is black
@@ -513,7 +513,7 @@ class MOVELIST:
             # looping to total number of black pawns on the board
             for pceNum in range(0, board.pceNum[Pieces.bP]):
                 sq = board.pList[Pieces.bP][pceNum] # to get the square on which there is a black Pawn
-                assert_condition(SqOnBoard(sq))
+                _assert_condition(SqOnBoard(sq))
                         
                 # if it is a capture move            
                 if(not SQOFFBOARD(sq - 9) and PieceCol[board.pieces[sq - 9]] == Colors.WHITE): # if the capturing piece is WHITE
@@ -532,11 +532,11 @@ class MOVELIST:
         pce = LoopSlidePce[pceIndex] # for white First piece is White Bishop
         
         while(pce != 0):
-            assert_condition(PieceValid(pce))
+            _assert_condition(PieceValid(pce))
             pce = LoopSlidePce[pceIndex]
             for pceNum in range(0, board.pceNum[pce]):
                 sq = board.pList[pce][pceNum] # accesing the square on which that particular piece is
-                assert_condition(SqOnBoard(sq))
+                _assert_condition(SqOnBoard(sq))
                 
                 #generating the moves
                 for index in range(NumDir[pce]): # looping till no of directions for each piece
@@ -565,12 +565,12 @@ class MOVELIST:
         pce = LoopNonSlidePce[pceIndex] # for white First piece is White Knight
         
         while(pce != 0):
-            assert_condition(PieceValid(pce))
+            _assert_condition(PieceValid(pce))
             pce = LoopNonSlidePce[pceIndex]
             
             for pceNum in range(0, board.pceNum[pce]):
                 sq = board.pList[pce][pceNum] # accesing the square on which that particular piece is
-                assert_condition(SqOnBoard(sq))
+                _assert_condition(SqOnBoard(sq))
                 
                 #generating the moves
                 for index in range(NumDir[pce]): # looping till no of directions for each piece
@@ -590,7 +590,7 @@ class MOVELIST:
             
             pceIndex += 1
 
-    def get_move_list(self) -> list:
+    def _get_move_list(self) -> list:
         """
         Returns a list of moves in algebraic notation for all currently generated moves.
 
@@ -615,7 +615,7 @@ class MOVELIST:
             print(f"Move: {i+1} --> {move.alpha_move()} (Score: {score})")
         print(f"Move List Total {self.count} Moves: \n")
         
-    def pick_next_move(self, movenum: int) -> None:
+    def _pick_next_move(self, movenum: int) -> None:
         """
         Prioritizes the most promising move by iterating through available moves 
         and selecting the one with the highest score, starting from the specified 

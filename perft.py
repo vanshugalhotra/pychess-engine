@@ -1,5 +1,5 @@
 from board import Board
-from debug import assert_condition
+from debug import _assert_condition
 from move import MOVELIST
 from helper import execution_time
 
@@ -7,7 +7,7 @@ leafNodes = 0
 
 def Perft(depth, board: Board):
     global leafNodes
-    assert_condition(board.check_board())
+    _assert_condition(board._check_board())
     
     if(depth == 0):
         leafNodes += 1
@@ -27,7 +27,7 @@ def Perft(depth, board: Board):
 @execution_time
 def PerftTest(depth, board: Board):
     global leafNodes
-    assert_condition(board.check_board())
+    _assert_condition(board._check_board())
     
     board.print_board()
     
