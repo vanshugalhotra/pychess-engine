@@ -44,7 +44,6 @@ PieceBishopQueen = [False, False, False, True, False, True, False, False, False,
 
 PieceSlides = [False, False, False, True, True, True, False, False, False, True, True, True, False]
 
-
 LoopSlidePce = [Pieces.wB, Pieces.wR, Pieces.wQ, 0, Pieces.bB, Pieces.bR, Pieces.bQ, 0] # initially, lets say WHITE is generating moves then it will start from index 0 and loop till value is 0, means till number is 0, we generate moves for sliding pieces
 
 LoopNonSlidePce = [Pieces.wN, Pieces.wK, 0, Pieces.bN, Pieces.bK, 0]

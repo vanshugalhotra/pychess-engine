@@ -9,15 +9,40 @@ INFINITE = 30000
 MATE = 29000
 
 class Search:
+    """
+    The Search class implements the core search algorithm for a chess engine, including
+    iterative deepening, alpha-beta pruning, and quiescence search. It optimizes move ordering 
+    using heuristics like killer moves and search history, while tracking the principal variation.
+
+    Attributes:
+        board (Board): The current board state being evaluated.
+        info (EngineControls): Metadata for the search process, including nodes searched and time.
+
+    Methods:
+        update(board, info): Updates the current board and search info.
+        clear_for_search(): Resets search-related data and heuristics.
+        quiescene(alpha, beta): Performs quiescence search to evaluate tactical positions.
+        AlphaBeta(alpha, beta, depth, do_null): Implements the alpha-beta pruning algorithm.
+        iterative_deepening(): Performs iterative deepening search to find the best move.
+    """
     def __init__(self, board: Board, info):
         self.board = board
         self.info = info
         
-    def update(self, board, info):
+    def update(self, board, info) -> None:
+        """Updates the current board and search info."""
         self.board=board
         self.info=info
         
-    def clear_for_search(self): # clear all the stats, heuristics, searchHistory, seachKillers etc...
+    def clear_for_search(self) -> None:
+        """
+        Resets all search-related data structures and counters to prepare for a new search.
+
+        This method clears heuristics such as search history and killer moves, resets the 
+        principal variation table, and initializes counters like ply, nodes searched, 
+        and fail-high metrics to their default values.
+
+        """
         for index in range(13):
             for index2 in range(BRD_SQ_NUM):
                 self.board.searchHistory[index][index] = MOVE()
@@ -35,8 +60,21 @@ class Search:
         self.info.fhf = 0
         
     # Horizon Effect: caused by depth limitation of the search algorithm. Lets say at the last depth White queen captures a knight and since its the last depth we stop evaluating further, so right now white is up a knight but what if black takes the white queen (But this move is not considered due to limited depth)
-    # solution to the horizon effect is : quiescence search i.e evaluation only non-quiet positions (captures)
     def quiescene(self, alpha: int, beta: int) -> int:
+        """
+        Performs quiescence search to mitigate the horizon effect by evaluating only non-quiet (capture) positions.
+
+        The quiescence search extends beyond the regular search depth, evaluating only capture moves to
+        ensure stable evaluation by avoiding premature conclusions on unstable positions. This method checks for
+        repetitions, the fifty-move rule, and beta cutoffs to improve efficiency.
+
+        Args:
+            alpha (int): The lower bound of search value.
+            beta (int): The upper bound of search value.
+
+        Returns:
+            int: The evaluated score of the quiescent position.
+        """
         assert_condition(self.board.check_board())
         if( (self.info.nodes & 2047) == 0): # means after every 2048th node
             self.info.check_up()
@@ -93,7 +131,24 @@ class Search:
 
     # An alpha cutoff occurs when the minimizing player finds a move that is so bad that the maximizing player will avoid this line altogether.
 
-    def AlphaBeta(self, alpha: int, beta: int, depth: int, doNull):
+    def AlphaBeta(self, alpha: int, beta: int, depth: int, do_null) -> int:
+        """
+        Performs the Alpha-Beta pruning algorithm for a given search depth to improve search efficiency by pruning branches 
+        of the game tree that are not worth exploring.
+
+        The Alpha-Beta algorithm enhances the minimax search by maintaining two values, alpha and beta, to prune unnecessary 
+        branches based on the evaluations of previous moves. The method evaluates positions recursively while applying 
+        beta and alpha cutoffs and adjusts search history and killer moves to guide the search.
+
+        Args:
+            alpha (int): The lower bound of the evaluation for the maximizing player.
+            beta (int): The upper bound of the evaluation for the minimizing player.
+            depth (int): The current search depth.
+            do_null (bool): A flag indicating if null move pruning should be applied.
+
+        Returns:
+            int: The best score found for the given position, potentially pruned.
+        """
         assert_condition(self.board.check_board)
         
         if(depth == 0):
@@ -129,7 +184,7 @@ class Search:
             if(not  self.board.make_move(mlist.moves[MoveNum])):
                 continue
             Legal +=1
-            Score = -self.AlphaBeta(alpha=-beta, beta=-alpha, depth=depth-1, doNull=True)
+            Score = -self.AlphaBeta(alpha=-beta, beta=-alpha, depth=depth-1, do_null=True)
             self.board.take_move()
             if(self.info.stopped):
                 return 0
@@ -171,8 +226,18 @@ class Search:
         
         return alpha
     
-    
     def iterative_deepening(self) -> str:
+        """
+        Performs iterative deepening search, gradually increasing the search depth from 1 to a maximum depth. This method 
+        allows the engine to adjust to time constraints while ensuring progressively better evaluations.
+
+        Iterative deepening combines the benefits of depth-first search and breadth-first search, providing the best of both. 
+        It allows the engine to maintain a principal variation (PV) for better pruning and move ordering, as well as 
+        heuristics like search history and killers.
+
+        Returns:
+            str: The best move found at the final depth.
+        """
         # iterative deepening, search init
         # for depth = 1 to maxDepth, for each of these depths we then search with AlphaBeta
         # our depth depends on the time left on the clock, we don't want to search to depth 10 on first move and lose on time
@@ -188,7 +253,7 @@ class Search:
         
         #iterative deepening
         for currentDepth in range(1, self.info.depth+1):
-            bestScore = self.AlphaBeta(alpha=-INFINITE, beta=INFINITE, depth=currentDepth, doNull=True)
+            bestScore = self.AlphaBeta(alpha=-INFINITE, beta=INFINITE, depth=currentDepth, do_null=True)
             
             # out of time?
             if(self.info.stopped):

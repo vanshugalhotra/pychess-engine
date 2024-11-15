@@ -43,7 +43,6 @@ Squares = Square(
 
 Castle = namedtuple("Castle", ['WKCA', 'WQCA', 'BKCA', 'BQCA'])
 Castling = Castle(1, 2, 4, 8)
-
 class UNDO:
     def __init__(self):
         self.move = 0 # the move number
