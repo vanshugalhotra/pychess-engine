@@ -185,7 +185,7 @@ class Engine:
             bool: True if the move is legal, False otherwise.
         """
         enc_move = MOVE.parse_move(alpha_move=move, board=self.board)
-        return enc_move == MOVE.NOMOVE
+        return not enc_move == MOVE.NOMOVE
     
     def set_elo(self, elo: int) -> None:
         """

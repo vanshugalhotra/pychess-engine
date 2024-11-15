@@ -33,7 +33,7 @@ CastlePerm = [
 PieceBig = [False, False, True, True, True,True, True, False,True, True, True, True, True]
 PieceMaj = [False, False, False, False, True, True, True, False, False, False,True, True, True]
 PieceMin = [False, False, True, True, False, False, False, False, True, True,False, False, False]
-PieceVal = [0, 100, 325,325,  550, 1000, 50000, 100, 325, 325, 550, 1000, 50000]
+PieceVal = [0, 100, 325, 325, 550, 1000, 50000, 100, 325, 325, 550, 1000, 50000]
 PieceCol = [Colors.BOTH, Colors.WHITE, Colors.WHITE, Colors.WHITE, Colors.WHITE, Colors.WHITE, Colors.WHITE, Colors.BLACK, Colors.BLACK, Colors.BLACK, Colors.BLACK, Colors.BLACK, Colors.BLACK]
 
 PiecePawn = [False, True, False, False, False, False, False, True, False, False, False, False, False] # is Piece a Pawn ?
