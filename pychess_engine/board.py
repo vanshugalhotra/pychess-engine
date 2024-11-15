@@ -1,14 +1,14 @@
-from pychessengine.constants import *
-from pychessengine.undo import UNDO
-from pychessengine.globals import *
-from pychessengine.debug import _assert_condition, DEBUG
-from pychessengine.hashkeys import PositionKey
-from pychessengine.bitboards import SetBit, PopBit, CountBits, ClearBit
-from pychessengine.validate import SqOnBoard, PieceValid, SideValid
-from pychessengine.attack import is_sqaure_attacked
-from pychessengine.move import MOVE, MOVELIST
-from pychessengine.pvtable import PVTABLE
-from pychessengine.helper import FR2SQ
+from pychess_engine.constants import *
+from pychess_engine.undo import UNDO
+from pychess_engine.globals import *
+from pychess_engine.debug import _assert_condition, DEBUG
+from pychess_engine.hashkeys import PositionKey
+from pychess_engine.bitboards import SetBit, PopBit, CountBits, ClearBit
+from pychess_engine.validate import SqOnBoard, PieceValid, SideValid
+from pychess_engine.attack import is_sqaure_attacked
+from pychess_engine.move import MOVE, MOVELIST
+from pychess_engine.pvtable import PVTABLE
+from pychess_engine.helper import FR2SQ
 
 counter = 0
 class Board:

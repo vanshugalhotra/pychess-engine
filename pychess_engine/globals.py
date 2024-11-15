@@ -1,4 +1,4 @@
-from pychessengine.constants import BRD_SQ_NUM, Pieces, Colors, Squares
+from pychess_engine.constants import BRD_SQ_NUM, Pieces, Colors, Squares
 
 Sq120ToSq64 = [65] * BRD_SQ_NUM # initially every box is 65 (representing offboard)
 Sq64ToSq120 = [120] * 64 # initially every box is 120 doesn't mean anything we can put any value

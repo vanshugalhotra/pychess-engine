@@ -1,11 +1,11 @@
-from pychessengine.board import Board
-from pychessengine.move import MOVELIST, MOVE
-from pychessengine.init import initialize
-from pychessengine.fens import START_FEN
-from pychessengine.misc import GetTimeMs, ReadInput
-from pychessengine.helper import execution_time
-from pychessengine.search import Search
-from pychessengine.perft import PerftTest
+from pychess_engine.board import Board
+from pychess_engine.move import MOVELIST, MOVE
+from pychess_engine.init import initialize
+from pychess_engine.fens import START_FEN
+from pychess_engine.misc import GetTimeMs, ReadInput
+from pychess_engine.helper import execution_time
+from pychess_engine.search import Search
+from pychess_engine.perft import PerftTest
 
 class EngineControls:
     """

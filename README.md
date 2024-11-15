@@ -1,7 +1,7 @@
 
-# pychessengine - A Python Chess Engine
+# pychess_engine - A Python Chess Engine
 
-pychessengine is a lightweight chess engine written in Python. It can evaluate chess positions, calculate best moves, and integrate with various interfaces. It is designed to be simple and extensible, offering the flexibility to implement your own chess logic or use it as part of a larger project.
+**pychess_engine** is a lightweight chess engine written in Python. It can evaluate chess positions, calculate best moves, and integrate with various interfaces. It is designed to be simple and extensible, offering the flexibility to implement your own chess logic or use it as part of a larger project.
 
 ## Features
 - Evaluate positions and calculate best moves
@@ -13,10 +13,10 @@ pychessengine is a lightweight chess engine written in Python. It can evaluate c
 
 ## Installation
 
-Install `pychessengine` with pip
+Install `pychess_engine` with pip
 
 ```bash
-    pip install pychessengine
+    pip install pychess-engine
 ```
     
 # Documentation
@@ -54,7 +54,7 @@ Prints the current board to the console.
 
 
 ```python
-from pychessengine import Engine
+from pychess_engine import Engine
 engine = Engine()
 engine.print_board()
 
@@ -71,7 +71,7 @@ Loads a position from a FEN string.
 
 
 ```python
-from pychessengine import Engine
+from pychess_engine import Engine
 engine = Engine()
 WAC1 = "2rr3k/pp3pp1/1nnqbN1p/3pN3/2pP4/2P3Q1/PPB4P/R4RK1 w - -"
 engine.load_fen(WAC1)
@@ -87,7 +87,7 @@ Generates all legal moves from the current board position.
 
 
 ```python
-from pychessengine import Engine
+from pychess_engine import Engine
 engine = Engine()
 moves = engine.legal_moves()
 print(moves)
@@ -103,7 +103,7 @@ print(engine.legal_moves())
 Resets the board to the initial starting position.
 
 ```python
-from pychessengine import Engine
+from pychess_engine import Engine
 engine = Engine()
 
 WAC1 = "2rr3k/pp3pp1/1nnqbN1p/3pN3/2pP4/2P3Q1/PPB4P/R4RK1 w - -"
@@ -124,7 +124,7 @@ Attempts to make a move on the board.
 - **bool**: `True` if the move is successfully made, `False` if the move is illegal.
 
 ```python
-from pychessengine import Engine
+from pychess_engine import Engine
 engine = Engine()
 
 islegal = engine.make_move("e2e4")
@@ -144,7 +144,7 @@ Checks if a move is legal on the current board.
 - **bool**: `True` if the move is legal, `False` otherwise.
 
 ```python
-from pychessengine import Engine
+from pychess_engine import Engine
 engine = Engine()
 
 islegal = engine.is_move_legal("e2e4")
@@ -162,7 +162,7 @@ Sets the ELO rating for the engine, influencing search depth.
 - **elo (int)**: New ELO rating for the engine.
 
 ```python
-from pychessengine import Engine
+from pychess_engine import Engine
 engine = Engine()
 
 engine.set_elo(1700)
@@ -176,7 +176,7 @@ Retrieves the current ELO rating of the engine.
 - **int**: The current ELO rating.
 
 ```python
-from pychessengine import Engine
+from pychess_engine import Engine
 engine = Engine()
 
 print(engine.get_elo())
@@ -204,7 +204,7 @@ Evaluates the current board position.
 - **int**: Evaluation score of the position.
 
 ```python
-from pychessengine import Engine
+from pychess_engine import Engine
 engine = Engine()
 
 # can load_fen for evaluating specific positions
@@ -228,7 +228,7 @@ Determines the best move based on search parameters and constraints.
 - **str**: The best move in algebraic notation.
 
 ```python
-from pychessengine import Engine
+from pychess_engine import Engine
 engine = Engine()
 
 # can load a fen, or make a move using load_fen, make_move
@@ -255,7 +255,7 @@ Performs Perft (performance test) to calculate the number of legal positions up 
 - **depth (int, optional)**: Depth for the Perft test. Default is 3.
 
 ```python
-from pychessengine import Engine
+from pychess_engine import Engine
 engine = Engine()
 
 engine.perft_test()
@@ -284,4 +284,4 @@ If you have any feedback, please reach out at galhotravanshu@gmail.com or 205124
 
 ## GitHub Repo
 
-[https://github.com/vanshugalhotra/pychessengine](https://github.com/vanshugalhotra/pychessengine)
+[https://github.com/vanshugalhotra/pychess_engine](https://github.com/vanshugalhotra/pychess_engine)

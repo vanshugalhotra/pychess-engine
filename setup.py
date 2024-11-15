@@ -4,14 +4,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="pychessengine",
+    name="pychess_engine",
     version="1.0.0",
     author="Vanshu Galhotra",
     author_email="galhotravanshu@gmail.com",
     description="A chess engine module for Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/vanshugalhotra/pychessengine",
+    url="https://github.com/vanshugalhotra/pychess_engine",
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -24,7 +24,7 @@ setup(
     install_requires=[],  # Add dependencies here if needed
     entry_points={
         "console_scripts": [
-            "pychessengine=pychessengine.cli:main",  # Adjust CLI entry point if necessary
+            "pychess_engine=pychess_engine.cli:main",  # Adjust CLI entry point if necessary
         ],
     },
 )

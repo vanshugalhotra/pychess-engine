@@ -1,6 +1,6 @@
-from pychessengine.constants import BRD_SQ_NUM, Pieces, Colors, Squares
-from pychessengine.debug import _assert_condition
-from pychessengine.helper import RAND_64
+from pychess_engine.constants import BRD_SQ_NUM, Pieces, Colors, Squares
+from pychess_engine.debug import _assert_condition
+from pychess_engine.helper import RAND_64
 
 class PositionKey:
     
