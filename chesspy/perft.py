@@ -1,7 +1,7 @@
-from pychess.board import Board
-from pychess.debug import _assert_condition
-from pychess.move import MOVELIST
-from pychess.helper import execution_time
+from pychessengine.board import Board
+from pychessengine.debug import _assert_condition
+from pychessengine.move import MOVELIST
+from pychessengine.helper import execution_time
 
 leafNodes = 0
 

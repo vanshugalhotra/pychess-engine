@@ -1,5 +1,5 @@
 from random import getrandbits
-from pychess.misc import GetTimeMs
+from pychessengine.misc import GetTimeMs
 
 def RAND_64():
     """

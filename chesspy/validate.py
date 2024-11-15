@@ -1,5 +1,5 @@
-from pychess.constants import Pieces, Colors, Squares
-from pychess.globals import FilesBrd
+from pychessengine.constants import Pieces, Colors, Squares
+from pychessengine.globals import FilesBrd
 
 def SqOnBoard(sq):
     return 0 if FilesBrd[sq] == Squares.OFFBOARD else 1

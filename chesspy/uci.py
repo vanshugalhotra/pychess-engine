@@ -1,8 +1,8 @@
-from pychess.constants import MAXDEPTH, Colors
-from pychess.perft import PerftTest
-from pychess.move import MOVELIST
-from pychess.engine import Engine
-from pychess.fens import START_FEN
+from pychessengine.constants import MAXDEPTH, Colors
+from pychessengine.perft import PerftTest
+from pychessengine.move import MOVELIST
+from pychessengine.engine import Engine
+from pychessengine.fens import START_FEN
 
 NAME = "UstaadJi"
 AUTHOR = "Vanshu Galhotra"
