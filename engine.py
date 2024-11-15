@@ -207,7 +207,7 @@ class Engine:
         return self.board.evaluate_position()
     
     @execution_time
-    def best_move(self, depth=MAXDEPTH, movestogo=30, movetime=None, increment=0, time=None) -> str:
+    def best_move(self, depth=MAXDEPTH, movestogo=30, movetime=None, increment=0, time=None, display_calculation=True) -> str:
         """
         Determines the best move using the specified search depth or time constraints.
         
@@ -217,6 +217,7 @@ class Engine:
             movetime (int, optional): Time allocated for this move only.
             increment (int, optional): Additional time (increment) per move.
             time (int, optional): Total time available for the current search phase.
+            display_calculation (bool, Optional): Whether wants to display the calculation part 
         
         Returns:
             str: Best move in algebraic notation.
@@ -238,9 +239,11 @@ class Engine:
 
         # Update search settings and initiate iterative deepening
         self.search.update(board=self.board, info=self.controls)
-        print(self.controls)
+        if(display_calculation):
+            print(self.controls)
         
-        return self.search.iterative_deepening()
+        result = self.search.iterative_deepening(display_calculation=display_calculation)
+        return result
     
     def print_board(self) -> None:
         self.board.print_board()

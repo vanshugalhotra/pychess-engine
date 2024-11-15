@@ -37,8 +37,9 @@ def execution_time(function):
     """
     def wrapper(*args, **kwargs):
         starttime = GetTimeMs()
-        function(*args, **kwargs)   
+        result = function(*args, **kwargs)   
         endtime = GetTimeMs()
         print(f'\tFunction: {function.__name__} Executed in {endtime - starttime}ms')
+        return result
         
     return wrapper

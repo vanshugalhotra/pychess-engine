@@ -226,7 +226,7 @@ class Search:
         
         return alpha
     
-    def iterative_deepening(self) -> str:
+    def iterative_deepening(self, display_calculation: bool) -> str:
         """
         Performs iterative deepening search, gradually increasing the search depth from 1 to a maximum depth. This method 
         allows the engine to adjust to time constraints while ensuring progressively better evaluations.
@@ -262,17 +262,19 @@ class Search:
             pvMoves = self.board.PvTable._get_pv_line(board=self.board, depth=currentDepth)
             bestMove = self.board.PvArray[0]
             
-            print(f"info score cp {bestScore} depth {currentDepth} nodes {self.info.nodes} time {GetTimeMs() - self.info.starttime}ms", end=" ")
+            if(display_calculation):
+                print(f"info score cp {bestScore} depth {currentDepth} nodes {self.info.nodes} time {GetTimeMs() - self.info.starttime}ms", end=" ")
             
-            print("pv", end=" ")
-            for pvNum in range(0, pvMoves):
-                print(f"{self.board.PvArray[pvNum].alpha_move()}", end=" ")
-            print()
-            if(self.info.fh):
-                print(f"Ordering: {(self.info.fhf / self.info.fh):.2f}")
-            else:
-                print("Ordering: NAN")
+                print("pv", end=" ")
+                for pvNum in range(0, pvMoves):
+                    print(f"{self.board.PvArray[pvNum].alpha_move()}", end=" ")
+                print()
+                if(self.info.fh):
+                    print(f"Ordering: {(self.info.fhf / self.info.fh):.2f}")
+                else:
+                    print("Ordering: NAN")
                 
-        print(f"bestmove {bestMove.alpha_move()}")
-        return bestMove.alpha_move()
+        bestmove = bestMove.alpha_move()
+        display_calculation and print(f"bestmove {bestmove}")
+        return bestmove
     
