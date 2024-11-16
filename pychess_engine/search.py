@@ -273,8 +273,10 @@ class Search:
                     print(f"Ordering: {(self.info.fhf / self.info.fh):.2f}")
                 else:
                     print("Ordering: NAN")
-                
+        
         bestmove = bestMove.alpha_move()
+        if(bestMove.move == 0):
+            bestmove = "-"
         display_calculation and print(f"bestmove {bestmove}")
         return bestmove
     

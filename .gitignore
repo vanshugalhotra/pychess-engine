@@ -9,3 +9,4 @@ build/
 
 # Virtual environments
 venv/
+test.py

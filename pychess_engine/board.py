@@ -65,7 +65,7 @@ class Board:
         self.pList = [[0 for _ in range(10)] for _ in range(13)] #piece list, pList[wN][0] = E1; adds a white knight on e1
         
         self.PvTable = PVTABLE()
-        self.PvArray = [0] * MAXDEPTH
+        self.PvArray = [MOVE()] * MAXDEPTH
         
         #needed for move ordering
         # searchHistory[13][120] indexed by piece type and board square, everytime a move improves by alpha we reset all the values stored in this array to 0, 

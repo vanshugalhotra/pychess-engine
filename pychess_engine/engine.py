@@ -230,31 +230,34 @@ class Engine:
         Returns:
             str: Best move in algebraic notation.
         """
-        self.controls.movestogo = movestogo
-        self.controls.starttime = GetTimeMs()
-        
-        if depth is None:
-            depth = next((d for elo, d in sorted(EngineControls.elo_to_depth.items()) if self.elo <= elo), 6)
-        
-        self.controls.depth = depth
-        
-        if movetime:
-            self.controls.movestogo = 1  # Only consider this move
-            self.controls.timeset = True
-            self.controls.stoptime = self.controls.starttime + movetime
-        elif time:
-            # Split available time across remaining moves
-            self.controls.timeset = True
-            time_per_move = time / movestogo
-            buffer_time = 50  # To be safe
-            self.controls.stoptime = self.controls.starttime + time_per_move + increment - buffer_time
+        try: 
+            self.controls.movestogo = movestogo
+            self.controls.starttime = GetTimeMs()
+            
+            if depth is None:
+                depth = next((d for elo, d in sorted(EngineControls.elo_to_depth.items()) if self.elo <= elo), 6)
+            
+            self.controls.depth = depth
+            
+            if movetime:
+                self.controls.movestogo = 1  # Only consider this move
+                self.controls.timeset = True
+                self.controls.stoptime = self.controls.starttime + movetime
+            elif time:
+                # Split available time across remaining moves
+                self.controls.timeset = True
+                time_per_move = time / movestogo
+                buffer_time = 50  # To be safe
+                self.controls.stoptime = self.controls.starttime + time_per_move + increment - buffer_time
 
-        # Update search settings and initiate iterative deepening
-        self.search.update(board=self.board, info=self.controls)
-        if(display_calculation):
-            print(self.controls)
-        
-        result = self.search.iterative_deepening(display_calculation=display_calculation)
+            # Update search settings and initiate iterative deepening
+            self.search.update(board=self.board, info=self.controls)
+            if(display_calculation):
+                print(self.controls)
+            
+            result = self.search.iterative_deepening(display_calculation=display_calculation)
+        except Exception:
+            print("Something went Wrong!")
         return result
     
     def print_board(self) -> None:

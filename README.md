@@ -196,8 +196,8 @@ Evaluates the current board position.
 - **King**: 50000 (INF)
 
 ### What it means
-- **Positive** Score for **White** means **Advantage** for White
-- **Negative** Score for **Black** means **Advantage** for Black
+- **Positive** Score means **Advantage**
+- **Negative** Score means **Disadvantage**
 
 
 #### Returns
@@ -225,7 +225,7 @@ Determines the best move based on search parameters and constraints.
 - **display_calculation (bool, optional)**: Whether to display the calculation part.
 
 #### Returns
-- **str**: The best move in algebraic notation.
+- **str**: The best move in algebraic notation. `-` if there is some problem in generating bestmove (maybe due to invalid position)
 
 ```python
 from pychess_engine import Engine
@@ -284,4 +284,4 @@ If you have any feedback, please reach out at galhotravanshu@gmail.com or 205124
 
 ## GitHub Repo
 
-[https://github.com/vanshugalhotra/pychess_engine](https://github.com/vanshugalhotra/pychess_engine)
+[https://github.com/vanshugalhotra/pychess-engine](https://github.com/vanshugalhotra/pychess-engine)
