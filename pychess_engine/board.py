@@ -5,7 +5,7 @@ from pychess_engine.debug import _assert_condition, DEBUG
 from pychess_engine.hashkeys import PositionKey
 from pychess_engine.bitboards import SetBit, PopBit, CountBits, ClearBit
 from pychess_engine.validate import SqOnBoard, PieceValid, SideValid
-from pychess_engine.attack import is_sqaure_attacked
+from pychess_engine.attack import is_square_attacked
 from pychess_engine.move import MOVE, MOVELIST
 from pychess_engine.pvtable import PVTABLE
 from pychess_engine.helper import FR2SQ
@@ -684,11 +684,45 @@ class Board:
 
         _assert_condition(self._check_board())
 
-        if(is_sqaure_attacked(self.king_square[side], self.side, self)): # side is the side which made the move, self.side now is now the opposite side, so we check if after making the move, the opposite side is attacking the king_square, means king is in check, then its an illegal move
+        if is_square_attacked(self.king_square[side], self.side, self): # side is the side which made the move, self.side now is now the opposite side, so we check if after making the move, the opposite side is attacking the king_square, means king is in check, then its an illegal move
             self.take_move()  # take back the move
             return False
 
         return True
+
+    def is_in_check(self, side: int) -> bool:
+        """
+        Checks if the given side is in check.
+
+        Args:
+            side (int): The side to check (0 for white, 1 for black).
+
+        Returns:
+            bool: True if the side is in check, False otherwise.
+        """
+        king_square = self.king_square[side]
+        return is_square_attacked(king_square, side ^ 1, self)
+
+    def is_checkmate(self) -> bool:
+        """
+        Checks if the current side to move is in checkmate.
+
+        Returns:
+            bool: True if the current side to move is in checkmate, False otherwise.
+        """
+        if not self.is_in_check(self.side):
+            return False
+
+        mlist = MOVELIST()
+        mlist.generate_all_moves(self)
+
+        for move_num in range(mlist.count):
+            if self.make_move(mlist.moves[move_num]):
+                self.take_move()
+                return False
+
+        return True
+
 
     def is_repetition(self) -> bool :
         """

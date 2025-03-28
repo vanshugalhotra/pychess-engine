@@ -16,8 +16,8 @@ bishop_direction = [-9, -11, 11, 9]
 king_direction = [-1, -10, 1, 10, -9, -11, 11, 9]
 
 
-def is_sqaure_attacked(square: int, side: int, board) -> bool:
-    
+def is_square_attacked(square: int, side: int, board) -> bool:
+
     """
     Determines if a given square is attacked by any piece of a specified (opposite) side.
 
@@ -30,25 +30,25 @@ def is_sqaure_attacked(square: int, side: int, board) -> bool:
         bool: True if the square is attacked, otherwise False.
 
     """
-    
+
     _assert_condition(SqOnBoard(square))
     _assert_condition(SideValid(side))
     _assert_condition(board._check_board())
-    
+
     # checking for pawns
     if(side == Colors.WHITE):
-        if(board.pieces[square - 11] == Pieces.wP or board.pieces[square - 9] == Pieces.wP): # -9 -11 for white pieces, 
+        if(board.pieces[square - 11] == Pieces.wP or board.pieces[square - 9] == Pieces.wP): # -9 -11 for white pieces,
             return True
     else:
         if(board.pieces[square + 11] == Pieces.bP or board.pieces[square + 9] == Pieces.bP): # +9 and +11 for black pawns
             return True
-        
+
     # checking for knights
     for i in range(0, 8): # looping on each square there can be a knight attacking
         pce = board.pieces[square + knight_direction[i]]
         if(PieceValidEmpty(pce) and PieceKnight[pce] and PieceCol[pce] == side):
             return True
-        
+
     # rooks, queens
     for i in range(0, 4):
         dir = rook_direction[i]
@@ -61,7 +61,7 @@ def is_sqaure_attacked(square: int, side: int, board) -> bool:
                 break #if it hits another piece
             t_sq += dir
             pce = board.pieces[t_sq]
-            
+
     # bishops, queens
     for i in range(0, 4):
         dir = bishop_direction[i]
@@ -74,11 +74,11 @@ def is_sqaure_attacked(square: int, side: int, board) -> bool:
                 break #if it hits another piece
             t_sq += dir
             pce = board.pieces[t_sq]
-            
+
     # kings
     for i in range(0, 8):
         pce = board.pieces[square + king_direction[i]]
         if(PieceValidEmpty(pce) and PieceKing[pce] and PieceCol[pce] == side):
             return True
-            
+
     return False
