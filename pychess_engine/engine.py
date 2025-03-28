@@ -158,7 +158,7 @@ class Engine:
         Returns:
             str: FEN string representing the current board state.
         """
-        pass  # todo: implement
+        return self.board.get_fen()
 
     def make_move(self, move: str) -> bool:
         """
@@ -264,8 +264,6 @@ class Engine:
     def print_board(self) -> None:
         self.board.print_board()
 
-    def get_current_fen(self) -> str:
-        return self.board.get_fen()
 
     def perft_test(self, depth=3) -> None:
         """Perft Testing"""
