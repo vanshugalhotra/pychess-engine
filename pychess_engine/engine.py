@@ -113,7 +113,7 @@ class Engine:
     def __init__(self, elo=1500):
         self.name = "UstaadJi"
         self.author = "Vanshu Galhotra"
-        self.version = "1.0.0"
+        self.version = "1.1.0"
         self.elo = elo
         self.controls = EngineControls()
         self.board = Board()
@@ -255,7 +255,7 @@ class Engine:
             if(display_calculation):
                 print(self.controls)
             
-            result = self.search.iterative_deepening(display_calculation=display_calculation)
+            result, score = self.search.iterative_deepening(display_calculation=display_calculation)
         except Exception:
             print("Something went Wrong!")
         return result
@@ -266,3 +266,29 @@ class Engine:
     def perft_test(self, depth=3) -> None:
         """Perft Testing"""
         PerftTest(depth=depth, board=self.board)
+
+    def analyze_position(self, fen, depth=4) -> int:
+        
+        """
+        Analyzes a given chess position using iterative deepening search.
+
+        This function loads the given FEN (Forsyth-Edwards Notation) position into the board,
+        sets the search depth, and then performs an iterative deepening search to evaluate 
+        the position.
+
+        Args:
+            fen (str): The FEN string representing the chess position.
+            depth (int, optional): The maximum depth for the search. Default is 4.
+
+        Returns:
+            int: The evaluation score of the position
+        """
+        self.load_fen(fen=fen)
+        prevDepth = self.controls.depth
+        self.controls.depth = depth
+
+        result = self.search.iterative_deepening(display_calculation=False)
+
+        move, score = result 
+        self.controls.depth = prevDepth
+        return score

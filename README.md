@@ -201,7 +201,7 @@ Evaluates the current board position.
 
 
 #### Returns
-- **int**: Evaluation score of the position.
+- **int**: Evaluation score of the position (based on current situation only, i.e material and placement of pieces).
 
 ```python
 from pychess_engine import Engine
@@ -210,6 +210,29 @@ engine = Engine()
 # can load_fen for evaluating specific positions
 
 print(engine.evaluate())
+
+```
+
+
+## `analyze_position(fen: str, depth=4) -> int`
+Analyzes a given chess position using iterative deepening search.
+
+#### Arguments
+- **fen (str)**: FEN string representing the chess position.
+- **depth (int, optional)**: The maximum depth for the search. Default is `4`.
+
+#### Returns
+- **int**: The evaluation score of the position
+
+#### Example Usage
+
+```python
+from pychess_engine import Engine
+engine = Engine()
+
+WAC1 = "2rr3k/pp3pp1/1nnqbN1p/3pN3/2pP4/2P3Q1/PPB4P/R4RK1 w - -"
+score = engine.analyze_position(fen=WAC1, depth=5)
+print(f"Evaluation score: {score}")
 
 ```
 

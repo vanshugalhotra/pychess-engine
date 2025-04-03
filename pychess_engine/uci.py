@@ -148,3 +148,5 @@ def uci_game():
         if(engine.controls.quit):
             break
 
+if __name__ == "__main__":
+    uci_game()

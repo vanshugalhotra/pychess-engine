@@ -226,7 +226,7 @@ class Search:
         
         return alpha
     
-    def iterative_deepening(self, display_calculation: bool) -> str:
+    def iterative_deepening(self, display_calculation: bool) -> tuple[str, int]:
         """
         Performs iterative deepening search, gradually increasing the search depth from 1 to a maximum depth. This method 
         allows the engine to adjust to time constraints while ensuring progressively better evaluations.
@@ -237,6 +237,7 @@ class Search:
 
         Returns:
             str: The best move found at the final depth.
+            int: The best score 
         """
         # iterative deepening, search init
         # for depth = 1 to maxDepth, for each of these depths we then search with _alpha_beta
@@ -278,5 +279,4 @@ class Search:
         if(bestMove.move == 0):
             bestmove = "-"
         display_calculation and print(f"bestmove {bestmove}")
-        return bestmove
-    
+        return (bestmove, bestScore)
